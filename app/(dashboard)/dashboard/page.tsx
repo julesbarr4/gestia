@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createClient } from "@/lib/supabase/server";
 import { formatEuros } from "@/lib/utils";
 import { FileText, Receipt, Users, AlertTriangle, TrendingUp, Zap } from "lucide-react";

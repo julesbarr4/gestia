@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { createClient } from "@/lib/supabase/server";
 import { formatEuros, formatDate } from "@/lib/utils";
 import Link from "next/link";
