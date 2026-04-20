@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestia — Votre assistant administratif IA</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Tokens ── */
+    :root {
+      --black:      #0a0a0a;
+      --black-soft: #141414;
+      --white:      #ffffff;
+      --cream:      #f7f4ef;
+      --cream-dark: #ede9e2;
+      --gold:       #c9a96e;
+      --gold-light: #e8d5b0;
+      --gray-400:   #9a9a9a;
+      --gray-600:   #555555;
+
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'DM Sans', system-ui, sans-serif;
+
+      --section-pad: 120px 0;
+      --container:   1200px;
+      --radius:      4px;
+
+      --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ── Base ── */
+    body {
+      font-family: var(--font-sans);
+      background: var(--white);
+      color: var(--black);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    /* ── Typography ── */
+    .serif { font-family: var(--font-serif); }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      border-radius: var(--radius);
+    }
+
+    .btn-primary {
+      background: var(--black);
+      color: var(--white);
+    }
+    .btn-primary:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .btn-outline:hover {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin: 24px 0;
+    }
+    .divider-center { margin: 24px auto; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="container navbar__inner">
+
+      <a href="#" class="navbar__logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="#c9a96e"/>
+        </svg>
+        Gestia
+      </a>
+
+      <ul class="navbar__links">
+        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+        <li><a href="#tarifs">Tarifs</a></li>
+        <li><a href="#temoignages">Témoignages</a></li>
+      </ul>
+
+      <div class="navbar__actions">
+        <a href="#" class="navbar__link-subtle">Connexion</a>
+        <a href="#" class="btn btn-primary">Essai gratuit</a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="container hero__inner">
+
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        Conforme facturation électronique 2026
+      </div>
+
+      <h1 class="hero__title">
+        Votre admin gérée<br/>
+        <em>par l'intelligence</em><br/>
+        artificielle.
+      </h1>
+
+      <p class="hero__sub">
+        Gestia automatise vos devis, factures, relances et emails clients<br/>
+        grâce à 5 agents IA dédiés. Gagnez 5h par semaine dès le premier jour.
+      </p>
+
+      <div class="hero__actions">
+        <a href="#" class="btn btn-gold">Commencer gratuitement</a>
+        <a href="#fonctionnalites" class="btn btn-outline">Voir comment ça marche</a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <span class="hero__stat-val">5h</span>
+          <span class="hero__stat-label">économisées / semaine</span>
+        </div>
+        <div class="hero__stat-sep"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-val">30s</span>
+          <span class="hero__stat-label">pour générer un devis</span>
+        </div>
+        <div class="hero__stat-sep"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-val">5</span>
+          <span class="hero__stat-label">agents IA au travail</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="hero__scroll">
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <style>
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(201,169,110,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(201,169,110,0.05) 0%, transparent 60%);
+    }
+
+    .hero__inner {
+      position: relative;
+      padding-top: 120px;
+      padding-bottom: 100px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(201,169,110,0.12);
+      border: 1px solid rgba(201,169,110,0.25);
+      color: var(--gold-light);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 100px;
+      margin-bottom: 48px;
+    }
+
+    .hero__badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero__title {
+      font-size: clamp(52px, 7vw, 96px);
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      max-width: 760px;
+    }
+
+    .hero__title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero__sub {
+      font-size: 17px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.75;
+      margin-bottom: 48px;
+      max-width: 520px;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 80px;
+    }
+
+    .hero__stats {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .hero__stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hero__stat-val {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .hero__stat-label {
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--gray-400);
+      text-transform: uppercase;
+    }
+
+    .hero__stat-sep {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .hero__scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero__scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+  </style>
+
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.3s var(--ease);
+    }
+
+    .navbar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .navbar__logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+
+    .navbar__links {
+      display: flex;
+      list-style: none;
+      gap: 40px;
+    }
+
+    .navbar__links a {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .navbar__links a:hover { color: var(--white); }
+
+    .navbar__actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .navbar__link-subtle {
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .navbar__link-subtle:hover { color: var(--white); }
+
+    .navbar .btn-primary {
+      padding: 10px 24px;
+      font-size: 12px;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════
+       FONCTIONNALITÉS
+  ══════════════════════════════════════════ -->
+  <section class="features" id="fonctionnalites">
+    <div class="container">
+
+      <div class="section-header">
+        <p class="section-label">Ce que fait Gestia</p>
+        <div class="divider divider-center"></div>
+        <h2 class="section-title">5 agents IA,<br/><em>une équipe complète.</em></h2>
+        <p class="section-sub">Chaque agent est entraîné pour une mission précise. Ensemble, ils gèrent votre entreprise pendant que vous vous concentrez sur ce qui compte vraiment.</p>
+      </div>
+
+      <div class="features__grid">
+
+        <div class="feature-card feature-card--large">
+          <div class="feature-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+          </div>
+          <p class="feature-card__agent">Agent Admin</p>
+          <h3 class="feature-card__title">Devis & factures<br/>en 30 secondes</h3>
+          <p class="feature-card__desc">Décrivez votre projet en quelques mots. L'agent génère un document professionnel complet, conforme aux normes françaises, prêt à envoyer.</p>
+          <div class="feature-card__tag">TVA · Mentions légales · Format FR</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+          </div>
+          <p class="feature-card__agent">Agent Support</p>
+          <h3 class="feature-card__title">Emails répondus<br/>24h/24</h3>
+          <p class="feature-card__desc">L'IA lit, analyse et répond à vos emails clients avec votre voix — catégorisation, détection d'urgence, réponse professionnelle.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75"/></svg>
+          </div>
+          <p class="feature-card__agent">Agent CFO</p>
+          <h3 class="feature-card__title">Rapport financier<br/>hebdomadaire</h3>
+          <p class="feature-card__desc">Analyse de votre CA, trésorerie, impayés et taux d'acceptation devis — avec recommandations concrètes chaque lundi matin.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"/></svg>
+          </div>
+          <p class="feature-card__agent">Agent CEO</p>
+          <h3 class="feature-card__title">Stratégie &<br/>décisions clés</h3>
+          <p class="feature-card__desc">Analyse de votre position sur le marché, identification des opportunités de croissance et priorisation des actions à fort impact.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46"/></svg>
+          </div>
+          <p class="feature-card__agent">Agent CMO</p>
+          <h3 class="feature-card__title">Contenu marketing<br/>sur mesure</h3>
+          <p class="feature-card__desc">Posts LinkedIn, Instagram, Facebook et newsletters générés en quelques secondes — adaptés à votre secteur et à votre ton.</p>
+        </div>
+
+        <div class="feature-card feature-card--dark">
+          <div class="feature-card__icon feature-card__icon--light">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <p class="feature-card__agent" style="color:var(--gold)">Relances auto</p>
+          <h3 class="feature-card__title" style="color:var(--white)">Factures impayées<br/>détectées & relancées</h3>
+          <p class="feature-card__desc" style="color:rgba(255,255,255,0.5)">L'agent suit vos échéances et envoie des relances graduées — cordiale, ferme, formelle — au bon moment, sans vous déranger.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .features {
+      background: var(--cream);
+      padding: 140px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 80px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .section-title {
+      font-size: clamp(36px, 4vw, 56px);
+      line-height: 1.12;
+      color: var(--black);
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gray-600);
+    }
+
+    .section-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--gray-600);
+      line-height: 1.8;
+      margin-top: 20px;
+    }
+
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 2px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      padding: 48px 40px;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      z-index: 1;
+      position: relative;
+    }
+
+    .feature-card--large {
+      grid-column: span 1;
+      background: var(--black);
+    }
+
+    .feature-card--large .feature-card__agent { color: var(--gold); }
+    .feature-card--large .feature-card__title { color: var(--white); }
+    .feature-card--large .feature-card__desc  { color: rgba(255,255,255,0.5); }
+    .feature-card--large .feature-card__icon  { color: var(--gold); border-color: rgba(201,169,110,0.2); }
+
+    .feature-card--dark {
+      background: var(--black-soft);
+    }
+
+    .feature-card__icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--cream-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-600);
+      margin-bottom: 28px;
+    }
+
+    .feature-card__icon--light {
+      border-color: rgba(255,255,255,0.1);
+      color: var(--gold);
+    }
+
+    .feature-card__agent {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .feature-card__title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--black);
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+
+    .feature-card__desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--gray-600);
+      line-height: 1.75;
+    }
+
+    .feature-card__tag {
+      margin-top: 24px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: rgba(201,169,110,0.7);
+      text-transform: uppercase;
+      border-top: 1px solid rgba(201,169,110,0.15);
+      padding-top: 20px;
+    }
+  </style>
+
+
+  <!-- ══════════════════════════════════════════
+       TÉMOIGNAGES
+  ══════════════════════════════════════════ -->
+  <section class="testimonials" id="temoignages">
+    <div class="container">
+
+      <div class="testimonials__header">
+        <p class="section-label">Ils nous font confiance</p>
+        <div class="divider divider-center"></div>
+        <h2 class="section-title">Des entrepreneurs<br/><em>qui ont repris leur temps.</em></h2>
+      </div>
+
+      <div class="testimonials__grid">
+
+        <div class="testimonial testimonial--featured">
+          <div class="testimonial__quote">"</div>
+          <p class="testimonial__text">Avant Gestia, je passais deux jours entiers par semaine sur l'admin. Maintenant c'est automatique. Les devis sont impeccables, les relances partent sans que j'y pense — et mes clients me paient plus vite.</p>
+          <div class="testimonial__author">
+            <div class="testimonial__avatar">S</div>
+            <div>
+              <div class="testimonial__name">Sophie M.</div>
+              <div class="testimonial__role">Graphiste freelance · Paris</div>
+            </div>
+          </div>
+          <div class="testimonial__result">
+            <span class="testimonial__result-val">−12h</span>
+            <span class="testimonial__result-label">d'admin par semaine</span>
+          </div>
+        </div>
+
+        <div class="testimonials__right">
+          <div class="testimonial">
+            <p class="testimonial__text">"Le rapport hebdomadaire m'a révélé que 40% de mon CA venait d'un seul client. J'ai pu diversifier à temps. Aucun comptable ne m'aurait dit ça aussi vite."</p>
+            <div class="testimonial__author">
+              <div class="testimonial__avatar">T</div>
+              <div>
+                <div class="testimonial__name">Thomas R.</div>
+                <div class="testimonial__role">Consultant marketing · Lyon</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial">
+            <p class="testimonial__text">"Pendant mes vacances, l'agent support a répondu à tous mes emails clients. Aucun n'a attendu plus de 5 minutes. C'est exactement ce dont j'avais besoin."</p>
+            <div class="testimonial__author">
+              <div class="testimonial__avatar">A</div>
+              <div>
+                <div class="testimonial__name">Amina B.</div>
+                <div class="testimonial__role">Gérante e-commerce · Bordeaux</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .testimonials {
+      background: var(--black);
+      padding: 140px 0;
+    }
+
+    .testimonials__header {
+      text-align: center;
+      max-width: 520px;
+      margin: 0 auto 80px;
+    }
+
+    .testimonials__header .section-title { color: var(--white); }
+    .testimonials__header .section-title em { color: var(--gold); font-style: italic; }
+
+    .testimonials__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .testimonials__right {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .testimonial {
+      background: var(--black-soft);
+      padding: 48px;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+
+    .testimonial--featured {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .testimonial__quote {
+      font-family: var(--font-serif);
+      font-size: 80px;
+      color: rgba(0,0,0,0.15);
+      line-height: 0.6;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+
+    .testimonial--featured .testimonial__text { color: var(--black); }
+    .testimonial--featured .testimonial__name { color: var(--black); }
+    .testimonial--featured .testimonial__role { color: rgba(0,0,0,0.55); }
+
+    .testimonial__text {
+      font-size: 16px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.8;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+
+    .testimonial__author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .testimonial__avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+
+    .testimonial--featured .testimonial__avatar {
+      background: rgba(0,0,0,0.15);
+      color: var(--black);
+    }
+
+    .testimonial__name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .testimonial__role {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    .testimonial__result {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(0,0,0,0.12);
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .testimonial__result-val {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .testimonial__result-label {
+      font-size: 13px;
+      color: rgba(0,0,0,0.55);
+    }
+  </style>
+
+
+  <!-- ══════════════════════════════════════════
+       TARIFS
+  ══════════════════════════════════════════ -->
+  <section class="pricing" id="tarifs">
+    <div class="container">
+
+      <div class="section-header">
+        <p class="section-label">Tarifs</p>
+        <div class="divider divider-center"></div>
+        <h2 class="section-title">Simple, transparent,<br/><em>sans engagement.</em></h2>
+        <p class="section-sub">Résiliable à tout moment. 14 jours gratuits sans carte bancaire.</p>
+      </div>
+
+      <div class="pricing__grid">
+
+        <div class="pricing-card">
+          <div class="pricing-card__header">
+            <p class="pricing-card__plan">Starter</p>
+            <p class="pricing-card__target">Freelances & micro-entrepreneurs</p>
+          </div>
+          <div class="pricing-card__price">
+            <span class="pricing-card__amount">49€</span>
+            <span class="pricing-card__period">/mois</span>
+          </div>
+          <div class="pricing-card__divider"></div>
+          <ul class="pricing-card__features">
+            <li><span class="check">✓</span> 10 devis / mois générés par IA</li>
+            <li><span class="check">✓</span> 10 factures / mois</li>
+            <li><span class="check">✓</span> Relances automatiques</li>
+            <li><span class="check">✓</span> Rapport financier hebdomadaire</li>
+            <li><span class="check">✓</span> Support email</li>
+            <li class="disabled"><span>—</span> Agent support emails</li>
+            <li class="disabled"><span>—</span> Contenu marketing IA</li>
+            <li class="disabled"><span>—</span> Analyse stratégique CEO</li>
+          </ul>
+          <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:40px;">Commencer gratuitement</a>
+        </div>
+
+        <div class="pricing-card pricing-card--featured">
+          <div class="pricing-card__badge">Le plus populaire</div>
+          <div class="pricing-card__header">
+            <p class="pricing-card__plan" style="color:var(--gold)">Pro</p>
+            <p class="pricing-card__target" style="color:rgba(255,255,255,0.5)">PME 1 à 10 salariés</p>
+          </div>
+          <div class="pricing-card__price">
+            <span class="pricing-card__amount" style="color:var(--white)">99€</span>
+            <span class="pricing-card__period" style="color:rgba(255,255,255,0.4)">/mois</span>
+          </div>
+          <div class="pricing-card__divider" style="border-color:rgba(255,255,255,0.08)"></div>
+          <ul class="pricing-card__features" style="color:rgba(255,255,255,0.7)">
+            <li><span class="check" style="color:var(--gold)">✓</span> Devis & factures <strong style="color:var(--white)">illimités</strong></li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Relances automatiques</li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Rapport financier hebdo</li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Agent support emails IA</li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Contenu marketing multi-réseaux</li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Analyse stratégique CEO IA</li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Export PDF professionnel</li>
+            <li><span class="check" style="color:var(--gold)">✓</span> Support prioritaire</li>
+          </ul>
+          <a href="#" class="btn btn-gold" style="width:100%;justify-content:center;margin-top:40px;">Essai 14 jours gratuit</a>
+        </div>
+
+      </div>
+
+      <p class="pricing__note">Tous les plans incluent l'hébergement, les mises à jour et la conformité facturation électronique 2026.</p>
+
+    </div>
+  </section>
+
+  <style>
+    .pricing {
+      background: var(--cream);
+      padding: 140px 0;
+    }
+
+    .pricing__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--white);
+      padding: 56px 48px;
+      position: relative;
+    }
+
+    .pricing-card--featured {
+      background: var(--black);
+    }
+
+    .pricing-card__badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .pricing-card__plan {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+
+    .pricing-card__target {
+      font-size: 12px;
+      color: var(--gray-400);
+      letter-spacing: 0.02em;
+      margin-bottom: 32px;
+    }
+
+    .pricing-card__price {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 32px;
+    }
+
+    .pricing-card__amount {
+      font-family: var(--font-serif);
+      font-size: 56px;
+      font-weight: 600;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .pricing-card__period {
+      font-size: 15px;
+      color: var(--gray-400);
+    }
+
+    .pricing-card__divider {
+      border-top: 1px solid var(--cream-dark);
+      margin-bottom: 32px;
+    }
+
+    .pricing-card__features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .pricing-card__features .check {
+      color: var(--gold);
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .pricing-card__features .disabled {
+      opacity: 0.35;
+    }
+
+    .pricing__note {
+      text-align: center;
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 48px;
+    }
+  </style>
+
+
+  <!-- ══════════════════════════════════════════
+       CTA FINAL
+  ══════════════════════════════════════════ -->
+  <section class="cta-final">
+    <div class="container cta-final__inner">
+      <div class="cta-final__content">
+        <p class="section-label" style="color:var(--gold)">Prêt à commencer ?</p>
+        <div class="divider"></div>
+        <h2 class="cta-final__title">Libérez 5h par semaine.<br/><em>Dès aujourd'hui.</em></h2>
+        <p class="cta-final__sub">Rejoignez les entrepreneurs qui font confiance à Gestia pour leur administration. Configuration en moins de 5 minutes.</p>
+        <div class="cta-final__actions">
+          <a href="#" class="btn btn-gold">Démarrer mon essai gratuit</a>
+          <span class="cta-final__note">14 jours gratuits · Aucune carte requise · Résiliable à tout moment</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+
+      <div class="footer__brand">
+        <a href="#" class="navbar__logo" style="color:var(--white)">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="#c9a96e"/>
+          </svg>
+          Gestia
+        </a>
+        <p class="footer__tagline">L'assistant administratif IA<br/>pour les entrepreneurs français.</p>
+      </div>
+
+      <div class="footer__links">
+        <div class="footer__col">
+          <p class="footer__col-title">Produit</p>
+          <a href="#">Fonctionnalités</a>
+          <a href="#">Tarifs</a>
+          <a href="#">Témoignages</a>
+          <a href="#">Feuille de route</a>
+        </div>
+        <div class="footer__col">
+          <p class="footer__col-title">Légal</p>
+          <a href="#">CGV</a>
+          <a href="#">Confidentialité</a>
+          <a href="#">Mentions légales</a>
+          <a href="#">Conformité 2026</a>
+        </div>
+        <div class="footer__col">
+          <p class="footer__col-title">Contact</p>
+          <a href="#">contact@gestia.fr</a>
+          <a href="#">Support</a>
+          <a href="#">LinkedIn</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <span>© 2026 Gestia — JMB TRADING. Tous droits réservés.</span>
+        <span>Fait en France 🇫🇷</span>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    .cta-final {
+      background: var(--black);
+      padding: 160px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-final::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(201,169,110,0.07) 0%, transparent 70%);
+    }
+
+    .cta-final__inner {
+      position: relative;
+    }
+
+    .cta-final__content {
+      max-width: 680px;
+    }
+
+    .cta-final__title {
+      font-size: clamp(40px, 5vw, 72px);
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .cta-final__title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .cta-final__sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.8;
+      margin-bottom: 48px;
+      max-width: 480px;
+    }
+
+    .cta-final__actions {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .cta-final__note {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.02em;
+    }
+
+    /* Footer */
+    .footer {
+      background: #060606;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer__inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 60px;
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+
+    .footer__brand {
+      max-width: 220px;
+    }
+
+    .footer__tagline {
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.7;
+      margin-top: 16px;
+    }
+
+    .footer__links {
+      display: flex;
+      gap: 80px;
+    }
+
+    .footer__col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer__col-title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 4px;
+    }
+
+    .footer__col a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+
+    .footer__col a:hover { color: var(--white); }
+
+    .footer__bottom {
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer__bottom-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+    }
+  </style>
+
+</body>
+</html>
