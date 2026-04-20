@@ -1,3 +1,5 @@
+export const maxDuration = 120; // 2 min timeout Vercel
+
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRapportHebdomadaire } from "@/lib/agents/cfo-agent";
