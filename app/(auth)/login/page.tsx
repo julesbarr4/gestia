@@ -16,6 +16,10 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+      router.push("/dashboard");
+      return;
+    }
     setLoading(true);
     setErreur("");
 

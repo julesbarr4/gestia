@@ -15,6 +15,9 @@ import {
   Zap,
   LogOut,
 } from "lucide-react";
+import { isDemoMode } from "@/lib/demo/is-demo";
+import { MOCK_USER } from "@/lib/demo/mock-data";
+import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Tableau de bord" },
@@ -31,10 +34,17 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
+  // demo bypass
+  let user: any, supabase: any;
+  if (isDemoMode()) {
+    user = MOCK_USER;
+    supabase = getMockSupabaseClient();
+  } else {
+    supabase = await createClient();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (!u) redirect("/login");
+    user = u;
+  }
 
   const { data: profile } = await supabase
     .from("profiles")

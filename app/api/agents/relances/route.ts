@@ -4,8 +4,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRelance } from "@/lib/agents/admin-agent";
 import { formatDate } from "@/lib/utils";
+import { isDemoMode } from "@/lib/demo/is-demo";
+import { mockGenererRelance } from "@/lib/demo/mock-agents";
+import { MOCK_FACTURES } from "@/lib/demo/mock-data";
 
 export async function POST(req: NextRequest) {
+  // demo bypass
+  if (isDemoMode()) {
+    const { factureId } = await req.json();
+    if (!factureId) {
+      return NextResponse.json({ erreur: "factureId est requis" }, { status: 400 });
+    }
+    const facture = MOCK_FACTURES.find((f) => f.id === factureId) || MOCK_FACTURES[2];
+    const relance = await mockGenererRelance({
+      factureId,
+      nomClient: facture.clients?.nom,
+      numeroFacture: facture.numero,
+      montantTTC: facture.total_ttc,
+    });
+    return NextResponse.json({ relance, emailDestination: facture.clients ? `contact@demo.fr` : null });
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

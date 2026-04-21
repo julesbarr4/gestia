@@ -1,10 +1,21 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/demo/is-demo";
+import { MOCK_USER } from "@/lib/demo/mock-data";
+import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 export default async function ParametresPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // demo bypass
+  let user: any, supabase: any;
+  if (isDemoMode()) {
+    user = MOCK_USER;
+    supabase = getMockSupabaseClient();
+  } else {
+    supabase = await createClient();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    user = u;
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
