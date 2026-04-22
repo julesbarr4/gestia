@@ -104,38 +104,35 @@ export async function mockGenererFacture(params: {
 }
 
 export async function mockGenererRelance(params: {
-  factureId?: string;
-  nomClient?: string;
-  nomEntreprise?: string;
-  numeroFacture?: string;
-  montantTTC?: number;
-  dateEcheance?: string;
-  nbRelances?: number;
+  nomClient: string;
+  nomEntreprise: string;
+  numeroFacture: string;
+  montantTTC: number;
+  dateEcheance: string;
+  nbRelances: number;
 }): Promise<{ sujet: string; corps: string }> {
-  const numero = params.numeroFacture || "FAC-2026-XXXX";
-  const montant = params.montantTTC ? `${params.montantTTC.toFixed(2)}` : "montant dû";
-  const client = params.nomClient || "Madame, Monsieur";
-  const entreprise = params.nomEntreprise || "Entreprise Démo";
-  const echeance = params.dateEcheance || "date d'échéance";
-  const niveau = (params.nbRelances ?? 0) === 0 ? 1 : (params.nbRelances ?? 0) === 1 ? 2 : 3;
+  await new Promise((r) => setTimeout(r, 800));
 
-  if (niveau === 1) {
+  const { nomClient, nomEntreprise, numeroFacture, montantTTC, dateEcheance, nbRelances } = params;
+  const montantFormate = `${montantTTC.toFixed(2)} €`;
+
+  if (nbRelances === 0) {
     return {
-      sujet: `Facture ${numero} — simple rappel`,
-      corps: `Bonjour ${client},\n\nJe me permets de vous contacter au sujet de la facture ${numero} d'un montant de ${montant}€, émise le ${echeance}, dont le règlement n'a pas encore été enregistré à ce jour.\n\nIl s'agit certainement d'un simple oubli. Pourriez-vous vérifier de votre côté ?\n\nSi le règlement a déjà été effectué, merci d'ignorer ce message. Dans le cas contraire, je reste à votre disposition pour convenir d'un mode de paiement adapté.\n\nCordialement,\n${entreprise}\n\n— Inès, votre assistante Gestia`,
+      sujet: `Facture ${numeroFacture} — simple rappel`,
+      corps: `Bonjour ${nomClient},\n\nJe me permets de vous contacter au sujet de la facture ${numeroFacture} d'un montant de ${montantFormate}, émise le ${dateEcheance}, dont le règlement n'a pas encore été enregistré à ce jour.\n\nIl s'agit certainement d'un simple oubli. Pourriez-vous vérifier de votre côté ?\n\nSi le règlement a déjà été effectué, merci d'ignorer ce message. Dans le cas contraire, je reste à votre disposition pour convenir d'un mode de paiement adapté.\n\nCordialement,\n${nomEntreprise}\n\n— Inès, votre assistante Gestia`,
     };
   }
 
-  if (niveau === 2) {
+  if (nbRelances === 1) {
     return {
-      sujet: `Facture ${numero} — relance — action requise`,
-      corps: `Bonjour ${client},\n\nSauf erreur de notre part, la facture ${numero} d'un montant de ${montant}€, échue depuis le ${echeance}, n'a toujours pas été réglée.\n\nPour mémoire, conformément aux conditions générales de vente, tout retard de règlement entraîne l'application de pénalités de retard équivalentes à 3 fois le taux d'intérêt légal, ainsi qu'une indemnité forfaitaire de recouvrement de 40€ (art. L441-10 du Code de commerce).\n\nNous vous invitons à procéder au règlement sous 8 jours. En cas de difficulté, n'hésitez pas à nous contacter pour étudier ensemble un échéancier de paiement.\n\nCordialement,\n${entreprise}\n\n— Inès, votre assistante Gestia`,
+      sujet: `Facture ${numeroFacture} — relance — action requise`,
+      corps: `Bonjour ${nomClient},\n\nSauf erreur de notre part, la facture ${numeroFacture} d'un montant de ${montantFormate}, échue depuis le ${dateEcheance}, n'a toujours pas été réglée.\n\nPour mémoire, conformément aux conditions générales de vente, tout retard de règlement entraîne l'application de pénalités de retard équivalentes à 3 fois le taux d'intérêt légal, ainsi qu'une indemnité forfaitaire de recouvrement de 40 € (art. L441-10 du Code de commerce).\n\nNous vous invitons à procéder au règlement sous 8 jours. En cas de difficulté, n'hésitez pas à nous contacter pour étudier ensemble un échéancier de paiement.\n\nCordialement,\n${nomEntreprise}\n\n— Inès, votre assistante Gestia`,
     };
   }
 
   return {
-    sujet: `Facture ${numero} — mise en demeure`,
-    corps: `Bonjour ${client},\n\nMalgré nos précédentes relances, la facture ${numero} d'un montant de ${montant}€, échue depuis le ${echeance}, demeure impayée.\n\nLa présente vaut mise en demeure de régler sous 8 jours la somme due, majorée des pénalités de retard et de l'indemnité forfaitaire de 40€.\n\nÀ défaut de régularisation dans ce délai, nous serons contraints d'engager une procédure de recouvrement par voie judiciaire, dont les frais seront à votre charge.\n\nNous restons toutefois disponibles pour trouver une solution amiable. Contactez-nous rapidement.\n\nCordialement,\n${entreprise}\n\n— Inès, votre assistante Gestia`,
+    sujet: `Facture ${numeroFacture} — mise en demeure`,
+    corps: `Bonjour ${nomClient},\n\nMalgré nos précédentes relances, la facture ${numeroFacture} d'un montant de ${montantFormate}, échue depuis le ${dateEcheance}, demeure impayée.\n\nLa présente vaut mise en demeure de régler sous 8 jours la somme due, majorée des pénalités de retard et de l'indemnité forfaitaire de 40 €.\n\nÀ défaut de régularisation dans ce délai, nous serons contraints d'engager une procédure de recouvrement par voie judiciaire, dont les frais seront à votre charge.\n\nNous restons toutefois disponibles pour trouver une solution amiable. Contactez-nous rapidement.\n\nCordialement,\n${nomEntreprise}\n\n— Inès, votre assistante Gestia`,
   };
 }
 

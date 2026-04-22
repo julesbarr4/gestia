@@ -6,23 +6,28 @@ import { genererRelance } from "@/lib/agents/admin-agent";
 import { formatDate } from "@/lib/utils";
 import { isDemoMode } from "@/lib/demo/is-demo";
 import { mockGenererRelance } from "@/lib/demo/mock-agents";
-import { MOCK_FACTURES } from "@/lib/demo/mock-data";
+import { MOCK_FACTURES, MOCK_PROFILE } from "@/lib/demo/mock-data";
 
 export async function POST(req: NextRequest) {
-  // demo bypass
   if (isDemoMode()) {
     const { factureId } = await req.json();
-    if (!factureId) {
-      return NextResponse.json({ erreur: "factureId est requis" }, { status: 400 });
+    const facture = MOCK_FACTURES.find((f) => f.id === factureId);
+
+    if (!facture) {
+      return NextResponse.json({ erreur: "Facture introuvable" }, { status: 404 });
     }
-    const facture = MOCK_FACTURES.find((f) => f.id === factureId) || MOCK_FACTURES[2];
+
     const relance = await mockGenererRelance({
-      factureId,
-      nomClient: facture.clients?.nom,
+      nomClient: facture.clients?.nom || "Client",
+      nomEntreprise: MOCK_PROFILE.nom_entreprise,
       numeroFacture: facture.numero,
       montantTTC: facture.total_ttc,
+      dateEcheance: facture.date_echeance || "",
+      nbRelances: facture.nb_relances || 0,
     });
-    return NextResponse.json({ relance, emailDestination: facture.clients ? `contact@demo.fr` : null });
+
+    const clientEmail = (facture.clients as { nom?: string; email?: string } | null)?.email;
+    return NextResponse.json({ relance, emailDestination: clientEmail || "client@exemple.fr" });
   }
 
   const supabase = await createClient();
