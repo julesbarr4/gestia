@@ -4,10 +4,21 @@ import { createClient } from "@/lib/supabase/server";
 import { formatEuros } from "@/lib/utils";
 import { FileText, Receipt, Users, AlertTriangle, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
+import { isDemoMode } from "@/lib/demo/is-demo";
+import { MOCK_USER } from "@/lib/demo/mock-data";
+import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // demo bypass
+  let user: any, supabase: any;
+  if (isDemoMode()) {
+    user = MOCK_USER;
+    supabase = getMockSupabaseClient();
+  } else {
+    supabase = await createClient();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    user = u;
+  }
 
   const debutMois = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 
@@ -27,8 +38,8 @@ export default async function DashboardPage() {
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
   ]);
 
-  const caMois = (facturesMois || []).reduce((s, f) => s + f.total_ttc, 0);
-  const montantImpaye = (facturesImpayees || []).reduce((s, f) => s + f.total_ttc, 0);
+  const caMois = (facturesMois || []).reduce((s: number, f: any) => s + f.total_ttc, 0);
+  const montantImpaye = (facturesImpayees || []).reduce((s: number, f: any) => s + f.total_ttc, 0);
 
   const STATS = [
     { label: "CA ce mois", valeur: formatEuros(caMois), icon: TrendingUp, couleur: "text-green-600", bg: "bg-green-50" },
@@ -77,7 +88,7 @@ export default async function DashboardPage() {
               </span>
             </div>
             <div className="space-y-2">
-              {facturesImpayees?.map((f) => (
+              {facturesImpayees?.map((f: any) => (
                 <div key={f.numero} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                   <div>
                     <span className="text-sm font-medium text-gray-900">{f.numero}</span>
@@ -127,7 +138,7 @@ export default async function DashboardPage() {
           <div className="bg-white rounded-xl border border-gray-100 p-6 lg:col-span-2">
             <h2 className="font-semibold text-gray-900 mb-4">Activité récente des agents IA</h2>
             <div className="space-y-2">
-              {derniersLogs?.map((log, i) => (
+              {derniersLogs?.map((log: any, i: number) => (
                 <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
                   <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
                   <span className="text-sm font-medium text-gray-700">

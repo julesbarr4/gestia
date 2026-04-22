@@ -14,9 +14,16 @@ export default function SignupPage() {
   const [succes, setSucces] = useState(false);
   const [erreur, setErreur] = useState("");
   const supabase = createClient();
+  const router = useRouter();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      router.push("/dashboard");
+      return;
+    }
     setLoading(true);
     setErreur("");
 
@@ -117,8 +124,8 @@ export default function SignupPage() {
           </button>
           <p className="text-xs text-gray-400 text-center">
             En créant un compte, vous acceptez nos{" "}
-            <a href="#" className="underline">CGV</a> et notre{" "}
-            <a href="#" className="underline">politique de confidentialité</a>.
+            <Link href="/cgv" className="underline">CGV</Link> et notre{" "}
+            <Link href="/confidentialite" className="underline">politique de confidentialité</Link>.
           </p>
         </form>
 

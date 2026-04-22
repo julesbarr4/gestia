@@ -3,10 +3,21 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { Users, Plus } from "lucide-react";
+import { isDemoMode } from "@/lib/demo/is-demo";
+import { MOCK_USER } from "@/lib/demo/mock-data";
+import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 export default async function ClientsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // demo bypass
+  let user: any, supabase: any;
+  if (isDemoMode()) {
+    user = MOCK_USER;
+    supabase = getMockSupabaseClient();
+  } else {
+    supabase = await createClient();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    user = u;
+  }
 
   const { data: clients } = await supabase
     .from("clients")
@@ -48,7 +59,7 @@ export default async function ClientsPage() {
               </tr>
             </thead>
             <tbody>
-              {clients.map((c) => (
+              {clients.map((c: any) => (
                 <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-900">{c.nom}</td>
                   <td className="px-4 py-3 text-gray-500">{c.email || "—"}</td>
