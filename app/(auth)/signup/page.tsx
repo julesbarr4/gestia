@@ -14,9 +14,14 @@ export default function SignupPage() {
   const [succes, setSucces] = useState(false);
   const [erreur, setErreur] = useState("");
   const supabase = createClient();
+  const router = useRouter();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+      router.push("/dashboard");
+      return;
+    }
     setLoading(true);
     setErreur("");
 

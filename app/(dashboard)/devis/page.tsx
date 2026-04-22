@@ -4,6 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { formatEuros, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Plus, FileText } from "lucide-react";
+import { isDemoMode } from "@/lib/demo/is-demo";
+import { MOCK_USER } from "@/lib/demo/mock-data";
+import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 const STATUT_LABELS: Record<string, { label: string; couleur: string }> = {
   brouillon: { label: "Brouillon", couleur: "bg-gray-100 text-gray-600" },
@@ -14,8 +17,16 @@ const STATUT_LABELS: Record<string, { label: string; couleur: string }> = {
 };
 
 export default async function DevisPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // demo bypass
+  let user: any, supabase: any;
+  if (isDemoMode()) {
+    user = MOCK_USER;
+    supabase = getMockSupabaseClient();
+  } else {
+    supabase = await createClient();
+    const { data: { user: u } } = await supabase.auth.getUser();
+    user = u;
+  }
 
   const { data: devis } = await supabase
     .from("devis")
@@ -64,7 +75,7 @@ export default async function DevisPage() {
               </tr>
             </thead>
             <tbody>
-              {devis.map((d) => {
+              {devis.map((d: any) => {
                 const statut = STATUT_LABELS[d.statut] || STATUT_LABELS.brouillon;
                 return (
                   <tr key={d.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
