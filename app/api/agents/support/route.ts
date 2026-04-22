@@ -7,14 +7,16 @@ import { isDemoMode } from "@/lib/demo/is-demo";
 import { mockAnalyserEmailSupport } from "@/lib/demo/mock-agents";
 
 export async function POST(req: NextRequest) {
-  // demo bypass
   if (isDemoMode()) {
     const body = await req.json();
-    const { emailDe, sujet, corps } = body;
+    const { emailDe, sujet, corps, ajouterSignatureLea } = body;
     if (!emailDe || !corps) {
       return NextResponse.json({ erreur: "emailDe et corps sont requis" }, { status: 400 });
     }
-    const analyse = await mockAnalyserEmailSupport({ emailDe, sujet, corps });
+    const analyse = await mockAnalyserEmailSupport({ emailDe, sujet: sujet || "", corps, nomEntreprise: "Entreprise Démo" });
+    if (ajouterSignatureLea === true) {
+      analyse.reponse += "\n\n— Généré par Léa, votre assistante support Gestia";
+    }
     return NextResponse.json({ analyse, emailLogId: crypto.randomUUID() });
   }
 
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { emailDe, sujet, corps } = body;
+  const { emailDe, sujet, corps, ajouterSignatureLea } = body;
 
   if (!emailDe || !corps) {
     return NextResponse.json({ erreur: "emailDe et corps sont requis" }, { status: 400 });
@@ -44,6 +46,10 @@ export async function POST(req: NextRequest) {
     corps,
     nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
   });
+
+  if (ajouterSignatureLea === true) {
+    analyse.reponse += "\n\n— Généré par Léa, votre assistante support Gestia";
+  }
 
   const { data: emailLog } = await supabase
     .from("emails_entrants")
