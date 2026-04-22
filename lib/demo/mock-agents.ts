@@ -9,20 +9,52 @@ export async function mockGenererDevis(params: {
   nomClient: string;
   nomEntreprise?: string;
 }): Promise<DocumentGenere> {
-  return {
-    titre: `Devis — ${params.descriptionProjet.slice(0, 60)}`,
-    lignes: [
-      { description: "Analyse des besoins et cadrage du projet", quantite: 1, prixUnitaireHT: 700, totalHT: 700 },
-      { description: "Conception et maquettage", quantite: 1, prixUnitaireHT: 1200, totalHT: 1200 },
-      { description: "Développement et intégration", quantite: 12, prixUnitaireHT: 110, totalHT: 1320 },
-      { description: "Recette, livraison et formation", quantite: 1, prixUnitaireHT: 480, totalHT: 480 },
-    ],
-    totalHT: 3700,
-    totalTVA: 740,
-    totalTTC: 4440,
-    notes: `Devis établi pour ${params.nomClient}. Acompte de 30 % à la signature, solde à la livraison.`,
-    conditions: "Devis valable 30 jours. Paiement à 30 jours fin de mois. Tout retard entraîne des pénalités de 3 fois le taux légal en vigueur.",
-  };
+  const variations: DocumentGenere[] = [
+    {
+      titre: "Devis DEV-2026-042 — Création site internet",
+      lignes: [
+        { description: "Conception maquettes graphiques (3 propositions)", quantite: 1, prixUnitaireHT: 800, totalHT: 800 },
+        { description: "Intégration HTML/CSS responsive (5 pages)", quantite: 5, prixUnitaireHT: 280, totalHT: 1400 },
+        { description: "Développement back-office administrable", quantite: 1, prixUnitaireHT: 1200, totalHT: 1200 },
+        { description: "Formation à l'administration (2h)", quantite: 2, prixUnitaireHT: 90, totalHT: 180 },
+      ],
+      totalHT: 3580,
+      totalTVA: 716,
+      totalTTC: 4296,
+      notes: "Devis établi sur la base d'un cahier des charges type. Toute prestation complémentaire fera l'objet d'un avenant.\n\n— Inès, votre assistante Gestia",
+      conditions: "Acompte de 30% à la commande, solde à livraison. Devis valable 30 jours. TVA 20%.",
+    },
+    {
+      titre: "Devis DEV-2026-043 — Rénovation salle de bain",
+      lignes: [
+        { description: "Dépose ancien équipement et évacuation gravats", quantite: 1, prixUnitaireHT: 450, totalHT: 450 },
+        { description: "Fourniture et pose douche italienne (receveur + paroi)", quantite: 1, prixUnitaireHT: 1850, totalHT: 1850 },
+        { description: "Fourniture et pose meuble vasque simple vasque 80cm", quantite: 1, prixUnitaireHT: 680, totalHT: 680 },
+        { description: "Raccordements plomberie et mise en eau", quantite: 1, prixUnitaireHT: 420, totalHT: 420 },
+        { description: "Main d'œuvre (3 jours, 2 ouvriers)", quantite: 6, prixUnitaireHT: 380, totalHT: 2280 },
+      ],
+      totalHT: 5680,
+      totalTVA: 568,
+      totalTTC: 6248,
+      notes: "TVA réduite à 10% applicable (logement de plus de 2 ans, travaux de rénovation). Attestation à fournir par le client avant facturation.\n\n— Inès, votre assistante Gestia",
+      conditions: "Acompte de 40% à la commande. Solde à la réception des travaux. Devis valable 30 jours. Garantie décennale incluse.",
+    },
+    {
+      titre: "Devis DEV-2026-044 — Mission conseil stratégique",
+      lignes: [
+        { description: "Audit initial et diagnostic (2 jours)", quantite: 2, prixUnitaireHT: 1200, totalHT: 2400 },
+        { description: "Rédaction plan d'action sur 90 jours", quantite: 1, prixUnitaireHT: 1800, totalHT: 1800 },
+        { description: "Atelier de restitution équipe (1/2 journée)", quantite: 1, prixUnitaireHT: 900, totalHT: 900 },
+        { description: "Suivi mensuel (3 mois, 2h/mois)", quantite: 6, prixUnitaireHT: 180, totalHT: 1080 },
+      ],
+      totalHT: 6180,
+      totalTVA: 1236,
+      totalTTC: 7416,
+      notes: "Mission réalisée dans vos locaux ou en visio selon votre préférence. Confidentialité assurée par NDA joint.\n\n— Inès, votre assistante Gestia",
+      conditions: "Règlement en 3 fois : 30% à la signature, 40% après restitution, 30% au terme du suivi. Devis valable 45 jours. TVA 20%.",
+    },
+  ];
+  return variations[Math.floor(Math.random() * variations.length)];
 }
 
 export async function mockGenererFacture(params: {
@@ -31,48 +63,79 @@ export async function mockGenererFacture(params: {
   nomEntreprise?: string;
   devisReference?: string;
 }): Promise<DocumentGenere> {
-  return {
-    titre: `Facture — ${params.descriptionPrestations.slice(0, 60)}`,
-    lignes: [
-      { description: "Prestation de service — phase 1", quantite: 1, prixUnitaireHT: 2000, totalHT: 2000 },
-      { description: "Prestation de service — phase 2", quantite: 1, prixUnitaireHT: 1500, totalHT: 1500 },
-      { description: "Frais de coordination et suivi", quantite: 1, prixUnitaireHT: 350, totalHT: 350 },
-    ],
-    totalHT: 3850,
-    totalTVA: 770,
-    totalTTC: 4620,
-    notes: params.devisReference
-      ? `Facture établie suite au devis ${params.devisReference} accepté par ${params.nomClient}.`
-      : `Facture établie pour ${params.nomClient}.`,
-    conditions: "Paiement sous 30 jours. En cas de retard, pénalités de 3 fois le taux légal en vigueur.",
-  };
+  const variations: DocumentGenere[] = [
+    {
+      titre: "Facture FAC-2026-087",
+      lignes: [
+        { description: "Solde création site internet (cf. devis DEV-2026-042)", quantite: 1, prixUnitaireHT: 2506, totalHT: 2506 },
+      ],
+      totalHT: 2506,
+      totalTVA: 501.2,
+      totalTTC: 3007.2,
+      notes: "Acompte de 1288,80 € déjà réglé le 12/01/2026. Solde dû : 3007,20 €.\n\n— Inès, votre assistante Gestia",
+      conditions: "Règlement sous 30 jours. Pénalités de retard : 3× le taux légal. Indemnité forfaitaire de recouvrement : 40€ (art. L441-10 du Code de commerce).",
+    },
+    {
+      titre: "Facture FAC-2026-088",
+      lignes: [
+        { description: "Rénovation salle de bain — fourniture et pose", quantite: 1, prixUnitaireHT: 3400, totalHT: 3400 },
+        { description: "Main d'œuvre (3 jours, 2 ouvriers)", quantite: 6, prixUnitaireHT: 380, totalHT: 2280 },
+      ],
+      totalHT: 5680,
+      totalTVA: 568,
+      totalTTC: 6248,
+      notes: "TVA réduite à 10% appliquée (logement de plus de 2 ans). Garantie décennale : contrat n°MAAF-2026-00X.\n\n— Inès, votre assistante Gestia",
+      conditions: "Règlement sous 30 jours. Pénalités de retard : 3× le taux légal. Indemnité forfaitaire de recouvrement : 40€ (art. L441-10 du Code de commerce).",
+    },
+    {
+      titre: "Facture FAC-2026-089",
+      lignes: [
+        { description: "Mission conseil — Phase 2 : plan d'action 90 jours", quantite: 1, prixUnitaireHT: 1800, totalHT: 1800 },
+        { description: "Atelier de restitution équipe (1/2 journée)", quantite: 1, prixUnitaireHT: 900, totalHT: 900 },
+      ],
+      totalHT: 2700,
+      totalTVA: 540,
+      totalTTC: 3240,
+      notes: "Facture émise à l'achèvement de la phase 2 (cf. devis DEV-2026-044). Phase 3 (suivi mensuel) facturée à partir du mois prochain.\n\n— Inès, votre assistante Gestia",
+      conditions: "Règlement sous 30 jours. Pénalités de retard : 3× le taux légal. Indemnité forfaitaire de recouvrement : 40€ (art. L441-10 du Code de commerce).",
+    },
+  ];
+  return variations[Math.floor(Math.random() * variations.length)];
 }
 
 export async function mockGenererRelance(params: {
   factureId?: string;
   nomClient?: string;
+  nomEntreprise?: string;
   numeroFacture?: string;
   montantTTC?: number;
+  dateEcheance?: string;
+  nbRelances?: number;
 }): Promise<{ sujet: string; corps: string }> {
   const numero = params.numeroFacture || "FAC-2026-XXXX";
-  const montant = params.montantTTC ? `${params.montantTTC.toFixed(2)} €` : "montant dû";
+  const montant = params.montantTTC ? `${params.montantTTC.toFixed(2)}` : "montant dû";
   const client = params.nomClient || "Madame, Monsieur";
+  const entreprise = params.nomEntreprise || "Entreprise Démo";
+  const echeance = params.dateEcheance || "date d'échéance";
+  const niveau = (params.nbRelances ?? 0) === 0 ? 1 : (params.nbRelances ?? 0) === 1 ? 2 : 3;
+
+  if (niveau === 1) {
+    return {
+      sujet: `Facture ${numero} — simple rappel`,
+      corps: `Bonjour ${client},\n\nJe me permets de vous contacter au sujet de la facture ${numero} d'un montant de ${montant}€, émise le ${echeance}, dont le règlement n'a pas encore été enregistré à ce jour.\n\nIl s'agit certainement d'un simple oubli. Pourriez-vous vérifier de votre côté ?\n\nSi le règlement a déjà été effectué, merci d'ignorer ce message. Dans le cas contraire, je reste à votre disposition pour convenir d'un mode de paiement adapté.\n\nCordialement,\n${entreprise}\n\n— Inès, votre assistante Gestia`,
+    };
+  }
+
+  if (niveau === 2) {
+    return {
+      sujet: `Facture ${numero} — relance — action requise`,
+      corps: `Bonjour ${client},\n\nSauf erreur de notre part, la facture ${numero} d'un montant de ${montant}€, échue depuis le ${echeance}, n'a toujours pas été réglée.\n\nPour mémoire, conformément aux conditions générales de vente, tout retard de règlement entraîne l'application de pénalités de retard équivalentes à 3 fois le taux d'intérêt légal, ainsi qu'une indemnité forfaitaire de recouvrement de 40€ (art. L441-10 du Code de commerce).\n\nNous vous invitons à procéder au règlement sous 8 jours. En cas de difficulté, n'hésitez pas à nous contacter pour étudier ensemble un échéancier de paiement.\n\nCordialement,\n${entreprise}\n\n— Inès, votre assistante Gestia`,
+    };
+  }
 
   return {
-    sujet: `Rappel de paiement — Facture ${numero}`,
-    corps: `Bonjour ${client},
-
-Nous nous permettons de vous contacter au sujet de la facture ${numero} d'un montant de ${montant}, dont l'échéance est dépassée.
-
-Sauf erreur de notre part, nous n'avons pas encore reçu votre règlement. Pourriez-vous procéder au virement dans les meilleurs délais ?
-
-Si vous avez déjà effectué le paiement, veuillez ignorer ce message et nous en informer afin que nous mettions à jour nos dossiers.
-
-Restant à votre disposition pour tout renseignement,
-
-Cordialement,
-Entreprise Démo
-contact@entreprise-demo.fr`,
+    sujet: `Facture ${numero} — mise en demeure`,
+    corps: `Bonjour ${client},\n\nMalgré nos précédentes relances, la facture ${numero} d'un montant de ${montant}€, échue depuis le ${echeance}, demeure impayée.\n\nLa présente vaut mise en demeure de régler sous 8 jours la somme due, majorée des pénalités de retard et de l'indemnité forfaitaire de 40€.\n\nÀ défaut de régularisation dans ce délai, nous serons contraints d'engager une procédure de recouvrement par voie judiciaire, dont les frais seront à votre charge.\n\nNous restons toutefois disponibles pour trouver une solution amiable. Contactez-nous rapidement.\n\nCordialement,\n${entreprise}\n\n— Inès, votre assistante Gestia`,
   };
 }
 
