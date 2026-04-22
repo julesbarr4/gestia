@@ -25,6 +25,7 @@ export default function EmailsPage() {
   const [analyse, setAnalyse] = useState<AnalyseEmail | null>(null);
   const [erreur, setErreur] = useState("");
   const [copie, setCopie] = useState(false);
+  const [ajouterSignatureLea, setAjouterSignatureLea] = useState(false);
 
   async function analyser(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,7 @@ export default function EmailsPage() {
     const res = await fetch("/api/agents/support", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ emailDe, sujet, corps }),
+      body: JSON.stringify({ emailDe, sujet, corps, ajouterSignatureLea }),
     });
 
     const data = await res.json();
@@ -112,13 +113,22 @@ export default function EmailsPage() {
               placeholder="Coller le contenu de l'email ici..."
             />
           </div>
+          <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ajouterSignatureLea}
+              onChange={(e) => setAjouterSignatureLea(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            Ajouter la signature « Généré par Léa » en bas de la réponse
+          </label>
           <button
             type="submit"
             disabled={loading}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" />Analyse en cours...</>
+              <><Loader2 className="w-4 h-4 animate-spin" />Léa analyse votre email...</>
             ) : (
               <><Sparkles className="w-4 h-4" />Analyser & répondre</>
             )}
@@ -128,7 +138,8 @@ export default function EmailsPage() {
         {/* RÉSULTAT */}
         {analyse && (
           <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-            <h2 className="font-semibold text-gray-900">Analyse de l'agent</h2>
+            <h2 className="font-semibold text-gray-900">Analyse de Léa</h2>
+            <p className="text-xs text-gray-400 -mt-2">Votre responsable service client IA</p>
 
             <div className="flex gap-2 flex-wrap">
               <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">

@@ -138,24 +138,111 @@ export async function mockGenererRelance(params: {
 
 export async function mockAnalyserEmailSupport(params: {
   emailDe: string;
-  sujet?: string;
+  sujet: string;
   corps: string;
-}): Promise<AnalyseEmail> {
+  nomEntreprise: string;
+}): Promise<{
+  categorie: string;
+  urgence: string;
+  resume: string;
+  sujetReponse: string;
+  reponse: string;
+}> {
+  await new Promise((r) => setTimeout(r, 1200));
+
+  const { corps, nomEntreprise } = params;
+  const corpsLower = corps.toLowerCase();
+
+  const motsAgressifs = [
+    "scandaleux",
+    "inacceptable",
+    "arnaque",
+    "honteux",
+    "nul",
+    "catastrophe",
+    "jamais ça",
+    "avis négatif",
+    "procès",
+    "avocat",
+    "!!",
+  ];
+  const motsReclamation = [
+    "retard",
+    "problème",
+    "erreur",
+    "déçu",
+    "pas reçu",
+    "ne fonctionne pas",
+    "cassé",
+    "remboursement",
+    "insatisfait",
+  ];
+
+  const estAgressif = motsAgressifs.some((m) => corpsLower.includes(m));
+  const estReclamation = motsReclamation.some((m) => corpsLower.includes(m));
+
+  if (estAgressif) {
+    return {
+      categorie: "reclamation",
+      urgence: "elevee",
+      resume:
+        "Client très mécontent exprimant une insatisfaction forte. Désescalade prioritaire.",
+      sujetReponse: `RE: ${params.sujet || "Votre message"} — nous traitons votre demande en priorité`,
+      reponse: `Bonjour,
+
+Je comprends parfaitement votre frustration, et je tiens d'abord à vous présenter nos sincères excuses pour la situation que vous décrivez. Votre insatisfaction est légitime et nous la prenons très au sérieux.
+
+Nous allons traiter votre demande en priorité absolue. Pour pouvoir vous apporter une réponse précise et une solution adaptée, pourriez-vous nous préciser :
+- La date et la référence de votre commande ou intervention
+- Les éléments concrets qui posent problème
+
+Je m'engage personnellement à revenir vers vous sous 24 heures ouvrées avec une proposition concrète. En attendant, n'hésitez pas à me joindre directement par téléphone si vous le souhaitez.
+
+Nous tenons à la qualité de notre relation avec vous et ferons le nécessaire pour trouver une issue satisfaisante.
+
+Bien cordialement,
+${nomEntreprise}`,
+    };
+  }
+
+  if (estReclamation) {
+    return {
+      categorie: "reclamation",
+      urgence: "normale",
+      resume:
+        "Client signale un problème avec sa commande/prestation. Réponse empathique et orientée solution attendue.",
+      sujetReponse: `RE: ${params.sujet || "Votre message"}`,
+      reponse: `Bonjour,
+
+Merci d'avoir pris le temps de nous écrire, et je suis sincèrement désolée pour la gêne occasionnée.
+
+Je comprends que cette situation ne corresponde pas à ce que vous étiez en droit d'attendre. Nous allons examiner votre dossier dans les plus brefs délais afin de comprendre ce qui s'est passé et de trouver ensemble la meilleure solution.
+
+Pourriez-vous me confirmer la référence de votre commande (ou la date de votre intervention) afin que je puisse accéder rapidement à votre dossier ?
+
+Je reviens vers vous sous 48 heures ouvrées avec une proposition concrète. Merci par avance pour votre patience.
+
+Bien cordialement,
+${nomEntreprise}`,
+    };
+  }
+
   return {
     categorie: "question",
-    urgence: "normale",
-    resume: "Le client demande des informations sur les délais et la prochaine étape du projet.",
-    sujetReponse: `Re : ${params.sujet || "Votre demande"}`,
+    urgence: "faible",
+    resume:
+      "Demande d'information standard avant achat ou engagement. Réponse commerciale accueillante attendue.",
+    sujetReponse: `RE: ${params.sujet || "Votre demande d'information"}`,
     reponse: `Bonjour,
 
-Merci pour votre message. Nous avons bien pris note de votre demande et nous revenons vers vous dans les plus brefs délais.
+Merci pour votre message et pour l'intérêt que vous portez à nos services.
 
-Notre équipe est actuellement en cours d'analyse de votre situation et vous apportera une réponse complète sous 24 à 48 heures ouvrées.
+Je reviens vers vous avec grand plaisir. Pour vous apporter une réponse la plus précise possible, pourriez-vous me préciser en quelques mots votre besoin exact et le délai dans lequel vous souhaitez avancer ?
 
-N'hésitez pas à nous contacter si vous avez des questions urgentes.
+Je me tiens également disponible pour un échange téléphonique si cela vous convient mieux — n'hésitez pas à me proposer un créneau.
 
-Cordialement,
-L'équipe Entreprise Démo`,
+Bien cordialement,
+${nomEntreprise}`,
   };
 }
 
