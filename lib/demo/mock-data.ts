@@ -202,6 +202,33 @@ export const MOCK_FACTURES = [
     updated_at: "2026-04-14T09:00:00.000Z",
     clients: { nom: "Atelier Dupont Créations" },
   },
+  {
+    id: "facture-4",
+    user_id: "demo-user-id",
+    client_id: "client-1",
+    devis_id: null,
+    numero: "FAC-2026-0004",
+    titre: "Maintenance et hébergement — T1 2026",
+    statut: "en_retard",
+    date_emission: "2026-02-01",
+    date_echeance: "2026-03-03",
+    lignes: [
+      { description: "Hébergement serveur dédié (3 mois)", quantite: 3, prixUnitaireHT: 180, totalHT: 540 },
+      { description: "Maintenance corrective et mises à jour", quantite: 1, prixUnitaireHT: 650, totalHT: 650 },
+    ],
+    total_ht: 1190,
+    taux_tva: 20,
+    total_tva: 238,
+    total_ttc: 1428,
+    notes: "Contrat de maintenance annuel — facturation trimestrielle.",
+    conditions: "Paiement à 30 jours. Pénalités de retard : 3× taux légal. Indemnité forfaitaire de recouvrement : 40€.",
+    genere_par_ia: false,
+    nb_relances: 2,
+    derniere_relance_at: "2026-04-10T09:00:00.000Z",
+    created_at: "2026-02-01T08:00:00.000Z",
+    updated_at: "2026-04-10T09:00:00.000Z",
+    clients: { nom: "Martin & Associés" },
+  },
 ];
 
 export const MOCK_EMAILS = [
