@@ -315,9 +315,9 @@ export default function LandingPage() {
             © {new Date().getFullYear()} Gestia — JMB TRADING · Tous droits réservés
           </p>
           <div className="flex gap-6 text-sm text-gray-400">
-            <a href="#" className="hover:text-gray-600">CGV</a>
-            <a href="#" className="hover:text-gray-600">Confidentialité</a>
-            <a href="#" className="hover:text-gray-600">Contact</a>
+            <Link href="/cgv" className="hover:text-gray-600">CGV</Link>
+            <Link href="/confidentialite" className="hover:text-gray-600">Confidentialité</Link>
+            <Link href="/contact" className="hover:text-gray-600">Contact</Link>
           </div>
         </div>
       </footer>

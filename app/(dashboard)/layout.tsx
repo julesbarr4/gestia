@@ -106,6 +106,11 @@ export default async function DashboardLayout({
 
       {/* CONTENU */}
       <main className="flex-1 overflow-auto">
+        {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+          <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 text-center">
+            🎭 Mode démo — les données ne sont pas enregistrées
+          </div>
+        )}
         {children}
       </main>
     </div>
