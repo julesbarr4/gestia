@@ -248,30 +248,132 @@ ${nomEntreprise}`,
 
 export async function mockRapportHebdomadaire(params: {
   nomEntreprise?: string;
-}): Promise<RapportFinancier> {
+  caSemaine?: number;
+  caMois?: number;
+  caMoisPrecedent?: number;
+  facturesImpayees?: number;
+  montantImpaye?: number;
+  nbNouveauxClients?: number;
+  nbDevisEnAttente?: number;
+  devisAcceptesTaux?: number;
+} = {}): Promise<RapportFinancier> {
+  await new Promise((r) => setTimeout(r, 1500));
+
+  const {
+    caSemaine = 9960,
+    caMois = 9960,
+    caMoisPrecedent = 8200,
+    facturesImpayees = 2,
+    montantImpaye = 1800,
+    nbNouveauxClients = 1,
+    nbDevisEnAttente = 1,
+    devisAcceptesTaux = 50,
+  } = params;
+
+  const progressionCA =
+    caMoisPrecedent > 0
+      ? Math.round(((caMois - caMoisPrecedent) / caMoisPrecedent) * 100)
+      : 0;
+  const ratioImpayes = caMois > 0 ? (montantImpaye / caMois) * 100 : 0;
+
+  const estSante =
+    progressionCA >= 5 &&
+    ratioImpayes < 10 &&
+    devisAcceptesTaux >= 55 &&
+    facturesImpayees <= 1;
+
+  const estTension =
+    progressionCA < -5 ||
+    ratioImpayes > 25 ||
+    facturesImpayees >= 3 ||
+    (caSemaine === 0 && caMois < caMoisPrecedent * 0.5);
+
+  if (estSante) {
+    return {
+      resumeExecutif: `Semaine solide : votre CA mensuel progresse de +${progressionCA}% vs mois dernier (${caMois}€ vs ${caMoisPrecedent}€). Vos impayés restent maîtrisés à ${ratioImpayes.toFixed(0)}% du CA, et votre taux d'acceptation devis de ${devisAcceptesTaux}% est au-dessus de la moyenne TPE (50%). Le moteur tourne bien — c'est le moment de pousser sur l'acquisition.\n\n— Hugo, votre CFO Gestia`,
+      pointsForts: [
+        `CA en progression de +${progressionCA}% sur le mois en cours`,
+        `Taux d'acceptation devis à ${devisAcceptesTaux}%, soit ${devisAcceptesTaux - 50} points au-dessus de la moyenne TPE`,
+        `${nbNouveauxClients} nouveau(x) client(s) ce mois — signe d'une acquisition saine`,
+        `Ratio impayés maîtrisé à ${ratioImpayes.toFixed(0)}% du CA (seuil d'alerte : 15%)`,
+      ],
+      pointsVigilance: [
+        `${nbDevisEnAttente} devis toujours en attente de réponse — à relancer cette semaine pour ne pas perdre ces opportunités`,
+        `Attention à ne pas vous reposer sur vos lauriers : une croissance à +${progressionCA}% demande de sécuriser la capacité de production`,
+      ],
+      recommandations: [
+        `Relancer les ${nbDevisEnAttente} devis en attente d'ici vendredi par un simple message (3 lignes max)`,
+        `Envoyer 3 devis prospection cette semaine pour maintenir le pipeline`,
+        `Commencer à constituer une réserve de trésorerie équivalente à 2 mois de charges fixes`,
+      ],
+      objectifsSemaineSuivante: [
+        `Transformer au moins 2 des ${nbDevisEnAttente} devis en attente`,
+        `Maintenir un taux d'acceptation devis supérieur à 55%`,
+        `Encaisser 100% des factures arrivant à échéance`,
+      ],
+    };
+  }
+
+  if (estTension) {
+    return {
+      resumeExecutif: `Semaine sous tension : votre CA mensuel est à ${caMois}€ contre ${caMoisPrecedent}€ le mois dernier (${progressionCA >= 0 ? "+" : ""}${progressionCA}%), et vous portez ${montantImpaye}€ d'impayés sur ${facturesImpayees} factures — soit ${ratioImpayes.toFixed(0)}% de votre CA du mois. Le pilotage financier doit devenir votre priorité absolue cette semaine.\n\n— Hugo, votre CFO Gestia`,
+      pointsForts: [
+        nbDevisEnAttente > 0
+          ? `${nbDevisEnAttente} devis en attente : du business potentiel existe, il faut le concrétiser`
+          : `Vous avez identifié la situation — c'est déjà 50% du chemin pour la redresser`,
+      ],
+      pointsVigilance: [
+        `${facturesImpayees} facture(s) impayée(s) pour ${montantImpaye}€ — ${ratioImpayes.toFixed(0)}% de votre CA mensuel (seuil critique : 15%)`,
+        progressionCA < 0
+          ? `CA en baisse de ${Math.abs(progressionCA)}% vs mois dernier — la tendance doit s'inverser`
+          : `CA stagnant alors que les impayés s'accumulent — effet ciseaux dangereux`,
+        devisAcceptesTaux < 50
+          ? `Taux d'acceptation devis à seulement ${devisAcceptesTaux}% — vos propositions ne convertissent pas`
+          : `Capacité commerciale intacte (${devisAcceptesTaux}% d'acceptation) — à mobiliser sur l'encaissement`,
+      ],
+      recommandations: [
+        `Priorité 1 absolue : relancer TOUS les impayés cette semaine. Utilisez les relances d'Inès.`,
+        `Priorité 2 : n'émettre aucun nouveau devis sans acompte de 30% minimum jusqu'à nouvel ordre`,
+        `Priorité 3 : lister vos charges fixes mensuelles et identifier ce qui peut être décalé de 30 jours`,
+        `Contacter votre banquier PROACTIVEMENT cette semaine pour négocier un découvert autorisé, avant d'en avoir besoin`,
+      ],
+      objectifsSemaineSuivante: [
+        `Récupérer au moins ${Math.round(montantImpaye * 0.4)}€ sur les impayés (40% du total)`,
+        `Sécuriser un rendez-vous banque si ce n'est pas déjà fait`,
+        `Ne signer aucun nouveau devis sans clause d'acompte`,
+      ],
+    };
+  }
+
   return {
-    resumeExecutif:
-      "Cette semaine affiche de bonnes performances avec un chiffre d'affaires en progression par rapport à la semaine précédente. Le portefeuille clients se consolide et le taux d'acceptation des devis reste au-dessus de la moyenne du secteur. Deux factures impayées méritent une attention particulière pour préserver la trésorerie.",
+    resumeExecutif: `Situation stable mais à surveiller : ${caMois}€ de CA ce mois (${progressionCA >= 0 ? "+" : ""}${progressionCA}% vs mois dernier), avec ${facturesImpayees} facture(s) impayée(s) pour ${montantImpaye}€. Votre pipeline est sain (${nbDevisEnAttente} devis en attente, taux d'acceptation ${devisAcceptesTaux}%), mais certains signaux méritent votre attention cette semaine.\n\n— Hugo, votre CFO Gestia`,
     pointsForts: [
-      "Chiffre d'affaires hebdomadaire en hausse de 12 % vs semaine précédente",
-      "Taux d'acceptation des devis : 67 % (moyenne secteur : 55 %)",
-      "Aucune nouvelle relance client nécessaire cette semaine",
+      progressionCA >= 0
+        ? `CA en progression de +${progressionCA}% sur le mois`
+        : `Activité maintenue malgré un léger recul de ${Math.abs(progressionCA)}%`,
+      `${nbDevisEnAttente} devis en attente : base commerciale active`,
+      nbNouveauxClients > 0
+        ? `${nbNouveauxClients} nouveau(x) client(s) acquis ce mois`
+        : `Taux d'acceptation devis à ${devisAcceptesTaux}%`,
     ],
     pointsVigilance: [
-      "Facture FAC-2026-0003 en retard depuis 11 jours — risque d'encaissement",
-      "Deux devis en attente de réponse depuis plus de 14 jours",
-      "CA mensuel inférieur de 8 % à l'objectif fixé en début de mois",
+      `${ratioImpayes.toFixed(0)}% de votre CA mensuel en impayés — sous le seuil critique (15%) mais à ne pas laisser dériver`,
+      nbDevisEnAttente >= 3
+        ? `${nbDevisEnAttente} devis en attente : au-delà de 2 semaines sans réponse, le taux de conversion chute de 60%`
+        : `Pipeline commercial limité : il faut alimenter en continu pour sécuriser les prochains mois`,
+      devisAcceptesTaux < 55
+        ? `Taux d'acceptation devis à ${devisAcceptesTaux}% — moyenne nationale à 50%, mais vous pouvez viser 60%+ avec un ciblage plus précis`
+        : `Concentration du CA à surveiller — quel est votre plus gros client en % du CA ?`,
     ],
     recommandations: [
-      "Relancer Atelier Dupont Créations par téléphone avant vendredi pour la facture en retard",
-      "Proposer un rendez-vous de suivi à Sophie Leclerc Conseil pour accélérer la décision sur le devis",
-      "Identifier 2 nouveaux prospects cette semaine pour alimenter le pipeline commercial",
-      "Mettre à jour les conditions de paiement sur les futurs devis pour réduire les délais",
+      `Relancer les ${facturesImpayees} factures impayées dans les 48h — chaque jour qui passe réduit vos chances de 2%`,
+      `Fixer un rythme de prospection hebdomadaire : 5 contacts qualifiés minimum cette semaine`,
+      `Analyser vos 3 plus gros clients : représentent-ils plus de 50% de votre CA ? Si oui, diversifier est prioritaire`,
     ],
     objectifsSemaineSuivante: [
-      "Encaisser au moins 1 des 2 factures impayées",
-      "Obtenir une réponse ferme sur le devis DEV-2026-0001",
-      "Créer et envoyer 1 nouveau devis prospect",
+      `Encaisser au moins une facture impayée`,
+      `Convertir au moins 1 des ${nbDevisEnAttente} devis en attente`,
+      `Maintenir un taux d'acceptation devis supérieur à 50%`,
     ],
   };
 }
