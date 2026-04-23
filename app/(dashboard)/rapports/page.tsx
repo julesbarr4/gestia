@@ -51,9 +51,9 @@ export default function RapportsPage() {
     <div className="p-8 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Rapport CFO Hebdomadaire</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Rapport hebdomadaire</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Votre agent CFO analyse vos chiffres et vous guide.
+            Hugo, votre CFO IA, analyse vos chiffres et vous guide semaine après semaine.
           </p>
         </div>
         <button
@@ -62,7 +62,7 @@ export default function RapportsPage() {
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
           {loading ? (
-            <><Loader2 className="w-4 h-4 animate-spin" />Analyse en cours...</>
+            <><Loader2 className="w-4 h-4 animate-spin" />Hugo analyse vos chiffres...</>
           ) : (
             <><TrendingUp className="w-4 h-4" />Générer le rapport</>
           )}
@@ -94,12 +94,24 @@ export default function RapportsPage() {
 
       {rapport && (
         <div className="space-y-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-5 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                H
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Analyse de Hugo</p>
+                <p className="text-xs text-gray-500">Votre directeur financier IA</p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-white rounded-xl border border-gray-100 p-6">
             <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-blue-500" />
               Résumé exécutif
             </h2>
-            <p className="text-gray-700 text-sm leading-relaxed">{rapport.resumeExecutif}</p>
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{rapport.resumeExecutif}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
