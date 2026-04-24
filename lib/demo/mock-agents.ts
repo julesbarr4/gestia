@@ -426,55 +426,227 @@ export async function mockAnalyseStrategique(params: {
 }
 
 export async function mockGenererContenuMarketing(params: {
+  nomEntreprise: string;
+  secteur?: string;
   sujet: string;
-  reseaux: string[];
+  reseaux: Array<"linkedin" | "instagram" | "facebook" | "newsletter">;
   tonalite?: string;
-}): Promise<ContenuMarketing> {
-  const hashtags = ["#entrepreneuriat", "#business", "#innovation", "#TPE", "#PME", "#digitalisation"];
+}): Promise<{
+  linkedin?: string;
+  instagram?: string;
+  facebook?: string;
+  newsletter?: { sujet: string; corps: string };
+  hashtags: string[];
+}> {
+  await new Promise((r) => setTimeout(r, 1500));
 
-  const result: ContenuMarketing = { hashtags };
+  const { nomEntreprise, sujet, reseaux } = params;
+  const sujetLower = sujet.toLowerCase();
 
-  if (params.reseaux.includes("linkedin")) {
-    result.linkedin = `🚀 ${params.sujet}
+  const motsPromo = ["promo", "offre", "réduction", "lancement", "nouveau", "soldes", "remise", "-20", "-30", "-50"];
+  const motsStorytelling = ["client", "projet", "retour", "expérience", "témoignage", "histoire", "parcours", "réussite"];
 
-Chez Entreprise Démo, nous croyons que chaque défi est une opportunité de grandir.
+  const estPromo = motsPromo.some((m) => sujetLower.includes(m));
+  const estStorytelling = motsStorytelling.some((m) => sujetLower.includes(m));
 
-Aujourd'hui, je voulais partager avec vous notre vision sur ce sujet qui nous tient particulièrement à cœur. Au quotidien, nous accompagnons des entrepreneurs et des PME dans leur transformation, et nous voyons chaque jour l'impact concret que peut avoir une approche structurée.
+  const result: {
+    linkedin?: string;
+    instagram?: string;
+    facebook?: string;
+    newsletter?: { sujet: string; corps: string };
+    hashtags: string[];
+  } = { hashtags: [] };
 
-Voici ce que nous avons appris :
-✅ La clarté des objectifs multiplie par 3 les chances de succès
-✅ Un accompagnement personnalisé fait toute la différence
-✅ Les outils digitaux ne remplacent pas la relation humaine — ils la renforcent
+  if (reseaux.includes("linkedin")) {
+    if (estPromo) {
+      result.linkedin = `J'ai une nouvelle qui va vous intéresser 👇
 
-Et vous, comment abordez-vous ce sujet dans votre activité ? Je suis curieux de lire vos retours en commentaires 👇
+Chez ${nomEntreprise}, on vient de lancer quelque chose dont on est fiers : ${sujet}.
 
-#entrepreneuriat #business #accompagnement`;
+Pourquoi on en parle aujourd'hui ?
+
+Parce qu'on a pris le temps de le construire correctement, avec les retours de nos premiers clients. Et parce qu'on pense que ça va vraiment vous faire gagner du temps (ou vous faire économiser, ou les deux).
+
+Les 10 premiers qui nous contactent cette semaine bénéficient d'un tarif de lancement — et d'un créneau d'échange direct avec moi pour adapter l'offre à leur contexte.
+
+Un message en MP ou un commentaire ici, et je reviens vers vous sous 24h.
+
+#TPE #Entrepreneurs #Lancement`;
+    } else if (estStorytelling) {
+      result.linkedin = `Un de nos clients m'a appelé la semaine dernière, la voix un peu tendue.
+
+Son contexte : ${sujet}.
+
+La situation semblait compliquée. Mais en creusant, on s'est rendu compte que le vrai enjeu n'était pas celui qu'il pensait.
+
+On a pris le temps de poser les choses à plat, de regarder les chiffres, et de construire ensemble un plan d'action sur 3 semaines.
+
+Résultat : non seulement le problème est résolu, mais il a identifié deux leviers de croissance qu'il n'avait jamais explorés.
+
+Ce que je retiens de cette expérience :
+
+→ Le problème exprimé n'est souvent pas le vrai problème
+→ Prendre 30 minutes pour comprendre avant d'agir, ça change tout
+→ Nos clients en savent plus sur leur business qu'ils ne le pensent — il faut juste bien les écouter
+
+Et vous, quelle est la dernière fois où vous avez remis à plat un sujet que vous pensiez réglé ?
+
+#Entrepreneuriat #TPE #Accompagnement`;
+    } else {
+      result.linkedin = `${sujet}.
+
+Voilà un sujet sur lequel je me fais poser la même question tous les mois par mes clients TPE.
+
+Alors voici les 3 erreurs que je vois le plus souvent — et comment les éviter :
+
+1️⃣ Vouloir tout faire parfait du premier coup
+La perfection est l'ennemi du lancement. Mieux vaut itérer vite avec de vrais retours clients que peaufiner seul dans son coin pendant 6 mois.
+
+2️⃣ Négliger les fondamentaux au profit des tactiques
+Avant de chercher "le bon outil" ou "la bonne technique", clarifiez votre proposition de valeur. Tout le reste en découle.
+
+3️⃣ Sous-estimer la puissance du bouche-à-oreille
+Un client satisfait vaut 10 posts LinkedIn bien écrits. Vos meilleurs commerciaux sont déjà dans votre portefeuille.
+
+Si vous deviez en retenir un seul : lequel vous parle le plus ?
+
+#Entrepreneuriat #Conseils #TPE`;
+    }
   }
 
-  if (params.reseaux.includes("instagram")) {
-    result.instagram = `✨ ${params.sujet} ✨
+  if (reseaux.includes("instagram")) {
+    if (estPromo) {
+      result.instagram = `OFFRE SPÉCIALE 🎉
 
-Parce que votre succès est notre priorité, nous mettons tout en œuvre pour vous accompagner à chaque étape.
+${sujet}
 
-💡 Des solutions concrètes
-🤝 Un accompagnement sur-mesure
-📈 Des résultats mesurables
+On vous a préparé quelque chose de spécial cette semaine. Tarif de lancement pour les 10 premiers.
 
-Suivez-nous pour plus de conseils ! ${hashtags.slice(0, 4).join(" ")}`;
+👉 Lien en bio ou DM pour en profiter
+⏰ Jusqu'à dimanche soir
+
+On a hâte d'en discuter avec vous ✨`;
+    } else if (estStorytelling) {
+      result.instagram = `L'histoire qui nous a marqués cette semaine ✨
+
+${sujet}
+
+Ce qu'on adore dans ce métier, c'est voir nos clients transformer leurs défis en opportunités.
+
+Merci à eux pour leur confiance 🙏
+
+Et vous, quelle est votre plus belle réussite récente ? On lit tout en commentaire 👇`;
+    } else {
+      result.instagram = `${sujet} — on vous dit tout 👇
+
+Voici les 3 points à retenir :
+
+✅ Point 1 — celui qu'on oublie tout le temps
+✅ Point 2 — celui qui change tout
+✅ Point 3 — le bonus qui fait la différence
+
+Swipez pour voir le détail de chaque point →
+
+Sauvegardez ce post pour y revenir plus tard 📌
+
+Et vous, vous faites comment ? Dites-nous en commentaire ✨`;
+    }
   }
 
-  if (params.reseaux.includes("facebook")) {
-    result.facebook = `📣 ${params.sujet}
+  if (reseaux.includes("facebook")) {
+    result.facebook = `Bonjour à toutes et à tous 👋
 
-Bonjour à toute notre communauté !
+Aujourd'hui on voulait partager avec vous quelque chose d'important : ${sujet}.
 
-Nous sommes ravis de vous partager nos dernières actualités et réflexions sur ce sujet important pour tous les entrepreneurs.
+Ça fait un moment qu'on travaille là-dessus en interne, et on est ravis de pouvoir enfin vous en parler. On sait à quel point c'est un sujet qui revient souvent dans vos messages, alors on espère que ça va vous aider.
 
-Chez Entreprise Démo, notre mission est simple : vous aider à développer votre activité avec les bons outils et le bon accompagnement.
+N'hésitez pas à nous poser vos questions en commentaire, on y répondra une par une dans la journée.
 
-N'hésitez pas à nous contacter pour en savoir plus ou à laisser un commentaire ci-dessous. Nous lisons et répondons à tous vos messages ! 😊
+Et si vous connaissez quelqu'un qui pourrait être intéressé, partagez-lui ce post — ça nous aide énormément !
 
-${hashtags.slice(0, 3).join(" ")}`;
+Belle journée à tous 💙`;
+  }
+
+  if (reseaux.includes("newsletter")) {
+    if (estPromo) {
+      result.newsletter = {
+        sujet: `🎁 ${sujet} — votre accès prioritaire (48h)`,
+        corps: `Bonjour,
+
+J'ai une nouvelle à vous annoncer en priorité — avant même qu'elle sorte publiquement.
+
+${sujet}
+
+Pourquoi je vous en parle en premier ? Parce que vous faites partie de nos clients les plus fidèles, et qu'on tenait à vous offrir un accès prioritaire avant que tout le monde ne se précipite dessus.
+
+Concrètement, voici ce que ça change pour vous :
+
+→ Tarif de lancement maintenu pendant 48h (puis +20% à partir de lundi)
+→ Un créneau d'échange direct avec notre équipe pour adapter l'offre à vos besoins
+→ Une garantie satisfait ou remboursé 30 jours, sans condition
+
+Pour en profiter, il suffit de répondre à cet email ou de cliquer sur le bouton ci-dessous. On revient vers vous dans la journée.
+
+À très vite,
+
+L'équipe ${nomEntreprise}
+
+P.S. : Cette offre est réservée à nos abonnés newsletter. N'hésitez pas à en parler à un ami, mais sachez qu'ils devront d'abord s'inscrire pour en bénéficier.`,
+      };
+    } else if (estStorytelling) {
+      result.newsletter = {
+        sujet: `Ce qu'un client nous a dit la semaine dernière`,
+        corps: `Bonjour,
+
+Je voulais partager avec vous une conversation qui m'a marqué cette semaine.
+
+${sujet}
+
+En discutant avec ce client, on a touché quelque chose d'important : la plupart des problèmes qu'on nous présente ne sont pas les vrais problèmes. Ce sont souvent les symptômes.
+
+Le vrai travail, c'est de prendre le temps de comprendre avant de proposer une solution. Et c'est exactement ce qui fait la différence entre un accompagnement qui transforme vraiment et un service qui ne fait que régler le problème du jour.
+
+Si vous vous reconnaissez dans cette situation, ou si vous avez un sujet similaire sur lequel vous bloquez depuis un moment, répondez-nous à cet email. On prendra le temps d'en parler ensemble, sans engagement.
+
+Belle semaine à vous,
+
+L'équipe ${nomEntreprise}`,
+      };
+    } else {
+      result.newsletter = {
+        sujet: `Le conseil du mois : ${sujet}`,
+        corps: `Bonjour,
+
+Chaque mois, on partage avec vous UN conseil concret, applicable immédiatement, sur un sujet qui nous est posé régulièrement par nos clients.
+
+Le sujet de ce mois : ${sujet}.
+
+Voici les 3 principes qui changent vraiment les choses :
+
+1. Commencer par les fondamentaux avant de chercher les astuces
+La plupart des gens veulent des hacks. La vérité, c'est que 80% des résultats viennent de 20% des actions — et ces 20%, ce sont les bases bien faites.
+
+2. Mesurer avant d'optimiser
+On ne peut pas améliorer ce qu'on ne mesure pas. Avant de vouloir "faire mieux", prenez 30 minutes pour poser des indicateurs simples.
+
+3. Tester à petite échelle avant de généraliser
+Une bonne idée sur 100 clients ne marche pas forcément sur 1000. Testez, ajustez, puis déployez.
+
+Si vous voulez aller plus loin sur ce sujet, répondez simplement à cet email avec votre question — on prendra le temps d'y répondre personnellement.
+
+Belle semaine,
+
+L'équipe ${nomEntreprise}`,
+      };
+    }
+  }
+
+  if (estPromo) {
+    result.hashtags = ["#Lancement", "#OffreSpeciale", "#TPE", "#Entrepreneuriat", "#FrancePME"];
+  } else if (estStorytelling) {
+    result.hashtags = ["#Storytelling", "#Entrepreneuriat", "#ClientSuccess", "#TPE", "#Temoignage"];
+  } else {
+    result.hashtags = ["#Conseils", "#Entrepreneuriat", "#TPE", "#FrancePME", "#Expertise"];
   }
 
   return result;
