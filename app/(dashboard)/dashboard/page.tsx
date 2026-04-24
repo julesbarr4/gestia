@@ -52,7 +52,7 @@ export default async function DashboardPage() {
     "admin-agent": "Agent Admin",
     "support-agent": "Agent Support",
     "cfo-agent": "Agent CFO",
-    "ceo-agent": "Agent CEO",
+    "ceo-agent": "Augustin",
     "cmo-agent": "Agent CMO",
   };
 
