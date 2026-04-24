@@ -379,49 +379,263 @@ export async function mockRapportHebdomadaire(params: {
 }
 
 export async function mockAnalyseStrategique(params: {
-  nomEntreprise?: string;
-}): Promise<AnalyseStrategique> {
+  nomEntreprise: string;
+  secteur?: string;
+  nbMoisActivite?: number;
+  caTotal?: number;
+  nbClients?: number;
+  objectifs?: string;
+  problemes?: string;
+}): Promise<{
+  diagnostic: string;
+  situationStrategique: string;
+  tensions: string[];
+  axes: Array<{
+    titre: string;
+    objectif: string;
+    actions: string[];
+  }>;
+  resultatsAttendus: string;
+  priorites: Array<{
+    action: string;
+    impact: string;
+    effort: string;
+    delai: string;
+  }>;
+  opportunites: string[];
+  risques: string[];
+  messageMotivation: string;
+}> {
+  await new Promise((r) => setTimeout(r, 2000));
+
+  const {
+    nomEntreprise,
+    nbMoisActivite = 24,
+    caTotal = 80000,
+    nbClients = 12,
+  } = params;
+
+  const caParClient = nbClients > 0 ? caTotal / nbClients : 0;
+  const caMensuelMoyen = nbMoisActivite > 0 ? caTotal / nbMoisActivite : 0;
+
+  const estCroissance = caMensuelMoyen >= 8000 && nbClients >= 10 && nbMoisActivite >= 12;
+  const estReinvention = caMensuelMoyen < 3000 || (nbMoisActivite >= 18 && nbClients < 5);
+
+  if (estCroissance) {
+    return {
+      diagnostic: `${nomEntreprise} est entrée dans sa phase d'accélération : ${nbClients} clients actifs, ${Math.round(caMensuelMoyen)}€ de CA mensuel moyen, ${nbMoisActivite} mois d'activité. Les fondations sont posées, le modèle fonctionne. La vraie question des 90 prochains jours n'est plus "comment gagner plus de clients", mais "comment grandir sans perdre ce qui fait votre différence".\n\n— Augustin, votre CEO Gestia`,
+      situationStrategique: `Vous êtes en phase d'accélération maîtrisée. Votre produit ou service a trouvé son marché. Les clients recommandent, le bouche-à-oreille fonctionne. Mais attention : c'est précisément à ce stade que la plupart des TPE perdent leur âme en grandissant mal.`,
+      tensions: [
+        `Capacité de production qui va bientôt saturer face à la demande entrante — sans plan, vous allez refuser des clients ou baisser en qualité`,
+        `Votre positionnement actuel est clair, mais il va devoir évoluer pour justifier des tarifs plus élevés et attirer des clients plus gros`,
+        `Vous êtes aujourd'hui l'homme/la femme-orchestre — si vous ne déléguez pas bientôt, vous deviendrez le goulet d'étranglement de votre propre réussite`,
+      ],
+      axes: [
+        {
+          titre: "Axe 1 : Muscler votre positionnement premium",
+          objectif: "Passer d'un positionnement généraliste à une expertise signature qui justifie 20 à 30% de tarif en plus",
+          actions: [
+            "Identifier le type de projet/client sur lequel vous êtes radicalement meilleur que la concurrence",
+            "Réécrire votre page d'accueil et votre pitch autour de cette expertise signature",
+            "Augmenter les tarifs de 15-20% sur les nouveaux clients dès le mois prochain",
+          ],
+        },
+        {
+          titre: "Axe 2 : Déléguer ou externaliser l'opérationnel",
+          objectif: "Libérer 20% de votre temps dirigeant pour travailler SUR l'entreprise, pas dedans",
+          actions: [
+            "Lister toutes vos tâches d'une semaine et identifier celles qui ne demandent pas votre expertise",
+            "Recruter un premier alternant ou freelance pour les tâches administratives/support",
+            "Mettre en place des process documentés pour que ce ne soit plus dans votre tête",
+          ],
+        },
+        {
+          titre: "Axe 3 : Construire une réserve stratégique",
+          objectif: "Sécuriser l'entreprise avec une trésorerie de 3 mois de charges — vous pourrez prendre des risques plus ambitieux",
+          actions: [
+            "Ouvrir un compte d'épargne pro dédié aux fonds propres",
+            "Verser automatiquement 10% de chaque encaissement dessus",
+            "Ne JAMAIS utiliser ce compte pour financer l'exploitation courante",
+          ],
+        },
+      ],
+      resultatsAttendus: `Dans 90 jours, ${nomEntreprise} aura une offre premium clairement identifiable, un CA en croissance sans saturation opérationnelle, et les premières briques d'une équipe qui vous libèrent du quotidien. Vous passerez de "dirigeant qui produit" à "dirigeant qui décide".`,
+      priorites: [
+        {
+          action: "Réécrire le positionnement autour d'une expertise signature",
+          impact: "eleve",
+          effort: "moyen",
+          delai: "1 mois",
+        },
+        {
+          action: "Augmenter les tarifs de 15-20% sur les nouveaux clients",
+          impact: "eleve",
+          effort: "faible",
+          delai: "immédiat",
+        },
+        {
+          action: "Recruter un premier renfort (alternant/freelance)",
+          impact: "eleve",
+          effort: "moyen",
+          delai: "2-3 mois",
+        },
+      ],
+      opportunites: [
+        `Demande en croissance sur votre marché — profitez-en pour monter en gamme avant la concurrence`,
+        `Vos clients actuels sont un vivier de recommandations sous-exploité — créez un programme de parrainage simple`,
+        `Possibilité de packager votre expertise en formations ou contenus premium (revenus passifs à terme)`,
+      ],
+      risques: [
+        `Croître trop vite sans structurer → baisse de qualité perçue → érosion de la confiance construite`,
+        `Rester trop longtemps l'homme-orchestre → épuisement personnel et plafonnement du CA`,
+        `Ne pas augmenter les tarifs alors que la demande le permet → laisse de l'argent sur la table`,
+      ],
+      messageMotivation: `Vous avez prouvé que votre idée marche. La prochaine étape n'est pas de travailler plus — c'est de travailler différemment. Votre job change : vous devenez stratège.`,
+    };
+  }
+
+  if (estReinvention) {
+    return {
+      diagnostic: `${nomEntreprise} est arrivée à un point de bascule : ${nbMoisActivite} mois d'activité, ${nbClients} clients, ${Math.round(caMensuelMoyen)}€ de CA mensuel moyen. Les signaux indiquent qu'il est temps de questionner le modèle, pas d'ajouter des tactiques. Ne vous laissez pas endormir par l'idée qu'"il suffit de prospecter plus". Le problème est probablement plus structurel.\n\n— Augustin, votre CEO Gestia`,
+      situationStrategique: `Vous êtes en phase de réinvention. Cela ne veut pas dire échec — cela veut dire que ce qui a fonctionné pour arriver ici ne fonctionnera pas pour aller plus loin. C'est un moment inconfortable mais décisif. Les dirigeants qui traversent cette phase en posant les bonnes questions en sortent plus forts.`,
+      tensions: [
+        `Votre proposition de valeur n'est pas suffisamment différenciée — vos prospects vous comparent à n'importe qui d'autre`,
+        `Vos clients actuels ne sont peut-être pas les "bons" clients — ceux qui paient trop peu, sont trop exigeants, ou ne reviennent jamais`,
+        `Votre modèle économique est à revoir : ${Math.round(caParClient)}€ de CA moyen par client est probablement sous la barre de rentabilité réelle`,
+      ],
+      axes: [
+        {
+          titre: "Axe 1 : Redéfinir votre client idéal",
+          objectif: "Arrêter de vendre à tout le monde pour se concentrer sur un profil précis qui paie bien et revient",
+          actions: [
+            "Lister vos 3 meilleurs clients (rentabilité + plaisir de travailler) et identifier ce qu'ils ont en commun",
+            "Dresser le profil du client idéal : secteur, taille, problèmes, budget type",
+            "Refuser désormais tout client qui ne correspond pas — c'est le plus difficile mais le plus transformateur",
+          ],
+        },
+        {
+          titre: "Axe 2 : Clarifier votre promesse",
+          objectif: "Passer d'une offre vague à une promesse qu'un client peut résumer en une phrase",
+          actions: [
+            "Tester 3 formulations de votre promesse sur des prospects et voir laquelle déclenche le plus de \"oui je veux en savoir plus\"",
+            "Réécrire tous vos supports (site, LinkedIn, signature email) autour de cette promesse",
+            "Dire NON publiquement à ce que vous ne faites PAS — c'est ça qui rend une offre crédible",
+          ],
+        },
+        {
+          titre: "Axe 3 : Sauver la trésorerie avant tout",
+          objectif: "S'assurer que vous tenez 6 mois, même si la réinvention prend du temps",
+          actions: [
+            "Lister toutes les charges fixes et identifier ce qui peut être réduit ou suspendu",
+            "Négocier avec 2-3 fournisseurs un décalage de paiement de 30 jours",
+            "Obtenir un rendez-vous banque PROACTIVEMENT pour anticiper un éventuel besoin de trésorerie",
+          ],
+        },
+      ],
+      resultatsAttendus: `Dans 90 jours, ${nomEntreprise} aura un client idéal clairement identifié, une promesse qui se mémorise en 10 secondes, et une trésorerie sécurisée. Vous aurez probablement moins de clients — mais chacun rapportera plus, et le travail sera plus satisfaisant.`,
+      priorites: [
+        {
+          action: "Définir le profil précis du client idéal",
+          impact: "eleve",
+          effort: "faible",
+          delai: "2 semaines",
+        },
+        {
+          action: "Réécrire la promesse de valeur en une phrase claire",
+          impact: "eleve",
+          effort: "moyen",
+          delai: "1 mois",
+        },
+        {
+          action: "Sécuriser la trésorerie (RDV banque + négo fournisseurs)",
+          impact: "eleve",
+          effort: "moyen",
+          delai: "immédiat",
+        },
+      ],
+      opportunites: [
+        `La période de questionnement est aussi celle où on découvre des niches ignorées par la concurrence`,
+        `Vos anciens clients peuvent redevenir des clients si votre offre évolue vers leurs vrais besoins`,
+        `Un positionnement plus clair attire des clients mieux payants — même en réduisant le volume, le CA peut monter`,
+      ],
+      risques: [
+        `Tenter de "sauver" le modèle actuel en empilant des tactiques (promos, pubs, prospection massive) → épuise la tréso sans régler le problème de fond`,
+        `Reporter la décision stratégique par peur → 6 mois de plus dans la même situation`,
+        `Couper trop brutalement sans plan B → fermeture par manque de cash`,
+      ],
+      messageMotivation: `Les entreprises qui traversent une phase de réinvention en posant les bonnes questions deviennent souvent meilleures que celles qui n'ont jamais été challengées. C'est un moment difficile, mais c'est aussi une opportunité rare.`,
+    };
+  }
+
   return {
-    diagnostic:
-      "Entreprise Démo présente un profil de croissance sain avec une base client fidèle et un positionnement clair sur son marché. Le chiffre d'affaires progresse régulièrement, mais la dépendance à un petit nombre de clients représente un risque de concentration à surveiller. La capacité de production est bien utilisée, mais une meilleure organisation du pipeline commercial permettrait d'optimiser les revenus.",
-    priorites: [
+    diagnostic: `${nomEntreprise} est dans une phase de consolidation : ${nbClients} clients, ${Math.round(caMensuelMoyen)}€ de CA mensuel moyen, ${nbMoisActivite} mois d'activité. Les fondamentaux sont là, mais certaines tensions structurelles doivent être résolues avant d'envisager une accélération. Les 90 prochains jours sont l'occasion de solidifier les bases.\n\n— Augustin, votre CEO Gestia`,
+    situationStrategique: `Vous êtes en phase de consolidation. Votre activité fonctionne, vous générez un revenu, mais l'entreprise dépend trop souvent de votre implication quotidienne et n'a pas encore acquis la robustesse qui permettra d'accélérer sans risque. C'est un moment précieux pour renforcer ce qui doit l'être.`,
+    tensions: [
+      `Concentration du CA : avec ${nbClients} clients, la perte d'un gros client peut faire très mal`,
+      `Votre temps dirigeant est encore trop absorbé par le quotidien opérationnel — vous manquez de hauteur pour piloter`,
+      `Les process clés (vente, livraison, facturation) reposent sur votre mémoire et votre présence — non transmissibles en l'état`,
+    ],
+    axes: [
       {
-        action: "Mettre en place un suivi CRM systématique des prospects et relances",
-        impact: "eleve",
-        effort: "faible",
-        delai: "1 semaine",
+        titre: "Axe 1 : Diversifier le portefeuille clients",
+        objectif: "Réduire la dépendance à vos plus gros clients en élargissant la base",
+        actions: [
+          "Identifier votre plus gros client en % du CA — s'il dépasse 30%, c'est une priorité absolue",
+          "Lancer une action de prospection ciblée pour acquérir 3 clients similaires à vos meilleurs actuels",
+          "Refuser les projets qui renforcent la dépendance à un client existant",
+        ],
       },
       {
-        action: "Diversifier le portefeuille client en ciblant 2 nouveaux secteurs d'activité",
+        titre: "Axe 2 : Documenter vos process critiques",
+        objectif: "Rendre l'entreprise moins dépendante de votre présence quotidienne",
+        actions: [
+          "Lister les 5 process les plus critiques (vente, devis, livraison, facturation, relance)",
+          "Pour chacun, écrire une procédure simple que quelqu'un d'autre pourrait suivre",
+          "Identifier celui que vous pourriez déléguer en premier dans les 6 prochains mois",
+        ],
+      },
+      {
+        titre: "Axe 3 : Élever votre offre en gamme",
+        objectif: "Augmenter le CA par client plutôt que courir après de nouveaux clients en permanence",
+        actions: [
+          "Identifier 1 à 2 services complémentaires que vos meilleurs clients achèteraient",
+          "Tester la nouvelle offre sur 3 clients existants avant de la généraliser",
+          "Augmenter progressivement les tarifs sur les nouveaux clients (+10% dès le mois prochain)",
+        ],
+      },
+    ],
+    resultatsAttendus: `Dans 90 jours, ${nomEntreprise} aura un portefeuille plus équilibré (moins de risque de dépendance), des process documentés qui vous libèrent 3-4 heures par semaine, et un CA par client en hausse. Vous passerez de "tout fait par moi" à "je pilote et j'ai commencé à déléguer".`,
+    priorites: [
+      {
+        action: "Identifier et diversifier si un client pèse plus de 30% du CA",
         impact: "eleve",
+        effort: "moyen",
+        delai: "2 mois",
+      },
+      {
+        action: "Documenter vos 5 process critiques",
+        impact: "moyen",
         effort: "moyen",
         delai: "1 mois",
       },
       {
-        action: "Automatiser les relances de paiement pour réduire les délais d'encaissement",
+        action: "Tester un upsell sur 3 clients existants",
         impact: "moyen",
         effort: "faible",
-        delai: "2 semaines",
-      },
-      {
-        action: "Créer une offre packagée récurrente (abonnement mensuel) pour stabiliser les revenus",
-        impact: "eleve",
-        effort: "moyen",
-        delai: "6 semaines",
+        delai: "3 semaines",
       },
     ],
     opportunites: [
-      "Fort potentiel de upsell auprès des clients existants (formation, maintenance, conseil)",
-      "Marché en croissance sur les prestations d'accompagnement digital pour TPE/PME",
-      "Possibilité de partenariats avec des agences complémentaires pour augmenter les apports d'affaires",
+      `Vos clients actuels sont un vivier de recommandations — un simple message de demande peut générer 2-3 leads qualifiés`,
+      `La mise en place de process documentés peut vous permettre de recruter un premier alternant sans chaos`,
+      `Un upsell sur clients existants coûte 5 fois moins cher que l'acquisition d'un nouveau client`,
     ],
     risques: [
-      "Concentration du CA sur 2 clients représentant plus de 60 % du chiffre d'affaires",
-      "Délais de paiement longs qui peuvent créer des tensions de trésorerie en période de croissance",
-      "Concurrence croissante sur le segment des prestataires freelance à bas prix",
+      `Rester dans une zone de confort opérationnel sans jamais muscler la dimension stratégique`,
+      `Laisser un client dépasser 40% du CA sans réagir → exposition majeure en cas de perte`,
+      `Cumuler les process "dans la tête" au lieu de les documenter → impossibilité de déléguer plus tard`,
     ],
-    messageMotivation:
-      "Vous avez bâti des fondations solides — il est maintenant temps de structurer votre croissance pour passer au niveau supérieur.",
+    messageMotivation: `La phase de consolidation est moins excitante que la phase d'acquisition, mais c'est elle qui fait la différence entre les TPE qui plafonnent et celles qui passent au palier supérieur. Prenez ce temps au sérieux.`,
   };
 }
 
