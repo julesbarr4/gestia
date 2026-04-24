@@ -10,11 +10,11 @@ export async function POST(req: NextRequest) {
   // demo bypass
   if (isDemoMode()) {
     const body = await req.json();
-    const { sujet, reseaux, tonalite } = body;
+    const { sujet, reseaux, tonalite, nomEntreprise } = body;
     if (!sujet || !reseaux?.length) {
       return NextResponse.json({ erreur: "sujet et reseaux sont requis" }, { status: 400 });
     }
-    const contenu = await mockGenererContenuMarketing({ sujet, reseaux, tonalite });
+    const contenu = await mockGenererContenuMarketing({ nomEntreprise: nomEntreprise || "Entreprise Démo", sujet, reseaux, tonalite });
     return NextResponse.json({ contenu });
   }
 

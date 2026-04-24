@@ -7,6 +7,7 @@ interface ContenuMarketing {
   linkedin?: string;
   instagram?: string;
   facebook?: string;
+  newsletter?: { sujet: string; corps: string };
   hashtags: string[];
 }
 
@@ -59,14 +60,15 @@ export default function MarketingPage() {
     { id: "linkedin", label: "LinkedIn" },
     { id: "instagram", label: "Instagram" },
     { id: "facebook", label: "Facebook" },
+    { id: "newsletter", label: "Newsletter" },
   ];
 
   return (
     <div className="p-8 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Agent Marketing CMO</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Contenu marketing</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Générez du contenu pour vos réseaux sociaux en quelques secondes.
+          Cyprien, votre CMO IA, génère du contenu prêt à publier sur vos canaux.
         </p>
       </div>
 
@@ -95,7 +97,7 @@ export default function MarketingPage() {
 
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-2">Réseaux sociaux</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {RESEAUX.map((r) => (
                 <button
                   key={r.id}
@@ -132,7 +134,7 @@ export default function MarketingPage() {
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" />Génération...</>
+              <><Loader2 className="w-4 h-4 animate-spin" />Cyprien rédige votre contenu...</>
             ) : (
               "Générer le contenu"
             )}
@@ -141,8 +143,20 @@ export default function MarketingPage() {
 
         {contenu && (
           <div className="space-y-4">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  C
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Créé par Cyprien</p>
+                  <p className="text-xs text-gray-500">Votre directeur marketing IA</p>
+                </div>
+              </div>
+            </div>
+
             {Object.entries(contenu)
-              .filter(([k]) => k !== "hashtags")
+              .filter(([k]) => k !== "hashtags" && k !== "newsletter")
               .map(([reseau, texte]) => (
                 <div key={reseau} className="bg-white rounded-xl border border-gray-100 p-5">
                   <div className="flex items-center justify-between mb-3">
@@ -161,6 +175,46 @@ export default function MarketingPage() {
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">{texte as string}</p>
                 </div>
               ))}
+
+            {contenu.newsletter && (
+              <div className="bg-white rounded-xl border border-gray-100 p-5">
+                <h3 className="font-medium text-gray-900 mb-3">Newsletter</h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-medium text-gray-500">Objet de l&apos;email</p>
+                      <button
+                        onClick={() => copier(contenu.newsletter!.sujet, "newsletter-sujet")}
+                        className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
+                      >
+                        {copiePour === "newsletter-sujet" ? (
+                          <><CheckCircle className="w-3 h-3" />Copié !</>
+                        ) : (
+                          <><Copy className="w-3 h-3" />Copier</>
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-700 font-medium">{contenu.newsletter.sujet}</p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-medium text-gray-500">Corps de l&apos;email</p>
+                      <button
+                        onClick={() => copier(contenu.newsletter!.corps, "newsletter-corps")}
+                        className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
+                      >
+                        {copiePour === "newsletter-corps" ? (
+                          <><CheckCircle className="w-3 h-3" />Copié !</>
+                        ) : (
+                          <><Copy className="w-3 h-3" />Copier</>
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{contenu.newsletter.corps}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {contenu.hashtags?.length > 0 && (
               <div className="bg-gray-50 rounded-xl p-4">
