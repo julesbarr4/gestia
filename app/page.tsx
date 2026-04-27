@@ -112,6 +112,9 @@ export default function LandingPage() {
             <a href="#fonctionnalites" className="hover:text-gray-900 transition-colors">
               Fonctionnalités
             </a>
+            <Link href="/equipe" className="hover:text-gray-900 transition-colors">
+              L&apos;équipe
+            </Link>
             <a href="#tarifs" className="hover:text-gray-900 transition-colors">
               Tarifs
             </a>

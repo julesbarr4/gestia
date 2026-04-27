@@ -14,6 +14,7 @@ import {
   Settings,
   Zap,
   LogOut,
+  Target,
 } from "lucide-react";
 import { isDemoMode } from "@/lib/demo/is-demo";
 import { MOCK_USER } from "@/lib/demo/mock-data";
@@ -21,12 +22,14 @@ import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Tableau de bord" },
+  { href: "/clients", icon: Users, label: "Clients" },
   { href: "/devis", icon: FileText, label: "Devis" },
   { href: "/factures", icon: Receipt, label: "Factures" },
-  { href: "/clients", icon: Users, label: "Clients" },
   { href: "/emails", icon: Mail, label: "Emails" },
-  { href: "/rapports", icon: TrendingUp, label: "Rapports CFO" },
   { href: "/marketing", icon: Megaphone, label: "Marketing" },
+  { href: "/rapports", icon: TrendingUp, label: "Rapports CFO" },
+  { href: "/strategie", icon: Target, label: "Stratégie" },
+  { href: "/dashboard/equipe", icon: Users, label: "L'équipe" },
 ];
 
 export default async function DashboardLayout({
