@@ -18,16 +18,10 @@ export default function SignupPage() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
-    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      router.push("/dashboard");
-      return;
-    }
     setLoading(true);
     setErreur("");
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -39,6 +33,13 @@ export default function SignupPage() {
       setErreur(error.message);
       setLoading(false);
       return;
+    }
+
+    if (data.user) {
+      await supabase
+        .from("profiles")
+        .update({ nom_entreprise: nomEntreprise })
+        .eq("id", data.user.id);
     }
 
     setSucces(true);

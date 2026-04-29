@@ -4,42 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererFacture } from "@/lib/agents/admin-agent";
 import { genererNumeroDocument } from "@/lib/utils";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { mockGenererFacture } from "@/lib/demo/mock-agents";
-
 export async function POST(req: NextRequest) {
-  // demo bypass
-  if (isDemoMode()) {
-    const body = await req.json();
-    const { descriptionPrestations, clientId, nomClient, devisId, devisReference } = body;
-    if (!descriptionPrestations || !nomClient) {
-      return NextResponse.json({ erreur: "descriptionPrestations et nomClient sont requis" }, { status: 400 });
-    }
-    const document = await mockGenererFacture({ descriptionPrestations, nomClient, devisReference });
-    const dateEcheance = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-    const facture = {
-      id: crypto.randomUUID(),
-      user_id: "demo-user-id",
-      client_id: clientId || null,
-      devis_id: devisId || null,
-      numero: genererNumeroDocument("FAC", Math.floor(Math.random() * 90) + 10),
-      titre: document.titre,
-      statut: "brouillon",
-      lignes: document.lignes,
-      total_ht: document.totalHT,
-      total_tva: document.totalTVA,
-      total_ttc: document.totalTTC,
-      notes: document.notes,
-      conditions: document.conditions,
-      date_emission: new Date().toISOString().split("T")[0],
-      date_echeance: dateEcheance,
-      genere_par_ia: true,
-      nb_relances: 0,
-      created_at: new Date().toISOString(),
-    };
-    return NextResponse.json({ facture, document });
-  }
-
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

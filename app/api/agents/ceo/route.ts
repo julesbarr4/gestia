@@ -1,24 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { mockAnalyseStrategique } from "@/lib/demo/mock-agents";
-import { MOCK_PROFILE } from "@/lib/demo/mock-data";
+import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 120;
 
-export async function POST(req: NextRequest) {
-  const { objectifs, problemes } = await req.json();
+export async function POST(_req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (isDemoMode()) {
-    const analyse = await mockAnalyseStrategique({
-      nomEntreprise: MOCK_PROFILE.nom_entreprise,
-      secteur: "services",
-      nbMoisActivite: 24,
-      caTotal: 80000,
-      nbClients: 12,
-      objectifs: objectifs || "",
-      problemes: problemes || "",
-    });
-    return NextResponse.json({ analyse });
+  if (!user) {
+    return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
   }
 
   return NextResponse.json({ erreur: "Mode production non configuré" }, { status: 501 });

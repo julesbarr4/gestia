@@ -16,12 +16,6 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      router.push("/dashboard");
-      return;
-    }
     setLoading(true);
     setErreur("");
 
