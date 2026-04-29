@@ -34,14 +34,25 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("nom_entreprise")
-    .eq("id", user.id)
-    .single();
+  let nomEntreprise = "Mon Entreprise";
+  let plan = "starter";
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/login");
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("nom_entreprise, plan")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.nom_entreprise) nomEntreprise = profile.nom_entreprise;
+    if (profile?.plan) plan = profile.plan;
+  } catch {
+    redirect("/login");
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -60,7 +71,7 @@ export default async function DashboardLayout({
           <div className="px-2 py-1.5">
             <p className="text-xs text-gray-400">Entreprise</p>
             <p className="text-sm font-medium text-gray-900 truncate">
-              {profile?.nom_entreprise || "Mon Entreprise"}
+              {nomEntreprise}
             </p>
           </div>
         </div>
