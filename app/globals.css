@@ -4,6 +4,15 @@
 
 @layer base {
   :root {
+    /* Landing design tokens */
+    --ivory:   #FBF8F3;
+    --ivory-2: #F4EFE6;
+    --ink:     #0E0E0E;
+    --ink-2:   #4A4A47;
+    --ink-3:   #8A8780;
+    --line:    #E5DFD2;
+    --accent:  oklch(0.42 0.05 155);
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -16,7 +25,7 @@
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
+    --accent-shadcn: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
