@@ -1,12 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { formatEuros, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Plus, FileText } from "lucide-react";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { MOCK_USER } from "@/lib/demo/mock-data";
-import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 
 const STATUT_LABELS: Record<string, { label: string; couleur: string }> = {
   brouillon: { label: "Brouillon", couleur: "bg-gray-100 text-gray-600" },
@@ -17,16 +15,9 @@ const STATUT_LABELS: Record<string, { label: string; couleur: string }> = {
 };
 
 export default async function DevisPage() {
-  // demo bypass
-  let user: any, supabase: any;
-  if (isDemoMode()) {
-    user = MOCK_USER;
-    supabase = getMockSupabaseClient();
-  } else {
-    supabase = await createClient();
-    const { data: { user: u } } = await supabase.auth.getUser();
-    user = u;
-  }
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const { data: devis } = await supabase
     .from("devis")

@@ -3,19 +3,7 @@ export const maxDuration = 120; // 2 min timeout Vercel
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRapportHebdomadaire } from "@/lib/agents/cfo-agent";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { mockRapportHebdomadaire } from "@/lib/demo/mock-agents";
-
 export async function POST(_req: NextRequest) {
-  // demo bypass
-  if (isDemoMode()) {
-    const rapport = await mockRapportHebdomadaire({});
-    return NextResponse.json({
-      rapport,
-      metriques: { caSemaine: 9960, caMois: 9960, caMoisPrecedent: 8200, montantImpaye: 5160, tauxAcceptation: 50 },
-    });
-  }
-
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

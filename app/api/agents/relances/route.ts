@@ -4,32 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRelance } from "@/lib/agents/admin-agent";
 import { formatDate } from "@/lib/utils";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { mockGenererRelance } from "@/lib/demo/mock-agents";
-import { MOCK_FACTURES, MOCK_PROFILE } from "@/lib/demo/mock-data";
-
 export async function POST(req: NextRequest) {
-  if (isDemoMode()) {
-    const { factureId } = await req.json();
-    const facture = MOCK_FACTURES.find((f) => f.id === factureId);
-
-    if (!facture) {
-      return NextResponse.json({ erreur: "Facture introuvable" }, { status: 404 });
-    }
-
-    const relance = await mockGenererRelance({
-      nomClient: facture.clients?.nom || "Client",
-      nomEntreprise: MOCK_PROFILE.nom_entreprise,
-      numeroFacture: facture.numero,
-      montantTTC: facture.total_ttc,
-      dateEcheance: facture.date_echeance || "",
-      nbRelances: facture.nb_relances || 0,
-    });
-
-    const clientEmail = (facture.clients as { nom?: string; email?: string } | null)?.email;
-    return NextResponse.json({ relance, emailDestination: clientEmail || "client@exemple.fr" });
-  }
-
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

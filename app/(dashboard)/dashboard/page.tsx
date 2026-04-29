@@ -1,25 +1,16 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { formatEuros } from "@/lib/utils";
 import { FileText, Receipt, Users, AlertTriangle, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { MOCK_USER } from "@/lib/demo/mock-data";
-import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
 import { AGENT_LABEL, AGENT_COLOR } from "@/lib/agents/team-data";
 
 export default async function DashboardPage() {
-  // demo bypass
-  let user: any, supabase: any;
-  if (isDemoMode()) {
-    user = MOCK_USER;
-    supabase = getMockSupabaseClient();
-  } else {
-    supabase = await createClient();
-    const { data: { user: u } } = await supabase.auth.getUser();
-    user = u;
-  }
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const debutMois = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 

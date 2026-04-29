@@ -16,10 +16,6 @@ import {
   LogOut,
   Target,
 } from "lucide-react";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { MOCK_USER } from "@/lib/demo/mock-data";
-import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
-
 const NAV_ITEMS = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Tableau de bord" },
   { href: "/clients", icon: Users, label: "Clients" },
@@ -37,17 +33,9 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // demo bypass
-  let user: any, supabase: any;
-  if (isDemoMode()) {
-    user = MOCK_USER;
-    supabase = getMockSupabaseClient();
-  } else {
-    supabase = await createClient();
-    const { data: { user: u } } = await supabase.auth.getUser();
-    if (!u) redirect("/login");
-    user = u;
-  }
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -109,11 +97,6 @@ export default async function DashboardLayout({
 
       {/* CONTENU */}
       <main className="flex-1 overflow-auto">
-        {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
-          <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 text-center">
-            🎭 Mode démo — les données ne sont pas enregistrées
-          </div>
-        )}
         {children}
       </main>
     </div>

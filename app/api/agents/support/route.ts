@@ -3,23 +3,7 @@ export const maxDuration = 120; // 2 min timeout Vercel
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { analyserEtRepondreEmail } from "@/lib/agents/support-agent";
-import { isDemoMode } from "@/lib/demo/is-demo";
-import { mockAnalyserEmailSupport } from "@/lib/demo/mock-agents";
-
 export async function POST(req: NextRequest) {
-  if (isDemoMode()) {
-    const body = await req.json();
-    const { emailDe, sujet, corps, ajouterSignatureLea } = body;
-    if (!emailDe || !corps) {
-      return NextResponse.json({ erreur: "emailDe et corps sont requis" }, { status: 400 });
-    }
-    const analyse = await mockAnalyserEmailSupport({ emailDe, sujet: sujet || "", corps, nomEntreprise: "Entreprise Démo" });
-    if (ajouterSignatureLea === true) {
-      analyse.reponse += "\n\n— Généré par Léa, votre assistante support Gestia";
-    }
-    return NextResponse.json({ analyse, emailLogId: crypto.randomUUID() });
-  }
-
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
