@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Megaphone, Copy, CheckCircle } from "lucide-react";
+import { Loader2, Copy, CheckCircle } from "lucide-react";
 
 interface ContenuMarketing {
   linkedin?: string;
@@ -10,6 +10,37 @@ interface ContenuMarketing {
   newsletter?: { sujet: string; corps: string };
   hashtags: string[];
 }
+
+const RESEAUX = [
+  { id: "linkedin", label: "LinkedIn" },
+  { id: "instagram", label: "Instagram" },
+  { id: "facebook", label: "Facebook" },
+  { id: "newsletter", label: "Newsletter" },
+];
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  border: "1px solid var(--line)",
+  borderRadius: "8px",
+  padding: "10px 14px",
+  fontSize: "14px",
+  fontFamily: "Geist, sans-serif",
+  color: "var(--ink)",
+  background: "white",
+  outline: "none",
+  boxSizing: "border-box",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "10.5px",
+  fontFamily: "Geist, sans-serif",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.16em",
+  color: "var(--ink-3)",
+  marginBottom: "6px",
+  fontWeight: 500,
+};
 
 export default function MarketingPage() {
   const [sujet, setSujet] = useState("");
@@ -56,58 +87,57 @@ export default function MarketingPage() {
     setTimeout(() => setCopiePour(null), 2000);
   }
 
-  const RESEAUX = [
-    { id: "linkedin", label: "LinkedIn" },
-    { id: "instagram", label: "Instagram" },
-    { id: "facebook", label: "Facebook" },
-    { id: "newsletter", label: "Newsletter" },
-  ];
-
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Contenu marketing</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Cyprien, votre CMO IA, génère du contenu prêt à publier sur vos canaux.
+    <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%", maxWidth: "960px" }}>
+      <div style={{ marginBottom: "40px" }}>
+        <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "8px" }}>
+          MARKETING
         </p>
+        <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", fontWeight: 400, color: "var(--ink)", lineHeight: 1.1 }}>
+          Créer du contenu avec <span style={{ fontStyle: "italic" }}>Cyprien.</span>
+        </h1>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <form onSubmit={generer} className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-            <Megaphone className="w-4 h-4 text-blue-500" />
-            Paramètres
-          </h2>
-
+      <div style={{ display: "grid", gridTemplateColumns: contenu ? "400px 1fr" : "1fr", gap: "24px", maxWidth: contenu ? "100%" : "560px" }}>
+        <form onSubmit={generer} style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
           {erreur && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{erreur}</div>
+            <div style={{ background: "#fef2f2", color: "#991b1b", fontSize: "13px", padding: "12px 16px", borderRadius: "8px", fontFamily: "Geist, sans-serif" }}>
+              {erreur}
+            </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Sujet / thème du post</label>
+            <label style={labelStyle}>Sujet / thème du contenu</label>
             <textarea
               value={sujet}
               onChange={(e) => setSujet(e.target.value)}
               required
               rows={4}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              style={{ ...inputStyle, resize: "none" }}
               placeholder="Ex : Lancement de notre nouveau service de livraison express, promotion -20% ce week-end..."
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">Réseaux sociaux</label>
-            <div className="flex flex-wrap gap-2">
+            <label style={labelStyle}>Réseaux</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {RESEAUX.map((r) => (
                 <button
                   key={r.id}
                   type="button"
                   onClick={() => toggleReseau(r.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    reseaux.includes(r.id)
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontFamily: "Geist, sans-serif",
+                    fontWeight: 500,
+                    border: "1px solid",
+                    cursor: "pointer",
+                    background: reseaux.includes(r.id) ? "var(--ink)" : "transparent",
+                    color: reseaux.includes(r.id) ? "var(--ivory)" : "var(--ink-2)",
+                    borderColor: reseaux.includes(r.id) ? "var(--ink)" : "var(--line)",
+                  }}
                 >
                   {r.label}
                 </button>
@@ -116,11 +146,11 @@ export default function MarketingPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Tonalité</label>
+            <label style={labelStyle}>Tonalité</label>
             <select
               value={tonalite}
               onChange={(e) => setTonalite(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={inputStyle}
             >
               <option value="professionnel">Professionnel</option>
               <option value="decontracte">Décontracté</option>
@@ -131,39 +161,53 @@ export default function MarketingPage() {
           <button
             type="submit"
             disabled={loading || reseaux.length === 0}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              background: loading || reseaux.length === 0 ? "var(--ink-3)" : "var(--ink)",
+              color: "var(--ivory)",
+              borderRadius: "999px",
+              padding: "12px 24px",
+              fontSize: "13px",
+              fontFamily: "Geist, sans-serif",
+              fontWeight: 500,
+              border: "none",
+              cursor: loading || reseaux.length === 0 ? "not-allowed" : "pointer",
+              alignSelf: "flex-start",
+            }}
           >
             {loading ? (
               <><Loader2 className="w-4 h-4 animate-spin" />Cyprien rédige votre contenu...</>
             ) : (
-              "Générer le contenu"
+              "Générer le contenu →"
             )}
           </button>
         </form>
 
         {contenu && (
-          <div className="space-y-4">
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  C
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Créé par Cyprien</p>
-                  <p className="text-xs text-gray-500">Votre directeur marketing IA</p>
-                </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "16px", padding: "20px", display: "flex", alignItems: "center", gap: "14px" }}>
+              <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#ea580c", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "16px", fontFamily: "Instrument Serif, serif", fontStyle: "italic", flexShrink: 0 }}>
+                C
+              </div>
+              <div>
+                <p style={{ fontSize: "14px", fontFamily: "Geist, sans-serif", fontWeight: 600, color: "var(--ink)", marginBottom: "2px" }}>Créé par Cyprien</p>
+                <p style={{ fontSize: "11px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)" }}>Directeur marketing IA</p>
               </div>
             </div>
 
             {Object.entries(contenu)
               .filter(([k]) => k !== "hashtags" && k !== "newsletter")
               .map(([reseau, texte]) => (
-                <div key={reseau} className="bg-white rounded-xl border border-gray-100 p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-gray-900 capitalize">{reseau}</h3>
+                <div key={reseau} style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+                    <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>
+                      {reseau}
+                    </p>
                     <button
                       onClick={() => copier(texte as string, reseau)}
-                      className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
                     >
                       {copiePour === reseau ? (
                         <><CheckCircle className="w-3 h-3" />Copié !</>
@@ -172,56 +216,54 @@ export default function MarketingPage() {
                       )}
                     </button>
                   </div>
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{texte as string}</p>
+                  <p style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                    {texte as string}
+                  </p>
                 </div>
               ))}
 
             {contenu.newsletter && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5">
-                <h3 className="font-medium text-gray-900 mb-3">Newsletter</h3>
-                <div className="space-y-3">
+              <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px" }}>
+                <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "16px" }}>
+                  NEWSLETTER
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs font-medium text-gray-500">Objet de l&apos;email</p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "0.12em" }}>Objet</p>
                       <button
                         onClick={() => copier(contenu.newsletter!.sujet, "newsletter-sujet")}
-                        className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
                       >
-                        {copiePour === "newsletter-sujet" ? (
-                          <><CheckCircle className="w-3 h-3" />Copié !</>
-                        ) : (
-                          <><Copy className="w-3 h-3" />Copier</>
-                        )}
+                        {copiePour === "newsletter-sujet" ? <><CheckCircle className="w-3 h-3" />Copié !</> : <><Copy className="w-3 h-3" />Copier</>}
                       </button>
                     </div>
-                    <p className="text-sm text-gray-700 font-medium">{contenu.newsletter.sujet}</p>
+                    <p style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink)", fontWeight: 600 }}>{contenu.newsletter.sujet}</p>
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs font-medium text-gray-500">Corps de l&apos;email</p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "0.12em" }}>Corps</p>
                       <button
                         onClick={() => copier(contenu.newsletter!.corps, "newsletter-corps")}
-                        className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
                       >
-                        {copiePour === "newsletter-corps" ? (
-                          <><CheckCircle className="w-3 h-3" />Copié !</>
-                        ) : (
-                          <><Copy className="w-3 h-3" />Copier</>
-                        )}
+                        {copiePour === "newsletter-corps" ? <><CheckCircle className="w-3 h-3" />Copié !</> : <><Copy className="w-3 h-3" />Copier</>}
                       </button>
                     </div>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{contenu.newsletter.corps}</p>
+                    <p style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{contenu.newsletter.corps}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {contenu.hashtags?.length > 0 && (
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-xs font-medium text-gray-500 mb-2">Hashtags suggérés</p>
-                <div className="flex flex-wrap gap-1">
+              <div style={{ background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "16px", padding: "20px" }}>
+                <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "12px" }}>
+                  HASHTAGS SUGGÉRÉS
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {contenu.hashtags.map((h) => (
-                    <span key={h} className="text-xs bg-white border border-gray-200 text-blue-600 px-2 py-0.5 rounded-full">
+                    <span key={h} style={{ background: "white", border: "1px solid var(--line)", color: "var(--accent)", borderRadius: "999px", padding: "3px 10px", fontSize: "12px", fontFamily: "Geist Mono, monospace" }}>
                       {h.startsWith("#") ? h : `#${h}`}
                     </span>
                   ))}
