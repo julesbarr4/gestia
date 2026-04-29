@@ -117,3 +117,30 @@ export const TEAM_AGENTS = [
 ] as const;
 
 export type TeamAgent = (typeof TEAM_AGENTS)[number];
+
+export const AGENT_LABEL: Record<string, string> = {
+  "admin": "Inès",
+  "admin-agent": "Inès",
+  "ines": "Inès",
+  "support": "Léa",
+  "support-agent": "Léa",
+  "lea": "Léa",
+  "cfo": "Hugo",
+  "cfo-agent": "Hugo",
+  "hugo": "Hugo",
+  "cmo": "Cyprien",
+  "cmo-agent": "Cyprien",
+  "marketing": "Cyprien",
+  "cyprien": "Cyprien",
+  "ceo": "Augustin",
+  "ceo-agent": "Augustin",
+  "augustin": "Augustin",
+};
+
+export const AGENT_COLOR: Record<string, { accentBg: string; initiale: string }> = {
+  "Inès":     { accentBg: "bg-blue-600",    initiale: "I" },
+  "Léa":      { accentBg: "bg-emerald-600", initiale: "L" },
+  "Hugo":     { accentBg: "bg-violet-600",  initiale: "H" },
+  "Cyprien":  { accentBg: "bg-orange-600",  initiale: "C" },
+  "Augustin": { accentBg: "bg-gray-900",    initiale: "A" },
+};

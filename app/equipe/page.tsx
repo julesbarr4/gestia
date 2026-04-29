@@ -67,7 +67,7 @@ export default function EquipePage() {
               className={`${agent.cardBg} ${agent.cardBorder} border rounded-2xl p-6 hover:shadow-lg transition-shadow`}
             >
               <div
-                className={`w-14 h-14 ${agent.accentBg} rounded-full flex items-center justify-center text-white font-bold text-xl mb-4`}
+                className={`w-16 h-16 ${agent.accentBg} rounded-full flex items-center justify-center text-white font-bold text-2xl mb-4 shadow-md`}
               >
                 {agent.initiale}
               </div>
