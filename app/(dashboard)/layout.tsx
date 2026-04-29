@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { NavItem } from "./nav-item";
 
 const NAV_ITEMS = [
   { label: "Tableau de bord", href: "/dashboard" },
@@ -23,16 +24,26 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("nom_entreprise, plan")
-    .eq("id", user.id)
-    .single();
+  let nomEntreprise = "Mon Entreprise";
+  let plan = "starter";
 
-  const nomEntreprise = profile?.nom_entreprise || "Mon Entreprise";
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/login");
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("nom_entreprise, plan")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.nom_entreprise) nomEntreprise = profile.nom_entreprise;
+    if (profile?.plan) plan = profile.plan;
+  } catch {
+    redirect("/login");
+  }
+
   const initiale = nomEntreprise.charAt(0).toUpperCase();
 
   return (
@@ -101,7 +112,7 @@ export default async function DashboardLayout({
                 textOverflow: "ellipsis",
               }}>{nomEntreprise}</p>
               <p style={{ fontSize: "10.5px", color: "var(--ink-3)" }}>
-                {profile?.plan === "pro" ? "Plan Pro" : "Plan Starter"}
+                {plan === "pro" ? "Plan Pro" : "Plan Starter"}
               </p>
             </div>
           </div>
@@ -184,34 +195,5 @@ export default async function DashboardLayout({
 
       </div>
     </div>
-  );
-}
-
-function NavItem({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "8px 12px",
-        borderRadius: "9px",
-        fontSize: "13.5px",
-        color: "var(--ink-2)",
-        textDecoration: "none",
-        marginBottom: "2px",
-        transition: "background 0.15s, color 0.15s",
-      }}
-      onMouseOver={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "var(--ivory-2)";
-        (e.currentTarget as HTMLElement).style.color = "var(--ink)";
-      }}
-      onMouseOut={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "transparent";
-        (e.currentTarget as HTMLElement).style.color = "var(--ink-2)";
-      }}
-    >
-      {label}
-    </Link>
   );
 }

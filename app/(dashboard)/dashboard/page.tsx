@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { formatEuros } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { AGENT_LABEL, AGENT_COLOR } from "@/lib/agents/team-data";
+import { SummaryCard, ActionLink } from "./dashboard-cards";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -79,125 +79,27 @@ export default async function DashboardPage() {
         gap: "16px",
         marginBottom: "32px",
       }}>
-
-        <Link href="/rapports" style={{ textDecoration: "none" }}>
-          <div style={{
-            background: "var(--ink)",
-            borderRadius: "16px",
-            padding: "24px",
-            cursor: "pointer",
-            transition: "transform 0.15s, box-shadow 0.15s",
-          }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 18px 40px -22px rgba(14,14,14,0.35)";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "none";
-            }}
-          >
-            <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(251,248,243,0.5)", marginBottom: "16px" }}>
-              CA CE MOIS
-            </p>
-            <p style={{
-              fontFamily: "Instrument Serif, serif",
-              fontSize: "32px",
-              color: "var(--ivory)",
-              lineHeight: 1.06,
-              marginBottom: "6px",
-            }}>
-              {formatEuros(caMois)}
-            </p>
-            {progressionCA !== null && (
-              <p style={{
-                fontSize: "12px",
-                fontFamily: "Geist Mono, monospace",
-                color: progressionCA >= 0 ? "oklch(0.42 0.07 155)" : "#ef4444",
-              }}>
-                {progressionCA >= 0 ? "+" : ""}{progressionCA}% vs mois dernier
-              </p>
-            )}
-            <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", marginTop: "16px" }}>
-              Ouvrir →
-            </p>
-          </div>
-        </Link>
-
-        <Link href="/factures" style={{ textDecoration: "none" }}>
-          <div style={{
-            background: "white",
-            border: "1px solid var(--line)",
-            borderRadius: "16px",
-            padding: "24px",
-            cursor: "pointer",
-            transition: "transform 0.15s, box-shadow 0.15s",
-          }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 18px 40px -22px rgba(14,14,14,0.18)";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "none";
-            }}
-          >
-            <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "16px" }}>
-              À ENCAISSER
-            </p>
-            <p style={{
-              fontFamily: "Instrument Serif, serif",
-              fontSize: "32px",
-              color: montantImpaye > 0 ? "#92400e" : "var(--ink)",
-              lineHeight: 1.06,
-              marginBottom: "6px",
-            }}>
-              {formatEuros(montantImpaye)}
-            </p>
-            <p style={{ fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>
-              {facturesImpayees?.length || 0} facture{(facturesImpayees?.length || 0) > 1 ? "s" : ""} en attente
-            </p>
-            <p style={{ fontSize: "11px", color: "var(--ink-3)", marginTop: "16px" }}>Ouvrir →</p>
-          </div>
-        </Link>
-
-        <Link href="/devis" style={{ textDecoration: "none" }}>
-          <div style={{
-            background: "white",
-            border: "1px solid var(--line)",
-            borderRadius: "16px",
-            padding: "24px",
-            cursor: "pointer",
-            transition: "transform 0.15s, box-shadow 0.15s",
-          }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 18px 40px -22px rgba(14,14,14,0.18)";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "none";
-            }}
-          >
-            <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "16px" }}>
-              ACTIVITÉ
-            </p>
-            <p style={{
-              fontFamily: "Instrument Serif, serif",
-              fontSize: "32px",
-              color: "var(--ink)",
-              lineHeight: 1.06,
-              marginBottom: "6px",
-            }}>
-              {nbDevis || 0} devis
-            </p>
-            <p style={{ fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>
-              {nbClients || 0} clients · {nbFactures || 0} factures
-            </p>
-            <p style={{ fontSize: "11px", color: "var(--ink-3)", marginTop: "16px" }}>Ouvrir →</p>
-          </div>
-        </Link>
-
+        <SummaryCard
+          href="/rapports"
+          dark
+          eyebrow="CA CE MOIS"
+          value={formatEuros(caMois)}
+          sub={progressionCA !== null ? `${progressionCA >= 0 ? "+" : ""}${progressionCA}% vs mois dernier` : undefined}
+          subColor={progressionCA !== null ? (progressionCA >= 0 ? "oklch(0.42 0.07 155)" : "#ef4444") : undefined}
+        />
+        <SummaryCard
+          href="/factures"
+          eyebrow="À ENCAISSER"
+          value={formatEuros(montantImpaye)}
+          valueColor={montantImpaye > 0 ? "#92400e" : undefined}
+          sub={`${facturesImpayees?.length || 0} facture${(facturesImpayees?.length || 0) > 1 ? "s" : ""} en attente`}
+        />
+        <SummaryCard
+          href="/devis"
+          eyebrow="ACTIVITÉ"
+          value={`${nbDevis || 0} devis`}
+          sub={`${nbClients || 0} clients · ${nbFactures || 0} factures`}
+        />
       </div>
 
       <div style={{
@@ -292,34 +194,7 @@ export default async function DashboardPage() {
                 { label: "Analyser un email", sub: "Traité par Léa", href: "/emails", color: "#059669", initiale: "L" },
                 { label: "Rapport financier", sub: "Analysé par Hugo", href: "/rapports", color: "#7c3aed", initiale: "H" },
               ].map((a) => (
-                <Link key={a.href} href={a.href} style={{ textDecoration: "none" }}>
-                  <div style={{
-                    display: "flex", alignItems: "center", gap: "10px",
-                    padding: "9px 10px",
-                    borderRadius: "10px",
-                    transition: "background 0.12s",
-                    cursor: "pointer",
-                  }}
-                    onMouseOver={(e) => (e.currentTarget as HTMLElement).style.background = "var(--ivory-2)"}
-                    onMouseOut={(e) => (e.currentTarget as HTMLElement).style.background = "transparent"}
-                  >
-                    <div style={{
-                      width: "30px", height: "30px", borderRadius: "50%",
-                      background: a.color,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      color: "white",
-                      fontFamily: "Instrument Serif, serif",
-                      fontStyle: "italic",
-                      fontSize: "14px",
-                      flexShrink: 0,
-                    }}>{a.initiale}</div>
-                    <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: "13px", color: "var(--ink)", fontWeight: 500 }}>{a.label}</p>
-                      <p style={{ fontSize: "11px", color: "var(--ink-3)" }}>{a.sub}</p>
-                    </div>
-                    <ArrowRight style={{ width: "13px", height: "13px", color: "var(--line)" }} />
-                  </div>
-                </Link>
+                <ActionLink key={a.href} {...a} />
               ))}
             </div>
           </div>
