@@ -16,29 +16,37 @@ export default function EquipeDashboardPage() {
         {TEAM_AGENTS.map((agent) => (
           <div
             key={agent.id}
-            className={`${agent.cardBg} ${agent.cardBorder} border rounded-2xl p-6`}
+            style={{
+              backgroundColor: agent.style.cardBg,
+              borderColor: agent.style.cardBorder,
+            }}
+            className="border rounded-2xl p-6"
           >
             <div className="flex items-start justify-between mb-4">
               <div
-                className={`w-16 h-16 ${agent.accentBg} rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md`}
+                style={{ backgroundColor: agent.style.accentBg }}
+                className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md"
               >
                 {agent.initiale}
               </div>
               <Link
                 href={agent.lien}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg ${agent.accentBg} text-white hover:opacity-90 transition-opacity`}
+                style={{ backgroundColor: agent.style.accentBg }}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition-opacity"
               >
                 Ouvrir →
               </Link>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-1">{agent.prenom}</h3>
-            <p className={`text-sm font-medium ${agent.textColor} mb-3`}>{agent.role}</p>
+            <p style={{ color: agent.style.textColor }} className="text-sm font-medium mb-3">
+              {agent.role}
+            </p>
             <p className="text-gray-700 font-medium mb-4">{agent.baseline}</p>
             <p className="text-sm text-gray-600 mb-5">{agent.description}</p>
             <div className="space-y-2 mb-5">
               {agent.missions.map((m, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className={agent.textColor}>✓</span>
+                  <span style={{ color: agent.style.textColor }}>✓</span>
                   <span>{m}</span>
                 </div>
               ))}

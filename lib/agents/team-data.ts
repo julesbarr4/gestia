@@ -10,6 +10,12 @@ export const TEAM_AGENTS = [
     cardBg: "bg-blue-50",
     cardBorder: "border-blue-200",
     textColor: "text-blue-600",
+    style: {
+      accentBg: "#2563eb",
+      cardBg: "#eff6ff",
+      cardBorder: "#bfdbfe",
+      textColor: "#2563eb",
+    },
     baseline: "Devis, factures et relances sans effort",
     description:
       "12 ans d'expérience en cabinet d'expertise comptable. Inès maîtrise toutes les normes françaises : TVA, mentions légales, facturation électronique 2026.",
@@ -33,6 +39,12 @@ export const TEAM_AGENTS = [
     cardBg: "bg-emerald-50",
     cardBorder: "border-emerald-200",
     textColor: "text-emerald-600",
+    style: {
+      accentBg: "#059669",
+      cardBg: "#ecfdf5",
+      cardBorder: "#a7f3d0",
+      textColor: "#059669",
+    },
     baseline: "Vos emails clients traités 24h/24",
     description:
       "8 ans en customer success. Léa a géré plus de 50 000 tickets clients et sait désescalader même les situations les plus tendues.",
@@ -56,6 +68,12 @@ export const TEAM_AGENTS = [
     cardBg: "bg-violet-50",
     cardBorder: "border-violet-200",
     textColor: "text-violet-600",
+    style: {
+      accentBg: "#7c3aed",
+      cardBg: "#f5f3ff",
+      cardBorder: "#ddd6fe",
+      textColor: "#7c3aed",
+    },
     baseline: "Votre rapport financier chaque lundi matin",
     description:
       "15 ans en direction financière PME. Hugo reconnaît un problème de trésorerie ou un client toxique en 30 secondes de lecture.",
@@ -79,6 +97,12 @@ export const TEAM_AGENTS = [
     cardBg: "bg-orange-50",
     cardBorder: "border-orange-200",
     textColor: "text-orange-600",
+    style: {
+      accentBg: "#ea580c",
+      cardBg: "#fff7ed",
+      cardBorder: "#fed7aa",
+      textColor: "#ea580c",
+    },
     baseline: "Posts et newsletters prêts à publier",
     description:
       "10 ans en content marketing, plus de 5 000 posts produits pour des marques TPE/PME. Cyprien maîtrise les algorithmes des réseaux sociaux français.",
@@ -102,6 +126,12 @@ export const TEAM_AGENTS = [
     cardBg: "bg-gray-100",
     cardBorder: "border-gray-300",
     textColor: "text-gray-800",
+    style: {
+      accentBg: "#111827",
+      cardBg: "#f3f4f6",
+      cardBorder: "#d1d5db",
+      textColor: "#1f2937",
+    },
     baseline: "Votre stratégie trimestrielle décodée",
     description:
       "20 ans d'accompagnement de dirigeants. Ancien consultant en stratégie, Augustin voit plus loin que les chiffres de la semaine.",
@@ -137,10 +167,10 @@ export const AGENT_LABEL: Record<string, string> = {
   "augustin": "Augustin",
 };
 
-export const AGENT_COLOR: Record<string, { accentBg: string; initiale: string }> = {
-  "Inès":     { accentBg: "bg-blue-600",    initiale: "I" },
-  "Léa":      { accentBg: "bg-emerald-600", initiale: "L" },
-  "Hugo":     { accentBg: "bg-violet-600",  initiale: "H" },
-  "Cyprien":  { accentBg: "bg-orange-600",  initiale: "C" },
-  "Augustin": { accentBg: "bg-gray-900",    initiale: "A" },
+export const AGENT_COLOR: Record<string, { bg: string; initiale: string }> = {
+  "Inès":     { bg: "#2563eb", initiale: "I" },
+  "Léa":      { bg: "#059669", initiale: "L" },
+  "Hugo":     { bg: "#7c3aed", initiale: "H" },
+  "Cyprien":  { bg: "#ea580c", initiale: "C" },
+  "Augustin": { bg: "#111827", initiale: "A" },
 };

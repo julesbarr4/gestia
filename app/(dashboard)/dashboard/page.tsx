@@ -139,7 +139,10 @@ export default async function DashboardPage() {
                     return (
                       <div className="flex items-center gap-2">
                         {color ? (
-                          <div className={`w-6 h-6 ${color.accentBg} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                          <div
+                            style={{ backgroundColor: color.bg }}
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                          >
                             {color.initiale}
                           </div>
                         ) : (
