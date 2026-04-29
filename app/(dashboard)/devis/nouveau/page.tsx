@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Sparkles, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { formatEuros } from "@/lib/utils";
 
@@ -23,9 +23,17 @@ interface DevisGenere {
   conditions: string;
 }
 
+const TVA_OPTIONS = [
+  { value: "20", label: "TVA 20% (standard)" },
+  { value: "10", label: "TVA 10% (restauration, travaux)" },
+  { value: "5.5", label: "TVA 5,5% (alimentaire, livres)" },
+  { value: "0", label: "Sans TVA (auto-entrepreneur)" },
+];
+
 export default function NouveauDevisPage() {
   const [description, setDescription] = useState("");
   const [nomClient, setNomClient] = useState("");
+  const [tva, setTva] = useState("20");
   const [loading, setLoading] = useState(false);
   const [resultat, setResultat] = useState<DevisGenere | null>(null);
   const [erreur, setErreur] = useState("");
@@ -39,7 +47,7 @@ export default function NouveauDevisPage() {
     const res = await fetch("/api/agents/devis", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ descriptionProjet: description, nomClient }),
+      body: JSON.stringify({ descriptionProjet: description, nomClient, tva }),
     });
 
     const data = await res.json();
@@ -54,121 +62,218 @@ export default function NouveauDevisPage() {
     setLoading(false);
   }
 
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    border: "1px solid var(--line)",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    fontSize: "14px",
+    fontFamily: "Geist, sans-serif",
+    color: "var(--ink)",
+    background: "white",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: "10.5px",
+    fontFamily: "Geist, sans-serif",
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.16em",
+    color: "var(--ink-3)",
+    marginBottom: "6px",
+    fontWeight: 500,
+  };
+
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="mb-6">
-        <Link href="/devis" className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4">
-          <ArrowLeft className="w-4 h-4" />
-          Retour aux devis
+    <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%", maxWidth: "720px" }}>
+      <div style={{ marginBottom: "40px" }}>
+        <Link
+          href="/devis"
+          style={{ fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "20px" }}
+        >
+          ← Retour aux devis
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Nouveau devis par IA</h1>
-        <p className="text-sm text-gray-500 mt-1">Décrivez votre projet, l'IA génère un devis professionnel.</p>
+        <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "8px" }}>
+          NOUVEAU DEVIS
+        </p>
+        <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", fontWeight: 400, color: "var(--ink)", lineHeight: 1.1 }}>
+          Générer un devis avec <span style={{ fontStyle: "italic" }}>Inès.</span>
+        </h1>
       </div>
 
       {!resultat ? (
-        <form onSubmit={genererDevis} className="bg-white rounded-xl border border-gray-100 p-6 space-y-5 max-w-xl">
+        <form onSubmit={genererDevis} style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px" }}>
           {erreur && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{erreur}</div>
+            <div style={{ background: "#fef2f2", color: "#991b1b", fontSize: "13px", padding: "12px 16px", borderRadius: "8px", marginBottom: "24px", fontFamily: "Geist, sans-serif" }}>
+              {erreur}
+            </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nom du client</label>
-            <input
-              type="text"
-              value={nomClient}
-              onChange={(e) => setNomClient(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Société ABC"
-            />
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div>
+              <label style={labelStyle}>Nom du client</label>
+              <input
+                type="text"
+                value={nomClient}
+                onChange={(e) => setNomClient(e.target.value)}
+                required
+                style={inputStyle}
+                placeholder="Société ABC"
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Description du projet</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={5}
+                style={{ ...inputStyle, resize: "none" }}
+                placeholder="Ex : Création d'un site web vitrine pour une boulangerie artisanale. Inclure la page d'accueil, la carte, les horaires et un formulaire de contact…"
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Taux de TVA</label>
+              <select
+                value={tva}
+                onChange={(e) => setTva(e.target.value)}
+                style={inputStyle}
+              >
+                {TVA_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                background: loading ? "var(--ink-3)" : "var(--ink)",
+                color: "var(--ivory)",
+                borderRadius: "999px",
+                padding: "12px 24px",
+                fontSize: "13px",
+                fontFamily: "Geist, sans-serif",
+                fontWeight: 500,
+                border: "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                alignSelf: "flex-start",
+              }}
+            >
+              {loading ? (
+                <><Loader2 className="w-4 h-4 animate-spin" />Inès rédige votre devis...</>
+              ) : (
+                "Générer le devis →"
+              )}
+            </button>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description du projet</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={5}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="Ex : Création d'un site web vitrine pour une boulangerie artisanale. Inclure la page d'accueil, la carte, les horaires et un formulaire de contact. Design moderne et responsive..."
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" />Génération en cours...</>
-            ) : (
-              <><Sparkles className="w-4 h-4" />Générer le devis par IA</>
-            )}
-          </button>
         </form>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 p-8 space-y-6">
-          <div className="flex items-center justify-between">
+        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "32px" }}>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">{resultat.titre}</h2>
-              <p className="text-sm text-gray-400 mt-0.5">Client : {nomClient}</p>
+              <h2 style={{ fontFamily: "Instrument Serif, serif", fontSize: "24px", fontWeight: 400, color: "var(--ink)", marginBottom: "4px" }}>
+                {resultat.titre}
+              </h2>
+              <p style={{ fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>
+                Client : {nomClient}
+              </p>
             </div>
-            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-              Généré par IA
+            <span style={{
+              background: "color-mix(in oklch, var(--accent) 14%, transparent)",
+              color: "var(--accent)",
+              borderRadius: "999px",
+              padding: "3px 10px",
+              fontSize: "10.5px",
+              fontFamily: "Geist, sans-serif",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 500,
+            }}>
+              Généré par Inès
             </span>
           </div>
 
-          <table className="w-full text-sm">
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "24px" }}>
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left py-2 text-gray-500 font-medium">Description</th>
-                <th className="text-right py-2 text-gray-500 font-medium">Qté</th>
-                <th className="text-right py-2 text-gray-500 font-medium">PU HT</th>
-                <th className="text-right py-2 text-gray-500 font-medium">Total HT</th>
+              <tr style={{ borderBottom: "1px solid var(--line)" }}>
+                <th style={{ textAlign: "left", padding: "8px 0", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Description</th>
+                <th style={{ textAlign: "right", padding: "8px 0", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Qté</th>
+                <th style={{ textAlign: "right", padding: "8px 0", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>PU HT</th>
+                <th style={{ textAlign: "right", padding: "8px 0", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Total HT</th>
               </tr>
             </thead>
             <tbody>
               {resultat.lignes.map((l, i) => (
-                <tr key={i} className="border-b border-gray-50">
-                  <td className="py-3 text-gray-700">{l.description}</td>
-                  <td className="py-3 text-right text-gray-600">{l.quantite}</td>
-                  <td className="py-3 text-right text-gray-600">{formatEuros(l.prixUnitaireHT)}</td>
-                  <td className="py-3 text-right font-medium text-gray-900">{formatEuros(l.totalHT)}</td>
+                <tr key={i} style={{ borderBottom: "1px solid var(--line)" }}>
+                  <td style={{ padding: "12px 0", fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)" }}>{l.description}</td>
+                  <td style={{ padding: "12px 0", textAlign: "right", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>{l.quantite}</td>
+                  <td style={{ padding: "12px 0", textAlign: "right", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>{formatEuros(l.prixUnitaireHT)}</td>
+                  <td style={{ padding: "12px 0", textAlign: "right", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink)", fontWeight: 600 }}>{formatEuros(l.totalHT)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="flex justify-end">
-            <div className="space-y-1 text-sm min-w-48">
-              <div className="flex justify-between text-gray-500">
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "24px" }}>
+            <div style={{ minWidth: "220px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>
                 <span>Total HT</span><span>{formatEuros(resultat.totalHT)}</span>
               </div>
-              <div className="flex justify-between text-gray-500">
-                <span>TVA 20%</span><span>{formatEuros(resultat.totalTVA)}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>
+                <span>TVA</span><span>{formatEuros(resultat.totalTVA)}</span>
               </div>
-              <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-200">
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0 6px", fontSize: "14px", fontFamily: "Geist Mono, monospace", color: "var(--ink)", fontWeight: 700, borderTop: "1px solid var(--line)", marginTop: "4px" }}>
                 <span>Total TTC</span><span>{formatEuros(resultat.totalTTC)}</span>
               </div>
             </div>
           </div>
 
           {resultat.notes && (
-            <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-600">
+            <div style={{ background: "var(--ivory-2)", borderRadius: "8px", padding: "16px", marginBottom: "24px", fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)" }}>
               <strong>Notes :</strong> {resultat.notes}
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div style={{ display: "flex", gap: "12px" }}>
             <button
               onClick={() => setResultat(null)}
-              className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+              style={{
+                padding: "10px 20px",
+                fontSize: "13px",
+                fontFamily: "Geist, sans-serif",
+                color: "var(--ink-2)",
+                background: "transparent",
+                border: "1px solid var(--line)",
+                borderRadius: "999px",
+                cursor: "pointer",
+              }}
             >
               Régénérer
             </button>
             <button
               onClick={() => router.push("/devis")}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              style={{
+                padding: "10px 20px",
+                fontSize: "13px",
+                fontFamily: "Geist, sans-serif",
+                color: "var(--ivory)",
+                background: "var(--accent)",
+                border: "none",
+                borderRadius: "999px",
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
             >
-              Voir mes devis →
+              Sauvegarder →
             </button>
           </div>
         </div>

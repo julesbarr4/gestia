@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Save, CheckCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface Profile {
   nom_entreprise?: string | null;
@@ -18,6 +18,39 @@ interface Props {
   profile: Profile | null;
   email: string;
 }
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  border: "1px solid var(--line)",
+  borderRadius: "8px",
+  padding: "10px 14px",
+  fontSize: "14px",
+  fontFamily: "Geist, sans-serif",
+  color: "var(--ink)",
+  background: "white",
+  outline: "none",
+  boxSizing: "border-box",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "10.5px",
+  fontFamily: "Geist, sans-serif",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.16em",
+  color: "var(--ink-3)",
+  marginBottom: "6px",
+  fontWeight: 500,
+};
+
+const CHAMPS = [
+  { name: "nom_entreprise", label: "Nom de l'entreprise", placeholder: "Ma Boulangerie SAS", type: "text", required: true, full: true },
+  { name: "siret", label: "SIRET", placeholder: "123 456 789 00012", type: "text", required: false, full: false },
+  { name: "telephone", label: "Téléphone", placeholder: "06 12 34 56 78", type: "tel", required: false, full: false },
+  { name: "adresse", label: "Adresse", placeholder: "10 rue de la Paix", type: "text", required: false, full: true },
+  { name: "code_postal", label: "Code postal", placeholder: "75001", type: "text", required: false, full: false },
+  { name: "ville", label: "Ville", placeholder: "Paris", type: "text", required: false, full: false },
+];
 
 export default function ParametresClient({ profile, email }: Props) {
   const [form, setForm] = useState({
@@ -63,82 +96,32 @@ export default function ParametresClient({ profile, email }: Props) {
     setLoading(false);
   }
 
-  const CHAMPS = [
-    {
-      name: "nom_entreprise",
-      label: "Nom de l'entreprise",
-      placeholder: "Ma Boulangerie SAS",
-      type: "text",
-      required: true,
-      colSpan: "sm:col-span-2",
-    },
-    {
-      name: "siret",
-      label: "SIRET",
-      placeholder: "123 456 789 00012",
-      type: "text",
-      required: false,
-      colSpan: "",
-    },
-    {
-      name: "telephone",
-      label: "Téléphone",
-      placeholder: "06 12 34 56 78",
-      type: "tel",
-      required: false,
-      colSpan: "",
-    },
-    {
-      name: "adresse",
-      label: "Adresse",
-      placeholder: "10 rue de la Paix",
-      type: "text",
-      required: false,
-      colSpan: "sm:col-span-2",
-    },
-    {
-      name: "code_postal",
-      label: "Code postal",
-      placeholder: "75001",
-      type: "text",
-      required: false,
-      colSpan: "",
-    },
-    {
-      name: "ville",
-      label: "Ville",
-      placeholder: "Paris",
-      type: "text",
-      required: false,
-      colSpan: "",
-    },
-  ];
-
   return (
-    <div className="p-8 max-w-2xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Paramètres</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Informations de votre entreprise utilisées sur vos devis et factures
+    <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%", maxWidth: "720px" }}>
+      <div style={{ marginBottom: "40px" }}>
+        <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "8px" }}>
+          PARAMÈTRES
         </p>
+        <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", fontWeight: 400, color: "var(--ink)", lineHeight: 1.1 }}>
+          Votre <span style={{ fontStyle: "italic" }}>entreprise.</span>
+        </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="font-semibold text-gray-900 mb-1">Informations entreprise</h2>
-          <p className="text-xs text-gray-400 mb-5">
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px" }}>
+          <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "6px" }}>
+            INFORMATIONS ENTREPRISE
+          </p>
+          <p style={{ fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)", marginBottom: "24px" }}>
             Ces informations apparaîtront sur vos devis et factures générés par Inès.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
             {CHAMPS.map((champ) => (
-              <div key={champ.name} className={champ.colSpan}>
-                <label
-                  htmlFor={champ.name}
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+              <div key={champ.name} style={{ gridColumn: champ.full ? "1 / -1" : "auto" }}>
+                <label htmlFor={champ.name} style={labelStyle}>
                   {champ.label}
-                  {champ.required && <span className="text-red-500 ml-1">*</span>}
+                  {champ.required && <span style={{ color: "#991b1b", marginLeft: "4px" }}>*</span>}
                 </label>
                 <input
                   id={champ.name}
@@ -148,77 +131,95 @@ export default function ParametresClient({ profile, email }: Props) {
                   onChange={handleChange}
                   placeholder={champ.placeholder}
                   required={champ.required}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={inputStyle}
                 />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="font-semibold text-gray-900 mb-1">Compte</h2>
-          <p className="text-xs text-gray-400 mb-4">
-            L'adresse email ne peut pas être modifiée depuis cette page.
+        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px" }}>
+          <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "6px" }}>
+            COMPTE
+          </p>
+          <p style={{ fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)", marginBottom: "20px" }}>
+            L&apos;adresse email ne peut pas être modifiée depuis cette page.
           </p>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              disabled
-              className="w-full px-3 py-2 border border-gray-100 rounded-lg text-sm bg-gray-50 text-gray-400 cursor-not-allowed"
-            />
+            <label style={labelStyle}>Email</label>
+            <div style={{ ...inputStyle, background: "var(--ivory-2)", color: "var(--ink-3)", cursor: "not-allowed" }}>
+              {email}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 p-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Plan actuel</h2>
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px" }}>
+          <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "20px" }}>
+            PLAN ACTUEL
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
+            <span style={{
+              display: "inline-block",
+              background: "color-mix(in oklch, var(--accent) 14%, transparent)",
+              color: "var(--accent)",
+              borderRadius: "999px",
+              padding: "4px 14px",
+              fontSize: "11px",
+              fontFamily: "Geist, sans-serif",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+            }}>
               {profile?.plan === "pro" ? "Pro" : "Starter"}
             </span>
-            <span className="text-sm text-gray-400">
+            <span style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)" }}>
               {profile?.abonnement_actif ? "Abonnement actif" : "Période d'essai"}
             </span>
           </div>
-          <p className="text-xs text-gray-400 mt-3">
+          <p style={{ fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)" }}>
             Pour changer de plan, contactez-nous à{" "}
-            <a href="mailto:contact@gestia.fr" className="text-blue-600 hover:underline">
+            <a href="mailto:contact@gestia.fr" style={{ color: "var(--accent)", textDecoration: "none" }}>
               contact@gestia.fr
             </a>
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              background: loading ? "var(--ink-3)" : "var(--ink)",
+              color: "var(--ivory)",
+              borderRadius: "999px",
+              padding: "12px 24px",
+              fontSize: "13px",
+              fontFamily: "Geist, sans-serif",
+              fontWeight: 500,
+              border: "none",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
           >
             {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Enregistrement...
-              </>
+              <><Loader2 className="w-4 h-4 animate-spin" />Enregistrement...</>
             ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Enregistrer les modifications
-              </>
+              "Enregistrer les modifications"
             )}
           </button>
 
           {succes && (
-            <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium">
-              <CheckCircle className="w-4 h-4" />
+            <p style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--accent)", fontWeight: 500 }}>
               Modifications enregistrées
-            </div>
+            </p>
           )}
 
           {erreur && (
-            <p className="text-red-500 text-sm">{erreur}</p>
+            <p style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "#991b1b" }}>
+              {erreur}
+            </p>
           )}
         </div>
       </form>

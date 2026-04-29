@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Target } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface AnalyseStrategique {
   diagnostic: string;
@@ -23,6 +23,31 @@ interface AnalyseStrategique {
   risques: string[];
   messageMotivation: string;
 }
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  border: "1px solid var(--line)",
+  borderRadius: "8px",
+  padding: "10px 14px",
+  fontSize: "14px",
+  fontFamily: "Geist, sans-serif",
+  color: "var(--ink)",
+  background: "white",
+  outline: "none",
+  boxSizing: "border-box",
+  resize: "none" as const,
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "10.5px",
+  fontFamily: "Geist, sans-serif",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.16em",
+  color: "var(--ink-3)",
+  marginBottom: "6px",
+  fontWeight: 500,
+};
 
 export default function StrategiePage() {
   const [objectifs, setObjectifs] = useState("");
@@ -55,122 +80,129 @@ export default function StrategiePage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Stratégie</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Augustin, votre CEO IA, analyse votre situation et définit 3 axes prioritaires sur 90
-          jours.
+    <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%", maxWidth: "800px" }}>
+      <div style={{ marginBottom: "40px" }}>
+        <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "8px" }}>
+          STRATÉGIE
         </p>
+        <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", fontWeight: 400, color: "var(--ink)", lineHeight: 1.1 }}>
+          Votre analyse stratégique avec <span style={{ fontStyle: "italic" }}>Augustin.</span>
+        </h1>
       </div>
 
-      <form onSubmit={lancer} className="bg-white border border-gray-200 rounded-xl p-6 mb-8">
-        <label className="block mb-4">
-          <span className="text-sm font-medium text-gray-700">Vos objectifs (optionnel)</span>
+      <form onSubmit={lancer} style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px", marginBottom: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div>
+          <label style={labelStyle}>Vos objectifs (optionnel)</label>
           <textarea
             value={objectifs}
             onChange={(e) => setObjectifs(e.target.value)}
-            placeholder="Ex: doubler mon CA, recruter 2 personnes, lancer une nouvelle offre..."
-            className="mt-1 block w-full rounded-lg border-gray-300 focus:border-gray-900 focus:ring-gray-900 text-sm"
-            rows={2}
+            rows={3}
+            style={inputStyle}
+            placeholder="Ex : doubler mon CA, recruter 2 personnes, lancer une nouvelle offre..."
           />
-        </label>
-        <label className="block mb-4">
-          <span className="text-sm font-medium text-gray-700">
-            Vos problèmes actuels (optionnel)
-          </span>
+        </div>
+        <div>
+          <label style={labelStyle}>Vos problèmes actuels (optionnel)</label>
           <textarea
             value={problemes}
             onChange={(e) => setProblemes(e.target.value)}
-            placeholder="Ex: dépendance à un gros client, positionnement flou, charge opérationnelle..."
-            className="mt-1 block w-full rounded-lg border-gray-300 focus:border-gray-900 focus:ring-gray-900 text-sm"
-            rows={2}
+            rows={3}
+            style={inputStyle}
+            placeholder="Ex : dépendance à un gros client, positionnement flou, charge opérationnelle..."
           />
-        </label>
+        </div>
         <button
           type="submit"
           disabled={loading}
-          className="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 inline-flex items-center gap-2"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            background: loading ? "var(--ink-3)" : "var(--ink)",
+            color: "var(--ivory)",
+            borderRadius: "999px",
+            padding: "12px 24px",
+            fontSize: "13px",
+            fontFamily: "Geist, sans-serif",
+            fontWeight: 500,
+            border: "none",
+            cursor: loading ? "not-allowed" : "pointer",
+            alignSelf: "flex-start",
+          }}
         >
           {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Augustin analyse votre stratégie...
-            </>
+            <><Loader2 className="w-4 h-4 animate-spin" />Augustin analyse votre stratégie...</>
           ) : (
-            <>
-              <Target className="w-4 h-4" />
-              Lancer l&apos;analyse stratégique
-            </>
+            "Lancer l'analyse stratégique →"
           )}
         </button>
       </form>
 
+      {erreur && (
+        <div style={{ background: "#fef2f2", color: "#991b1b", fontSize: "13px", padding: "14px 16px", borderRadius: "8px", marginBottom: "24px", fontFamily: "Geist, sans-serif" }}>
+          {erreur}
+        </div>
+      )}
+
       {analyse && (
-        <div className="space-y-6">
-          <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                A
-              </div>
-              <div>
-                <p className="font-semibold text-gray-900">Analyse d&apos;Augustin</p>
-                <p className="text-xs text-gray-500">Votre directeur général IA</p>
-              </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "16px", padding: "20px", display: "flex", alignItems: "center", gap: "16px" }}>
+            <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ivory)", fontSize: "20px", fontFamily: "Instrument Serif, serif", fontStyle: "italic", flexShrink: 0 }}>
+              A
+            </div>
+            <div>
+              <p style={{ fontSize: "14px", fontFamily: "Geist, sans-serif", fontWeight: 600, color: "var(--ink)", marginBottom: "2px" }}>Analyse d&apos;Augustin</p>
+              <p style={{ fontSize: "11px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)" }}>Directeur général IA</p>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Diagnostic</h2>
-            <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+          <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "28px" }}>
+            <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "14px" }}>DIAGNOSTIC</p>
+            <p style={{ fontSize: "14px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
               {analyse.diagnostic}
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                S
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Situation stratégique</h2>
+          <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "28px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
+              <div style={{ width: "28px", height: "28px", background: "var(--ink)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ivory)", fontSize: "11px", fontFamily: "Geist, sans-serif", fontWeight: 700 }}>S</div>
+              <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>SITUATION STRATÉGIQUE</p>
             </div>
-            <p className="text-gray-700 leading-relaxed">{analyse.situationStrategique}</p>
+            <p style={{ fontSize: "14px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)", lineHeight: 1.7 }}>
+              {analyse.situationStrategique}
+            </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                T
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Tensions</h2>
+          <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "28px", borderLeft: "4px solid #f59e0b" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
+              <div style={{ width: "28px", height: "28px", background: "#f59e0b", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "11px", fontFamily: "Geist, sans-serif", fontWeight: 700 }}>T</div>
+              <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>TENSIONS</p>
             </div>
-            <ul className="space-y-2">
+            <ul style={{ display: "flex", flexDirection: "column", gap: "10px", margin: 0, padding: 0, listStyle: "none" }}>
               {analyse.tensions.map((t, i) => (
-                <li key={i} className="text-gray-700 flex gap-2">
-                  <span className="text-orange-500">•</span>
-                  <span>{t}</span>
+                <li key={i} style={{ display: "flex", gap: "10px", fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)", lineHeight: 1.6 }}>
+                  <span style={{ color: "#f59e0b", flexShrink: 0 }}>•</span>
+                  {t}
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                A
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Axes stratégiques (90 jours)</h2>
+          <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "28px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+              <div style={{ width: "28px", height: "28px", background: "var(--accent)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "11px", fontFamily: "Geist, sans-serif", fontWeight: 700 }}>A</div>
+              <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>AXES STRATÉGIQUES (90 JOURS)</p>
             </div>
-            <div className="space-y-4">
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               {analyse.axes.map((axe, i) => (
-                <div key={i} className="border-l-4 border-blue-600 pl-4">
-                  <h3 className="font-semibold text-gray-900 mb-1">{axe.titre}</h3>
-                  <p className="text-sm text-gray-600 mb-2 italic">{axe.objectif}</p>
-                  <ul className="space-y-1">
+                <div key={i} style={{ borderLeft: "2px solid var(--accent)", paddingLeft: "16px" }}>
+                  <h3 style={{ fontSize: "14px", fontFamily: "Geist, sans-serif", fontWeight: 600, color: "var(--ink)", marginBottom: "4px" }}>{axe.titre}</h3>
+                  <p style={{ fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)", fontStyle: "italic", marginBottom: "10px" }}>{axe.objectif}</p>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: "6px", margin: 0, padding: 0, listStyle: "none" }}>
                     {axe.actions.map((a, j) => (
-                      <li key={j} className="text-sm text-gray-700 flex gap-2">
-                        <span className="text-blue-600">→</span>
-                        <span>{a}</span>
+                      <li key={j} style={{ display: "flex", gap: "8px", fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-2)", lineHeight: 1.5 }}>
+                        <span style={{ color: "var(--accent)", flexShrink: 0 }}>→</span>
+                        {a}
                       </li>
                     ))}
                   </ul>
@@ -179,26 +211,22 @@ export default function StrategiePage() {
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                R
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Résultats attendus</h2>
+          <div style={{ background: "var(--ink)", borderRadius: "16px", padding: "28px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
+              <div style={{ width: "28px", height: "28px", background: "rgba(251,248,243,0.15)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ivory)", fontSize: "11px", fontFamily: "Geist, sans-serif", fontWeight: 700 }}>R</div>
+              <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(251,248,243,0.5)", fontWeight: 500 }}>RÉSULTATS ATTENDUS</p>
             </div>
-            <p className="text-gray-700 leading-relaxed">{analyse.resultatsAttendus}</p>
+            <p style={{ fontSize: "14px", fontFamily: "Geist, sans-serif", color: "var(--ivory)", lineHeight: 1.7 }}>
+              {analyse.resultatsAttendus}
+            </p>
           </div>
 
-          <div className="bg-gray-900 rounded-xl p-6 text-white">
-            <p className="text-lg italic leading-relaxed">&quot;{analyse.messageMotivation}&quot;</p>
-            <p className="text-sm text-gray-400 mt-3">— Augustin</p>
+          <div style={{ padding: "28px 0", textAlign: "center" }}>
+            <p style={{ fontSize: "20px", fontFamily: "Instrument Serif, serif", fontStyle: "italic", color: "var(--accent)", lineHeight: 1.5, marginBottom: "10px" }}>
+              &ldquo;{analyse.messageMotivation}&rdquo;
+            </p>
+            <p style={{ fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>— Augustin</p>
           </div>
-        </div>
-      )}
-
-      {erreur && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mt-4">
-          {erreur}
         </div>
       )}
     </div>

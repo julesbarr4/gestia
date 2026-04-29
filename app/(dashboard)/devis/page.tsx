@@ -4,14 +4,15 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { formatEuros, formatDate } from "@/lib/utils";
 import Link from "next/link";
-import { Plus, FileText } from "lucide-react";
 
-const STATUT_LABELS: Record<string, { label: string; couleur: string }> = {
-  brouillon: { label: "Brouillon", couleur: "bg-gray-100 text-gray-600" },
-  envoye: { label: "Envoyé", couleur: "bg-blue-100 text-blue-600" },
-  accepte: { label: "Accepté", couleur: "bg-green-100 text-green-600" },
-  refuse: { label: "Refusé", couleur: "bg-red-100 text-red-600" },
-  expire: { label: "Expiré", couleur: "bg-amber-100 text-amber-600" },
+type StatutStyle = { label: string; background: string; color: string };
+
+const STATUTS: Record<string, StatutStyle> = {
+  brouillon: { label: "Brouillon", background: "var(--line)", color: "var(--ink-3)" },
+  envoye: { label: "Envoyé", background: "var(--ivory-2)", color: "var(--ink-2)" },
+  accepte: { label: "Accepté", background: "color-mix(in oklch, var(--accent) 14%, transparent)", color: "var(--accent)" },
+  refuse: { label: "Refusé", background: "var(--line)", color: "var(--ink-3)" },
+  expire: { label: "Expiré", background: "var(--line)", color: "var(--ink-3)" },
 };
 
 export default async function DevisPage() {
@@ -26,62 +27,110 @@ export default async function DevisPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "40px" }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Devis</h1>
-          <p className="text-sm text-gray-500 mt-1">{devis?.length || 0} devis au total</p>
+          <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", marginBottom: "8px" }}>
+            DEVIS
+          </p>
+          <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", fontWeight: 400, color: "var(--ink)", lineHeight: 1.1 }}>
+            Vos <span style={{ fontStyle: "italic" }}>devis.</span>
+          </h1>
         </div>
         <Link
           href="/devis/nouveau"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "var(--ink)",
+            color: "var(--ivory)",
+            borderRadius: "999px",
+            padding: "10px 20px",
+            fontSize: "13px",
+            fontFamily: "Geist, sans-serif",
+            textDecoration: "none",
+            fontWeight: 500,
+          }}
         >
-          <Plus className="w-4 h-4" />
-          Nouveau devis IA
+          Nouveau devis →
         </Link>
       </div>
 
       {(!devis || devis.length === 0) ? (
-        <div className="text-center py-16">
-          <FileText className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">Aucun devis pour l'instant</p>
+        <div style={{ textAlign: "center", padding: "80px 0" }}>
+          <h2 style={{ fontFamily: "Instrument Serif, serif", fontSize: "24px", fontWeight: 400, color: "var(--ink-3)", marginBottom: "16px" }}>
+            Aucun <span style={{ fontStyle: "italic" }}>devis</span> pour l&apos;instant
+          </h2>
+          <p style={{ fontSize: "13px", color: "var(--ink-3)", fontFamily: "Geist, sans-serif", marginBottom: "24px" }}>
+            Inès génère votre premier devis professionnel en 30 secondes.
+          </p>
           <Link
             href="/devis/nouveau"
-            className="mt-4 inline-flex items-center gap-1 text-blue-600 text-sm hover:underline"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "var(--ink)",
+              color: "var(--ivory)",
+              borderRadius: "999px",
+              padding: "10px 20px",
+              fontSize: "13px",
+              fontFamily: "Geist, sans-serif",
+              textDecoration: "none",
+            }}
           >
-            <Plus className="w-4 h-4" />
-            Créer mon premier devis par IA
+            Créer mon premier devis →
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="border-b border-gray-100">
-              <tr>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Numéro</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Client</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Date</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Statut</th>
-                <th className="text-right px-4 py-3 text-gray-400 font-medium">Montant TTC</th>
+        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "var(--ivory-2)", borderBottom: "1px solid var(--line)" }}>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Numéro</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Client</th>
+                <th style={{ textAlign: "right", padding: "12px 24px", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Montant TTC</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Statut</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500 }}>Date</th>
               </tr>
             </thead>
             <tbody>
-              {devis.map((d: any) => {
-                const statut = STATUT_LABELS[d.statut] || STATUT_LABELS.brouillon;
+              {devis.map((d: any, i: number) => {
+                const statut = STATUTS[d.statut] || STATUTS.brouillon;
                 return (
-                  <tr key={d.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-900">{d.numero}</td>
-                    <td className="px-4 py-3 text-gray-600">
+                  <tr
+                    key={d.id}
+                    style={{ borderBottom: i < devis.length - 1 ? "1px solid var(--line)" : "none" }}
+                    className="hover:[background:var(--ivory-2)] transition-colors"
+                  >
+                    <td style={{ padding: "16px 24px", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink)" }}>
+                      {d.numero}
+                    </td>
+                    <td style={{ padding: "16px 24px", fontSize: "14px", fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}>
                       {(d.clients as { nom?: string } | null)?.nom || "—"}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">{formatDate(d.date_emission)}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statut.couleur}`}>
+                    <td style={{ padding: "16px 24px", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink)", textAlign: "right", fontWeight: 600 }}>
+                      {formatEuros(d.total_ttc)}
+                    </td>
+                    <td style={{ padding: "16px 24px" }}>
+                      <span style={{
+                        display: "inline-block",
+                        background: statut.background,
+                        color: statut.color,
+                        borderRadius: "999px",
+                        padding: "3px 10px",
+                        fontSize: "10.5px",
+                        fontFamily: "Geist, sans-serif",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.12em",
+                        fontWeight: 500,
+                      }}>
                         {statut.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-gray-900">
-                      {formatEuros(d.total_ttc)}
+                    <td style={{ padding: "16px 24px", fontSize: "12px", fontFamily: "Geist Mono, monospace", color: "var(--ink-3)" }}>
+                      {formatDate(d.date_emission)}
                     </td>
                   </tr>
                 );
