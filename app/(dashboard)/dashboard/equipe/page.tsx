@@ -20,7 +20,7 @@ export default function EquipeDashboardPage() {
           >
             <div className="flex items-start justify-between mb-4">
               <div
-                className={`w-14 h-14 ${agent.accentBg} rounded-full flex items-center justify-center text-white font-bold text-xl`}
+                className={`w-16 h-16 ${agent.accentBg} rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md`}
               >
                 {agent.initiale}
               </div>

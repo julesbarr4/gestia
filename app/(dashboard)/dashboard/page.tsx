@@ -7,6 +7,7 @@ import Link from "next/link";
 import { isDemoMode } from "@/lib/demo/is-demo";
 import { MOCK_USER } from "@/lib/demo/mock-data";
 import { getMockSupabaseClient } from "@/lib/demo/mock-supabase";
+import { AGENT_LABEL, AGENT_COLOR } from "@/lib/agents/team-data";
 
 export default async function DashboardPage() {
   // demo bypass
@@ -47,14 +48,6 @@ export default async function DashboardPage() {
     { label: "Devis", valeur: String(nbDevis || 0), icon: FileText, couleur: "text-purple-600", bg: "bg-purple-50" },
     { label: "Factures", valeur: String(nbFactures || 0), icon: Receipt, couleur: "text-orange-600", bg: "bg-orange-50" },
   ];
-
-  const agentLabel: Record<string, string> = {
-    "admin-agent": "Agent Admin",
-    "support-agent": "Agent Support",
-    "cfo-agent": "Agent CFO",
-    "ceo-agent": "Augustin",
-    "cmo-agent": "Agent CMO",
-  };
 
   return (
     <div className="p-8">
@@ -140,10 +133,22 @@ export default async function DashboardPage() {
             <div className="space-y-2">
               {derniersLogs?.map((log: any, i: number) => (
                 <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                  <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
-                  <span className="text-sm font-medium text-gray-700">
-                    {agentLabel[log.agent] || log.agent}
-                  </span>
+                  {(() => {
+                    const prenom = AGENT_LABEL[log.agent?.toLowerCase()] ?? log.agent;
+                    const color = AGENT_COLOR[prenom];
+                    return (
+                      <div className="flex items-center gap-2">
+                        {color ? (
+                          <div className={`w-6 h-6 ${color.accentBg} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                            {color.initiale}
+                          </div>
+                        ) : (
+                          <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
+                        )}
+                        <span className="font-medium text-gray-900">{prenom}</span>
+                      </div>
+                    );
+                  })()}
                   <span className="text-sm text-gray-400">— {log.action.replace(/_/g, " ")}</span>
                   <span className="ml-auto text-xs text-gray-300">
                     {new Date(log.created_at).toLocaleDateString("fr-FR")}

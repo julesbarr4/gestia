@@ -271,7 +271,7 @@ export const MOCK_LOGS = [
   {
     id: "log-1",
     user_id: "demo-user-id",
-    agent: "admin-agent",
+    agent: "admin",
     action: "generer_devis",
     input: { descriptionProjet: "Refonte site web", nomClient: "Martin & Associés" },
     output: { devisId: "devis-1", numero: "DEV-2026-0001" },
@@ -284,7 +284,7 @@ export const MOCK_LOGS = [
   {
     id: "log-2",
     user_id: "demo-user-id",
-    agent: "admin-agent",
+    agent: "admin",
     action: "generer_facture",
     input: { descriptionPrestations: "Développement app mobile", nomClient: "Martin & Associés" },
     output: { factureId: "facture-1", numero: "FAC-2026-0001" },
@@ -297,7 +297,7 @@ export const MOCK_LOGS = [
   {
     id: "log-3",
     user_id: "demo-user-id",
-    agent: "support-agent",
+    agent: "support",
     action: "analyser_email",
     input: { emailDe: "thomas.bernard@clientpro.fr" },
     output: { categorie: "question", urgence: "normale" },
@@ -310,7 +310,7 @@ export const MOCK_LOGS = [
   {
     id: "log-4",
     user_id: "demo-user-id",
-    agent: "admin-agent",
+    agent: "admin",
     action: "generer_relance",
     input: { factureId: "facture-3" },
     output: { emailDestination: "compta@atelier-dupont.fr" },
@@ -323,7 +323,7 @@ export const MOCK_LOGS = [
   {
     id: "log-5",
     user_id: "demo-user-id",
-    agent: "cfo-agent",
+    agent: "cfo",
     action: "generer_rapport_hebdomadaire",
     input: { semaine: "2026-04-14" },
     output: { caSemaine: 9960, montantImpaye: 5160 },
