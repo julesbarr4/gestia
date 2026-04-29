@@ -3,29 +3,18 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  FileText,
-  Receipt,
-  Users,
-  Mail,
-  TrendingUp,
-  Megaphone,
-  Settings,
-  Zap,
-  LogOut,
-  Target,
-} from "lucide-react";
+
 const NAV_ITEMS = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Tableau de bord" },
-  { href: "/clients", icon: Users, label: "Clients" },
-  { href: "/devis", icon: FileText, label: "Devis" },
-  { href: "/factures", icon: Receipt, label: "Factures" },
-  { href: "/emails", icon: Mail, label: "Emails" },
-  { href: "/marketing", icon: Megaphone, label: "Marketing" },
-  { href: "/rapports", icon: TrendingUp, label: "Rapports CFO" },
-  { href: "/strategie", icon: Target, label: "Stratégie" },
-  { href: "/dashboard/equipe", icon: Users, label: "L'équipe" },
+  { label: "Tableau de bord", href: "/dashboard" },
+  { label: "Clients", href: "/clients" },
+  { label: "Devis", href: "/devis" },
+  { label: "Factures", href: "/factures" },
+  { label: "Emails", href: "/emails" },
+  { label: "Marketing", href: "/marketing" },
+  { label: "Rapports", href: "/rapports" },
+  { label: "Stratégie", href: "/strategie" },
+  { label: "L'équipe", href: "/equipe" },
+  { label: "Paramètres", href: "/parametres" },
 ];
 
 export default async function DashboardLayout({
@@ -39,66 +28,190 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nom_entreprise")
+    .select("nom_entreprise, plan")
     .eq("id", user.id)
     .single();
 
-  return (
-    <div className="flex h-screen bg-gray-50">
-      {/* SIDEBAR */}
-      <aside className="w-60 bg-white border-r border-gray-100 flex flex-col">
-        <div className="p-4 border-b border-gray-100">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-gray-900">Gestia</span>
-          </Link>
-        </div>
+  const nomEntreprise = profile?.nom_entreprise || "Mon Entreprise";
+  const initiale = nomEntreprise.charAt(0).toUpperCase();
 
-        <div className="p-3 border-b border-gray-100">
-          <div className="px-2 py-1.5">
-            <p className="text-xs text-gray-400">Entreprise</p>
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {profile?.nom_entreprise || "Mon Entreprise"}
-            </p>
+  return (
+    <div style={{ display: "flex", minHeight: "100vh", background: "var(--ivory)" }}>
+
+      <aside style={{
+        width: "260px",
+        flexShrink: 0,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        height: "100vh",
+        background: "var(--ivory)",
+        borderRight: "1px solid var(--line)",
+        display: "flex",
+        flexDirection: "column",
+        zIndex: 40,
+      }}>
+
+        <div style={{
+          padding: "20px",
+          borderBottom: "1px solid var(--line)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+            <div style={{
+              width: "32px", height: "32px",
+              background: "var(--ink)",
+              borderRadius: "8px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--ivory)",
+              fontFamily: "Instrument Serif, serif",
+              fontStyle: "italic",
+              fontSize: "18px",
+            }}>g</div>
+            <span style={{
+              fontFamily: "Instrument Serif, serif",
+              fontSize: "17px",
+              color: "var(--ink)",
+              letterSpacing: "-0.02em",
+            }}>Gestia</span>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            background: "var(--ivory-2)",
+            borderRadius: "10px",
+            padding: "8px 10px",
+          }}>
+            <div style={{
+              width: "28px", height: "28px",
+              background: "var(--ink)",
+              borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--ivory)",
+              fontFamily: "Instrument Serif, serif",
+              fontStyle: "italic",
+              fontSize: "14px",
+              flexShrink: 0,
+            }}>{initiale}</div>
+            <div style={{ minWidth: 0 }}>
+              <p style={{
+                fontSize: "12.5px",
+                fontWeight: 500,
+                color: "var(--ink)",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}>{nomEntreprise}</p>
+              <p style={{ fontSize: "10.5px", color: "var(--ink-3)" }}>
+                {profile?.plan === "pro" ? "Plan Pro" : "Plan Starter"}
+              </p>
+            </div>
           </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-0.5">
+        <nav style={{ flex: 1, padding: "12px 10px", overflowY: "auto" }}>
           {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </Link>
+            <NavItem key={item.href} href={item.href} label={item.label} />
           ))}
         </nav>
 
-        <div className="p-3 border-t border-gray-100 space-y-0.5">
-          <Link
-            href="/parametres"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-          >
-            <Settings className="w-4 h-4" />
-            Paramètres
-          </Link>
-          <form action="/api/auth/signout" method="POST">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-              <LogOut className="w-4 h-4" />
-              Déconnexion
-            </button>
-          </form>
+        <div style={{
+          padding: "14px 20px",
+          borderTop: "1px solid var(--line)",
+        }}>
+          <p style={{ fontSize: "9.5px", letterSpacing: "0.18em", color: "var(--ink-3)", textTransform: "uppercase", marginBottom: "6px" }}>
+            PROPULSÉ PAR
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{
+              width: "18px", height: "18px",
+              background: "var(--ink)",
+              borderRadius: "4px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--ivory)",
+              fontFamily: "Instrument Serif, serif",
+              fontStyle: "italic",
+              fontSize: "10px",
+            }}>g</div>
+            <span style={{ fontSize: "12px", fontWeight: 500, color: "var(--ink-2)" }}>Gestia</span>
+          </div>
         </div>
+
       </aside>
 
-      {/* CONTENU */}
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <div style={{ marginLeft: "260px", flex: 1, display: "flex", flexDirection: "column" }}>
+
+        <header style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 30,
+          height: "56px",
+          background: "rgba(251,248,243,0.90)",
+          backdropFilter: "blur(12px)",
+          borderBottom: "1px solid var(--line)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 40px",
+        }}>
+          <p style={{
+            fontSize: "11.5px",
+            fontFamily: "Geist Mono, monospace",
+            color: "var(--ink-3)",
+            letterSpacing: "0.04em",
+          }}>
+            gestia.fr / <span style={{ color: "var(--ink)" }}>dashboard</span>
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            <Link href="/parametres" style={{ fontSize: "13px", color: "var(--ink-2)", textDecoration: "none" }}>
+              Paramètres
+            </Link>
+            <form action="/api/auth/signout" method="POST">
+              <button type="submit" style={{
+                fontSize: "13px",
+                color: "var(--ink-2)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}>
+                Déconnexion
+              </button>
+            </form>
+          </div>
+        </header>
+
+        <main style={{ flex: 1, padding: "40px" }}>
+          {children}
+        </main>
+
+      </div>
     </div>
+  );
+}
+
+function NavItem({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        padding: "8px 12px",
+        borderRadius: "9px",
+        fontSize: "13.5px",
+        color: "var(--ink-2)",
+        textDecoration: "none",
+        marginBottom: "2px",
+        transition: "background 0.15s, color 0.15s",
+      }}
+      onMouseOver={(e) => {
+        (e.currentTarget as HTMLElement).style.background = "var(--ivory-2)";
+        (e.currentTarget as HTMLElement).style.color = "var(--ink)";
+      }}
+      onMouseOut={(e) => {
+        (e.currentTarget as HTMLElement).style.background = "transparent";
+        (e.currentTarget as HTMLElement).style.color = "var(--ink-2)";
+      }}
+    >
+      {label}
+    </Link>
   );
 }
