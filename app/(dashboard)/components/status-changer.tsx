@@ -24,16 +24,16 @@ const STATUTS_FACTURE = [
   { value: "annulee", label: "Annulée" },
 ];
 
-const COLORS: Record<string, React.CSSProperties> = {
-  brouillon: { background: "var(--line)", color: "var(--ink-3)" },
-  envoye:    { background: "var(--ivory-2)", color: "var(--ink-2)" },
-  envoyee:   { background: "var(--ivory-2)", color: "var(--ink-2)" },
-  accepte:   { background: "color-mix(in oklch, var(--accent) 12%, transparent)", color: "var(--accent)" },
-  payee:     { background: "color-mix(in oklch, var(--accent) 12%, transparent)", color: "var(--accent)" },
-  refuse:    { background: "#FEE2E2", color: "#991B1B" },
-  annulee:   { background: "#FEE2E2", color: "#991B1B" },
-  en_retard: { background: "#7a1d1d", color: "var(--ivory)" },
-  expire:    { background: "var(--line)", color: "var(--ink-3)" },
+const BADGE: Record<string, React.CSSProperties> = {
+  brouillon: { background: "#E2E8F0", color: "#475569", border: "1px solid #CBD5E1" },
+  envoye:    { background: "#DBEAFE", color: "#1D4ED8", border: "1px solid #93C5FD" },
+  envoyee:   { background: "#DBEAFE", color: "#1D4ED8", border: "1px solid #93C5FD" },
+  accepte:   { background: "#DCFCE7", color: "#15803D", border: "1px solid #86EFAC" },
+  payee:     { background: "#DCFCE7", color: "#15803D", border: "1px solid #86EFAC" },
+  refuse:    { background: "#FEE2E2", color: "#B91C1C", border: "1px solid #FCA5A5" },
+  annulee:   { background: "#F3F4F6", color: "#6B7280", border: "1px solid #D1D5DB" },
+  en_retard: { background: "#7F1D1D", color: "#FEF2F2", border: "1px solid #991B1B" },
+  expire:    { background: "#FEF3C7", color: "#92400E", border: "1px solid #FCD34D" },
 };
 
 export function StatusChanger({ type, id, statutActuel }: Props) {
@@ -66,7 +66,7 @@ export function StatusChanger({ type, id, statutActuel }: Props) {
           cursor: loading ? "not-allowed" : "pointer",
           fontFamily: "Geist Mono, monospace",
           display: "flex", alignItems: "center", gap: "5px",
-          ...(COLORS[statutActuel] || COLORS.brouillon),
+          ...(BADGE[statutActuel] || BADGE.brouillon),
         }}
       >
         {statuts.find(s => s.value === statutActuel)?.label || statutActuel}
@@ -95,7 +95,7 @@ export function StatusChanger({ type, id, statutActuel }: Props) {
                 onMouseOver={(e) => (e.currentTarget.style.background = "var(--ivory-2)")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "none")}
               >
-                <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", marginRight: "8px", ...COLORS[s.value] }} />
+                <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", marginRight: "8px", ...BADGE[s.value] }} />
                 {s.label}
               </button>
             ))}

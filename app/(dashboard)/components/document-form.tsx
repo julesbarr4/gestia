@@ -47,6 +47,11 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
   const [clientId, setClientId] = useState<string | undefined>();
   const [clientSiret, setClientSiret] = useState("");
   const [clientTva, setClientTva] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientTelephone, setClientTelephone] = useState("");
+  const [clientAdresse, setClientAdresse] = useState("");
+  const [clientCodePostal, setClientCodePostal] = useState("");
+  const [clientVille, setClientVille] = useState("");
   const [nouveauClientDetecte, setNouveauClientDetecte] = useState(false);
   const [enregistrementClient, setEnregistrementClient] = useState(false);
   const [clientEnregistre, setClientEnregistre] = useState(false);
@@ -83,6 +88,8 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     setClientEnregistre(false);
     if (client) {
       setClientSiret(client.siret || "");
+      setClientEmail(client.email || "");
+      setClientTelephone(client.telephone || "");
     } else if (!id) {
       setClientSiret("");
       setClientTva("");
@@ -139,7 +146,15 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     const res = await fetch("/api/clients", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom: nomClient, siret: clientSiret }),
+      body: JSON.stringify({
+        nom: nomClient,
+        siret: clientSiret || undefined,
+        email: clientEmail || undefined,
+        telephone: clientTelephone || undefined,
+        adresse: clientAdresse || undefined,
+        code_postal: clientCodePostal || undefined,
+        ville: clientVille || undefined,
+      }),
     });
     const data = await res.json();
     if (res.ok) {
@@ -160,6 +175,13 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     const payload = {
       clientId: clientId || null,
       nomClient,
+      clientEmail: clientEmail || null,
+      clientTelephone: clientTelephone || null,
+      clientAdresse: clientAdresse || null,
+      clientCodePostal: clientCodePostal || null,
+      clientVille: clientVille || null,
+      clientSiret: clientSiret || null,
+      clientTva: clientTva || null,
       lignes,
       totalHT,
       totalTVA: montantTVA,
@@ -293,6 +315,56 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
           <div>
             <label style={labelStyle}>N° TVA intracommunautaire</label>
             <input style={inputStyle} value={clientTva} onChange={(e) => setClientTva(e.target.value)} placeholder="FR 12 345678901" />
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "12px" }}>
+          <div>
+            <label style={labelStyle}>EMAIL CLIENT</label>
+            <input
+              style={inputStyle}
+              type="email"
+              value={clientEmail}
+              onChange={(e) => setClientEmail(e.target.value)}
+              placeholder="contact@exemple.fr"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>TÉLÉPHONE CLIENT</label>
+            <input
+              style={inputStyle}
+              value={clientTelephone}
+              onChange={(e) => setClientTelephone(e.target.value)}
+              placeholder="06 12 34 56 78"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>ADRESSE CLIENT</label>
+            <input
+              style={inputStyle}
+              value={clientAdresse}
+              onChange={(e) => setClientAdresse(e.target.value)}
+              placeholder="10 rue de la Paix"
+            />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "8px" }}>
+            <div>
+              <label style={labelStyle}>CODE POSTAL</label>
+              <input
+                style={inputStyle}
+                value={clientCodePostal}
+                onChange={(e) => setClientCodePostal(e.target.value)}
+                placeholder="75001"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>VILLE</label>
+              <input
+                style={inputStyle}
+                value={clientVille}
+                onChange={(e) => setClientVille(e.target.value)}
+                placeholder="Paris"
+              />
+            </div>
           </div>
         </div>
       </div>

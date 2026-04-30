@@ -8,9 +8,9 @@ const styles = StyleSheet.create({
   page: {
     fontFamily: "Helvetica",
     fontSize: 10,
-    paddingTop: 48,
-    paddingBottom: 48,
-    paddingHorizontal: 52,
+    paddingTop: 52,
+    paddingBottom: 52,
+    paddingHorizontal: 56,
     backgroundColor: "#FBF8F3",
     color: "#0E0E0E",
   },
@@ -18,77 +18,73 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 32,
-    paddingBottom: 20,
+    marginBottom: 36,
+    paddingBottom: 22,
     borderBottomWidth: 0.5,
     borderBottomColor: "#E5DFD2",
   },
-  logo: { fontSize: 20, fontFamily: "Helvetica-BoldOblique", color: "#0E0E0E" },
-  docType: {
-    fontSize: 9, letterSpacing: 2, color: "#8A8780",
-    textTransform: "uppercase", marginBottom: 4,
-  },
-  docNumber: { fontSize: 16, fontFamily: "Helvetica-Bold", color: "#0E0E0E" },
+  logo: { fontSize: 22, fontFamily: "Helvetica-BoldOblique", color: "#0E0E0E" },
+  docType: { fontSize: 8, letterSpacing: 2, color: "#8A8780", textTransform: "uppercase", marginBottom: 4 },
+  docNumber: { fontSize: 18, fontFamily: "Helvetica-Bold", color: "#0E0E0E" },
   parties: { flexDirection: "row", justifyContent: "space-between", marginBottom: 28 },
   partyBlock: { width: "47%" },
   partyLabel: { fontSize: 8, letterSpacing: 1.5, color: "#8A8780", textTransform: "uppercase", marginBottom: 6 },
   partyName: { fontSize: 12, fontFamily: "Helvetica-Bold", color: "#0E0E0E", marginBottom: 3 },
   partyDetail: { fontSize: 9, color: "#4A4A47", lineHeight: 1.5 },
   partyMono: { fontSize: 9, color: "#8A8780", fontFamily: "Courier", marginTop: 2 },
+  datesRow: { flexDirection: "row", marginBottom: 24, gap: 24 },
+  dateLabel: { fontSize: 8, letterSpacing: 1.5, color: "#8A8780", textTransform: "uppercase", marginBottom: 3 },
+  dateVal: { fontSize: 10, fontFamily: "Courier", color: "#0E0E0E" },
   tableHeader: {
     flexDirection: "row",
     backgroundColor: "#F4EFE6",
-    paddingVertical: 7,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 4,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
     borderBottomWidth: 0.5,
     borderBottomColor: "#E5DFD2",
   },
   tableLastRow: {
     flexDirection: "row",
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
   },
-  colDesc: { flex: 3, fontSize: 9, color: "#8A8780", textTransform: "uppercase", letterSpacing: 1 },
-  colQty: { width: 40, textAlign: "center", fontSize: 9, color: "#8A8780", textTransform: "uppercase", letterSpacing: 1 },
-  colPrice: { width: 75, textAlign: "right", fontSize: 9, color: "#8A8780", textTransform: "uppercase", letterSpacing: 1 },
-  colTotal: { width: 75, textAlign: "right", fontSize: 9, color: "#8A8780", textTransform: "uppercase", letterSpacing: 1 },
-  cellDesc: { flex: 3, fontSize: 10, color: "#0E0E0E" },
-  cellQty: { width: 40, textAlign: "center", fontSize: 10, color: "#4A4A47", fontFamily: "Courier" },
-  cellPrice: { width: 75, textAlign: "right", fontSize: 10, color: "#4A4A47", fontFamily: "Courier" },
-  cellTotal: { width: 75, textAlign: "right", fontSize: 10, fontFamily: "Helvetica-Bold", color: "#0E0E0E" },
+  colDesc:  { flex: 1, fontSize: 8, color: "#8A8780", textTransform: "uppercase", letterSpacing: 0.8 },
+  colQty:   { width: 36, textAlign: "center" as const, fontSize: 8, color: "#8A8780", textTransform: "uppercase", letterSpacing: 0.8 },
+  colPrice: { width: 90, textAlign: "right" as const, fontSize: 8, color: "#8A8780", textTransform: "uppercase", letterSpacing: 0.8 },
+  colTotal: { width: 90, textAlign: "right" as const, fontSize: 8, color: "#8A8780", textTransform: "uppercase", letterSpacing: 0.8 },
+  cellDesc:  { flex: 1, fontSize: 10, color: "#0E0E0E", lineHeight: 1.4 },
+  cellQty:   { width: 36, textAlign: "center" as const, fontSize: 10, color: "#4A4A47", fontFamily: "Courier" },
+  cellPrice: { width: 90, textAlign: "right" as const, fontSize: 10, color: "#4A4A47", fontFamily: "Courier" },
+  cellTotal: { width: 90, textAlign: "right" as const, fontSize: 10, fontFamily: "Helvetica-Bold", color: "#0E0E0E" },
   totalsBlock: {
-    marginTop: 16,
+    marginTop: 20,
     backgroundColor: "#F4EFE6",
-    padding: 14,
+    padding: 16,
     borderRadius: 6,
-    alignSelf: "flex-end",
-    width: 240,
+    alignSelf: "flex-end" as const,
+    width: 260,
   },
-  totalRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
+  totalRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 6 },
   totalLabel: { fontSize: 9, color: "#4A4A47" },
   totalVal: { fontSize: 9, fontFamily: "Courier", color: "#0E0E0E" },
-  totalDivider: { borderBottomWidth: 0.5, borderBottomColor: "#E5DFD2", marginVertical: 8 },
-  totalTTCLabel: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#0E0E0E" },
-  totalTTCVal: { fontSize: 14, fontFamily: "Helvetica-BoldOblique", color: "#0E0E0E" },
+  totalDivider: { borderBottomWidth: 0.5, borderBottomColor: "#E5DFD2", marginVertical: 10 },
+  totalTTCLabel: { fontSize: 12, fontFamily: "Helvetica-Bold", color: "#0E0E0E" },
+  totalTTCVal: { fontSize: 16, fontFamily: "Helvetica-BoldOblique", color: "#0E0E0E" },
   footer: {
-    marginTop: 28,
+    marginTop: 24,
     paddingTop: 14,
     borderTopWidth: 0.5,
     borderTopColor: "#E5DFD2",
   },
   footerText: { fontSize: 8, color: "#8A8780", lineHeight: 1.6 },
-  signature: { fontSize: 8, color: "#8A8780", marginTop: 10 },
-  datesRow: { flexDirection: "row", gap: 20, marginBottom: 24 },
-  dateBlock: {},
-  dateLabel: { fontSize: 8, letterSpacing: 1.5, color: "#8A8780", textTransform: "uppercase", marginBottom: 3 },
-  dateVal: { fontSize: 10, fontFamily: "Courier", color: "#0E0E0E" },
+  signature: { fontSize: 8, color: "#8A8780", fontStyle: "italic", marginTop: 8 },
 });
 
 interface Ligne {
@@ -130,7 +126,7 @@ interface DocumentPDFProps {
 }
 
 function euros(n: number): string {
-  return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+  return (n || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 }
 
 function DocumentPDF({
@@ -177,14 +173,14 @@ function DocumentPDF({
         </View>
 
         <View style={styles.datesRow}>
-          <View style={styles.dateBlock}>
+          <View style={{}}>
             <Text style={styles.dateLabel}>Date d&apos;émission</Text>
             <Text style={styles.dateVal}>
               {new Date(dateEmission).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
             </Text>
           </View>
           {dateValiditeOuEcheance && (
-            <View style={styles.dateBlock}>
+            <View style={{}}>
               <Text style={styles.dateLabel}>{dateSuffixLabel}</Text>
               <Text style={styles.dateVal}>
                 {new Date(dateValiditeOuEcheance).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
