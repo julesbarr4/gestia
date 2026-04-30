@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatEuros } from "@/lib/utils";
 import { StatusChanger } from "@/app/(dashboard)/components/status-changer";
 import { FactureActions } from "./facture-actions";
+import { BoutonPDF } from "@/app/(dashboard)/components/pdf-button-wrapper";
 
 export default async function FactureDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -70,6 +71,37 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+          <BoutonPDF
+            nomFichier={`${facture.numero}.pdf`}
+            type="facture"
+            numero={facture.numero}
+            dateEmission={facture.date_emission}
+            dateValiditeOuEcheance={facture.date_echeance}
+            emetteur={{
+              nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
+              adresse: profile?.adresse,
+              codePostal: profile?.code_postal,
+              ville: profile?.ville,
+              siret: profile?.siret,
+              email: profile?.email,
+            }}
+            client={{
+              nom: client?.nom || facture.titre || "Client",
+              adresse: client?.adresse,
+              codePostal: client?.code_postal,
+              ville: client?.ville,
+              siret: client?.siret,
+              email: client?.email,
+            }}
+            lignes={lignes}
+            totalHT={facture.total_ht}
+            totalTVA={facture.total_tva}
+            totalTTC={facture.total_ttc}
+            tauxTVA={facture.taux_tva}
+            conditions={facture.conditions}
+            notes={facture.notes}
+            genereParIA={facture.genere_par_ia}
+          />
           <StatusChanger type="facture" id={facture.id} statutActuel={facture.statut} />
           <FactureActions id={facture.id} />
         </div>
