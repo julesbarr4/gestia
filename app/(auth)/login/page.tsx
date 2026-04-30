@@ -4,7 +4,6 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Zap, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -31,62 +30,130 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-xl text-gray-900">Gestia</span>
+    <>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <form onSubmit={handleLogin} style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", minHeight: "100vh" }}>
+        <div style={{ background: "var(--ivory)", display: "flex", flexDirection: "column", justifyContent: "center", padding: "60px 64px", minHeight: "100vh" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", marginBottom: "56px" }}>
+            <div style={{ width: "28px", height: "28px", background: "var(--ink)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ivory)", fontFamily: "Instrument Serif, serif", fontStyle: "italic", fontSize: "16px" }}>g</div>
+            <span style={{ fontFamily: "Instrument Serif, serif", fontSize: "17px", color: "var(--ink)", letterSpacing: "-0.02em" }}>Gestia</span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Connexion</h1>
-          <p className="text-gray-500 text-sm mt-1">Bon retour parmi nous</p>
+
+          <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.18em", color: "var(--ink-3)", marginBottom: "12px", fontFamily: "Geist Mono, monospace" }}>ESPACE CLIENT</p>
+          <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "42px", lineHeight: 1.04, letterSpacing: "-0.02em", color: "var(--ink)", marginBottom: "8px" }}>
+            Bon retour<br /><em>parmi nous.</em>
+          </h1>
+          <p style={{ fontSize: "15px", color: "var(--ink-2)", marginBottom: "40px", lineHeight: 1.55 }}>
+            Connectez-vous à votre espace Gestia.
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px", maxWidth: "380px" }}>
+            {erreur && (
+              <div style={{ background: "#FEF2F2", color: "#991B1B", fontSize: "13px", padding: "10px 14px", borderRadius: "10px", border: "1px solid #FECACA" }}>
+                {erreur}
+              </div>
+            )}
+            <div>
+              <label style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ink-3)", display: "block", marginBottom: "6px" }}>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@exemple.fr"
+                required
+                style={{ width: "100%", padding: "11px 14px", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: "14.5px", background: "white", color: "var(--ink)", outline: "none", boxSizing: "border-box" }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ink-3)", display: "block", marginBottom: "6px" }}>Mot de passe</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                style={{ width: "100%", padding: "11px 14px", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: "14.5px", background: "white", color: "var(--ink)", outline: "none", boxSizing: "border-box" }}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%", padding: "13px", background: "var(--ink)", color: "var(--ivory)",
+                border: "none", borderRadius: "999px", fontSize: "14px", fontWeight: 500,
+                cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                marginTop: "6px",
+              }}
+            >
+              {loading && <span style={{ width: "14px", height: "14px", border: "2px solid rgba(251,248,243,0.4)", borderTopColor: "var(--ivory)", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block" }} />}
+              Se connecter →
+            </button>
+          </div>
+
+          <p style={{ fontSize: "13px", color: "var(--ink-3)", marginTop: "28px" }}>
+            Pas encore de compte ?{" "}
+            <Link href="/signup" style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+              Créer un compte gratuit
+            </Link>
+          </p>
+
+          <p style={{ fontSize: "11px", color: "var(--ink-3)", marginTop: "40px", fontFamily: "Geist Mono, monospace" }}>
+            © 2026 Gestia · JMB Trading · Connexion chiffrée ·{" "}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <span style={{ width: "5px", height: "5px", background: "var(--accent)", borderRadius: "50%", display: "inline-block" }} />
+              Données hébergées en France
+            </span>
+          </p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-          {erreur && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{erreur}</div>
-          )}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="vous@exemple.fr"
-            />
+        <div style={{
+          background: "var(--ink)", display: "flex", flexDirection: "column",
+          justifyContent: "center", padding: "60px 56px", position: "relative", overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute", top: "-100px", left: "-100px",
+            width: "400px", height: "400px", borderRadius: "50%",
+            background: "radial-gradient(circle, oklch(0.42 0.07 155) 0%, transparent 70%)",
+            opacity: 0.25,
+          }} />
+          <p style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.2em", color: "rgba(251,248,243,0.4)", marginBottom: "32px", fontFamily: "Geist Mono, monospace" }}>
+            PORTAIL GESTIA
+          </p>
+          <blockquote style={{
+            fontFamily: "Instrument Serif, serif", fontStyle: "italic",
+            fontSize: "32px", lineHeight: 1.2, color: "var(--ivory)",
+            marginBottom: "40px", letterSpacing: "-0.01em",
+          }}>
+            "J'économise 5h par semaine sur mon admin. Inès gère tout."
+          </blockquote>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "56px" }}>
+            <div style={{
+              width: "40px", height: "40px", borderRadius: "50%",
+              background: "oklch(0.42 0.07 155)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--ivory)", fontFamily: "Instrument Serif, serif",
+              fontStyle: "italic", fontSize: "18px",
+            }}>S</div>
+            <div>
+              <p style={{ fontSize: "14px", color: "var(--ivory)", fontWeight: 500 }}>Sophie M.</p>
+              <p style={{ fontSize: "12px", color: "rgba(251,248,243,0.5)", fontStyle: "italic" }}>Graphiste freelance</p>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
-            />
+          <div style={{ display: "flex", gap: "32px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "32px" }}>
+            {[
+              { val: "5h", label: "économisées / semaine" },
+              { val: "500+", label: "entrepreneurs actifs" },
+              { val: "98%", label: "de satisfaction" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "28px", color: "var(--ivory)", lineHeight: 1 }}>{s.val}</p>
+                <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.4)", marginTop: "4px" }}>{s.label}</p>
+              </div>
+            ))}
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Se connecter
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Pas encore de compte ?{" "}
-          <Link href="/signup" className="text-blue-600 font-medium hover:underline">
-            Créer un compte
-          </Link>
-        </p>
-      </div>
-    </div>
+        </div>
+      </form>
+    </>
   );
 }

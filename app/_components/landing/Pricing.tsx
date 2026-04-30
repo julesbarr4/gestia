@@ -5,7 +5,7 @@ const PLANS = [
   {
     name: "Starter",
     cible: "Freelances & micro-entrepreneurs",
-    monthly: 49,
+    monthly: 19,
     features: [
       "10 devis / mois par IA",
       "10 factures / mois",
@@ -19,7 +19,7 @@ const PLANS = [
   {
     name: "Pro",
     cible: "PME 1 à 10 salariés",
-    monthly: 99,
+    monthly: 39,
     features: [
       "Devis & factures illimités",
       "Agent support emails IA",
