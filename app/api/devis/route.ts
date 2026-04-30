@@ -12,6 +12,27 @@ export async function POST(req: NextRequest) {
     tauxTVA, conditionsPaiement, reference, notes, validite,
   } = body;
 
+  let clientIdFinal = clientId || null;
+
+  if (!clientIdFinal && body.nomClient?.trim()) {
+    const { data: nouveauClient } = await supabase
+      .from("clients")
+      .insert({
+        user_id: user.id,
+        nom: body.nomClient.trim(),
+        email: body.clientEmail || null,
+        telephone: body.clientTelephone || null,
+        adresse: body.clientAdresse || null,
+        code_postal: body.clientCodePostal || null,
+        ville: body.clientVille || null,
+        siret: body.clientSiret || null,
+      })
+      .select("id")
+      .single();
+
+    if (nouveauClient) clientIdFinal = nouveauClient.id;
+  }
+
   const numero = reference || `DEV-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
   const dateValidite = validite
     ? new Date(Date.now() + Number(validite) * 86400000).toISOString().split("T")[0]
@@ -21,7 +42,7 @@ export async function POST(req: NextRequest) {
     .from("devis")
     .insert({
       user_id: user.id,
-      client_id: clientId || null,
+      client_id: clientIdFinal,
       numero,
       titre: `Devis ${nomClient}`,
       statut: "brouillon",
