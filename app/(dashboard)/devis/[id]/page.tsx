@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatEuros } from "@/lib/utils";
 import { StatusChanger } from "@/app/(dashboard)/components/status-changer";
 import { DevisActions } from "./devis-actions";
+import { BoutonPDF } from "@/app/(dashboard)/components/pdf-button-wrapper";
 
 export default async function DevisDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -63,6 +64,37 @@ export default async function DevisDetailPage({ params }: { params: Promise<{ id
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+          <BoutonPDF
+            nomFichier={`${devis.numero}.pdf`}
+            type="devis"
+            numero={devis.numero}
+            dateEmission={devis.date_emission}
+            dateValiditeOuEcheance={devis.date_validite}
+            emetteur={{
+              nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
+              adresse: profile?.adresse,
+              codePostal: profile?.code_postal,
+              ville: profile?.ville,
+              siret: profile?.siret,
+              email: profile?.email,
+            }}
+            client={{
+              nom: client?.nom || devis.titre || "Client",
+              adresse: client?.adresse,
+              codePostal: client?.code_postal,
+              ville: client?.ville,
+              siret: client?.siret,
+              email: client?.email,
+            }}
+            lignes={lignes}
+            totalHT={devis.total_ht}
+            totalTVA={devis.total_tva}
+            totalTTC={devis.total_ttc}
+            tauxTVA={devis.taux_tva}
+            conditions={devis.conditions}
+            notes={devis.notes}
+            genereParIA={devis.genere_par_ia}
+          />
           <StatusChanger type="devis" id={devis.id} statutActuel={devis.statut} />
           <DevisActions id={devis.id} />
         </div>
