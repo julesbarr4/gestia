@@ -1,17 +1,24 @@
 export const dynamic = "force-dynamic";
-
 import { createClient } from "@/lib/supabase/server";
-import NouvelleFactureClient from "./nouvelle-facture-client";
+import { DocumentForm } from "@/app/(dashboard)/components/document-form";
 
 export default async function NouvelleFacturePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-
   const { data: clients } = await supabase
     .from("clients")
-    .select("id, nom, email, ville")
+    .select("id, nom, email, ville, siret, telephone")
     .eq("user_id", user!.id)
     .order("nom", { ascending: true });
 
-  return <NouvelleFactureClient clients={clients || []} />;
+  return (
+    <DocumentForm
+      type="facture"
+      clients={clients || []}
+      agentEndpoint="/api/agents/factures"
+      sauvegardeEndpoint="/api/factures"
+      retourHref="/factures"
+      titreIA="Générer avec Inès →"
+    />
+  );
 }
