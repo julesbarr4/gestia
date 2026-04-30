@@ -63,6 +63,23 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
           <p style={{ fontSize: "12px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace", marginTop: "6px" }}>
             Émise le {new Date(facture.date_emission).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
           </p>
+          {facture.devis_id && (
+            <a
+              href={`/devis/${facture.devis_id}`}
+              style={{
+                fontSize: "11px",
+                color: "var(--ink-3)",
+                textDecoration: "none",
+                fontFamily: "Geist Mono, monospace",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                marginTop: "4px",
+              }}
+            >
+              ← Devis d'origine
+            </a>
+          )}
           {facture.date_echeance && (
             <p style={{ fontSize: "12px", color: echeanceDepassee ? "#DC2626" : "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
               Échéance : {new Date(facture.date_echeance).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}

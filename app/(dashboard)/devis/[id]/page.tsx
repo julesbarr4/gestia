@@ -6,6 +6,7 @@ import { formatEuros } from "@/lib/utils";
 import { StatusChanger } from "@/app/(dashboard)/components/status-changer";
 import { DevisActions } from "./devis-actions";
 import { BoutonPDF } from "@/app/(dashboard)/components/pdf-button-wrapper";
+import { ConvertirEnFactureBtn } from "./convertir-btn";
 
 export default async function DevisDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,6 +21,13 @@ export default async function DevisDetailPage({ params }: { params: Promise<{ id
     .single();
 
   if (!devis) notFound();
+
+  const { data: factureExistante } = await supabase
+    .from("factures")
+    .select("id, numero")
+    .eq("devis_id", id)
+    .eq("user_id", user!.id)
+    .single();
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -96,6 +104,28 @@ export default async function DevisDetailPage({ params }: { params: Promise<{ id
             genereParIA={devis.genere_par_ia}
           />
           <StatusChanger type="devis" id={devis.id} statutActuel={devis.statut} />
+          {devis.statut === "accepte" && (
+            factureExistante ? (
+              <a
+                href={`/factures/${factureExistante.id}`}
+                style={{
+                  fontSize: "12px", color: "oklch(0.42 0.07 155)",
+                  background: "color-mix(in oklch, oklch(0.42 0.07 155) 12%, transparent)",
+                  border: "1px solid color-mix(in oklch, oklch(0.42 0.07 155) 30%, transparent)",
+                  borderRadius: "999px", padding: "6px 14px",
+                  textDecoration: "none", fontWeight: 500,
+                  display: "flex", alignItems: "center", gap: "5px",
+                }}
+              >
+                ✓ Voir la facture {factureExistante.numero}
+              </a>
+            ) : (
+              <ConvertirEnFactureBtn
+                devisId={devis.id}
+                devisNumero={devis.numero}
+              />
+            )
+          )}
           <DevisActions id={devis.id} />
         </div>
       </div>
