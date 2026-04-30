@@ -6,6 +6,7 @@ import { formatEuros } from "@/lib/utils";
 import { StatusChanger } from "@/app/(dashboard)/components/status-changer";
 import { FactureActions } from "./facture-actions";
 import { BoutonPDF } from "@/app/(dashboard)/components/pdf-button-wrapper";
+import { RelanceBtn } from "./relance-btn";
 
 export default async function FactureDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -83,7 +84,24 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
           {facture.date_echeance && (
             <p style={{ fontSize: "12px", color: echeanceDepassee ? "#DC2626" : "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
               Échéance : {new Date(facture.date_echeance).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-              {facture.nb_relances > 0 && ` · ${facture.nb_relances} relance(s) envoyée(s)`}
+            </p>
+          )}
+          {facture.nb_relances > 0 && facture.derniere_relance_at && (
+            <p style={{
+              fontSize: "11px",
+              color: "#92400E",
+              fontFamily: "Geist Mono, monospace",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+              background: "#FEF3C7",
+              border: "1px solid #FCD34D",
+              borderRadius: "999px",
+              padding: "2px 10px",
+              marginTop: "8px",
+            }}>
+              ✉ {facture.nb_relances} relance{facture.nb_relances > 1 ? "s" : ""} envoyée{facture.nb_relances > 1 ? "s" : ""}
+              · dernière le {new Date(facture.derniere_relance_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
             </p>
           )}
         </div>
@@ -120,6 +138,14 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
             genereParIA={facture.genere_par_ia}
           />
           <StatusChanger type="facture" id={facture.id} statutActuel={facture.statut} />
+          {(facture.statut === "envoyee" || facture.statut === "en_retard") && (
+            <RelanceBtn
+              factureId={facture.id}
+              factureNumero={facture.numero}
+              nbRelances={facture.nb_relances || 0}
+              emailClient={(facture.clients as { email?: string } | null)?.email}
+            />
+          )}
           <FactureActions id={facture.id} />
         </div>
       </div>
