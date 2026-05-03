@@ -51,7 +51,7 @@ function AgentCard({ agent }: { agent: (typeof AGENTS)[number] }) {
     <div className="rounded-2xl bg-[var(--ink)] text-[var(--ivory)] p-7 relative overflow-hidden">
       <div
         aria-hidden
-        className="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-30 blur-2xl pointer-events-none"
+        className="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-20 pointer-events-none"
         style={{ background: agent.color }}
       />
       <div className="relative">

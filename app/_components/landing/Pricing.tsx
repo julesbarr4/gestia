@@ -3,32 +3,45 @@ import { cn } from "@/lib/utils";
 
 const PLANS = [
   {
-    name: "Starter",
-    cible: "Freelances & micro-entrepreneurs",
-    monthly: 19,
+    name: "Gratuit",
+    cible: "Pour découvrir Gestia",
+    monthly: 0,
     features: [
-      "10 devis / mois par IA",
-      "10 factures / mois",
-      "Relances automatiques",
-      "Rapport financier hebdo",
-      "Support email",
+      "5 devis générés par Inès",
+      "5 factures générées par Inès",
+      "Export PDF professionnel",
+      "Accès au dashboard",
     ],
     cta: "Commencer gratuitement",
     featured: false,
   },
   {
-    name: "Pro",
-    cible: "PME 1 à 10 salariés",
-    monthly: 39,
+    name: "Essentiel",
+    cible: "Artisans & commerçants",
+    monthly: 19,
     features: [
       "Devis & factures illimités",
-      "Agent support emails IA",
-      "Contenu marketing IA",
-      "Analyse stratégique CEO IA",
-      "Support prioritaire",
+      "Inès (Admin) · Léa (Support)",
+      "Hugo (CFO) — rapport hebdo",
+      "Export PDF professionnel",
+      "Relances automatiques 3 niveaux",
     ],
-    cta: "Essai 14 jours gratuit",
+    cta: "Démarrer — 14 jours gratuits",
     featured: true,
+  },
+  {
+    name: "Pro",
+    cible: "TPE 2 à 10 salariés",
+    monthly: 39,
+    features: [
+      "Tout l'Essentiel",
+      "Cyprien (CMO) — contenu marketing",
+      "Augustin (CEO) — analyse stratégique",
+      "Support prioritaire",
+      "Accès API (bientôt)",
+    ],
+    cta: "Démarrer le Pro",
+    featured: false,
   },
 ];
 
@@ -51,7 +64,7 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-5 mt-14 max-w-[820px] mx-auto">
+        <div className="grid md:grid-cols-3 gap-5 mt-14">
           {PLANS.map((plan) => (
             <div
               key={plan.name}
@@ -78,18 +91,29 @@ export default function Pricing() {
               <div className="text-[26px] mb-6 font-serif">{plan.name}</div>
 
               <div className="flex items-baseline gap-1.5 mb-6">
-                <span
-                  className="font-mono text-[44px] tracking-tight"
-                  style={{ fontFeatureSettings: '"tnum"' }}
-                >
-                  {plan.monthly}€
-                </span>
-                <span
-                  className="text-[13px]"
-                  style={{ color: plan.featured ? "rgba(251,248,243,0.55)" : "var(--ink-3)" }}
-                >
-                  /mois
-                </span>
+                {plan.monthly === 0 ? (
+                  <span
+                    className="font-mono text-[44px] tracking-tight"
+                    style={{ fontFeatureSettings: '"tnum"' }}
+                  >
+                    Gratuit
+                  </span>
+                ) : (
+                  <>
+                    <span
+                      className="font-mono text-[44px] tracking-tight"
+                      style={{ fontFeatureSettings: '"tnum"' }}
+                    >
+                      {plan.monthly}€
+                    </span>
+                    <span
+                      className="text-[13px]"
+                      style={{ color: plan.featured ? "rgba(251,248,243,0.55)" : "var(--ink-3)" }}
+                    >
+                      /mois
+                    </span>
+                  </>
+                )}
               </div>
 
               <ul className="space-y-2.5 mb-7 flex-1">

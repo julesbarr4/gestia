@@ -1,4 +1,4 @@
-import { PublicShell } from "./components/public-layout";
+import Navbar from "./_components/landing/Navbar";
 import Hero from "./_components/landing/Hero";
 import LogoStrip from "./_components/landing/LogoStrip";
 import TeamSection from "./_components/landing/TeamSection";
@@ -9,10 +9,12 @@ import Pricing from "./_components/landing/Pricing";
 import Manifesto from "./_components/landing/Manifesto";
 import FAQ from "./_components/landing/FAQ";
 import FinalCTA from "./_components/landing/FinalCTA";
+import Footer from "./_components/landing/Footer";
 
 export default function LandingPage() {
   return (
-    <PublicShell>
+    <div style={{ minHeight: "100vh", background: "var(--ivory)" }}>
+      <Navbar />
       <main>
         <Hero />
         <LogoStrip />
@@ -25,6 +27,7 @@ export default function LandingPage() {
         <FAQ />
         <FinalCTA />
       </main>
-    </PublicShell>
+      <Footer />
+    </div>
   );
 }

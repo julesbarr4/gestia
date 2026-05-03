@@ -35,7 +35,7 @@ function Sparkline() {
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-[110px]" preserveAspectRatio="none">
       <defs>
-        <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="spark-fill-landing" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.18" />
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </linearGradient>
@@ -43,7 +43,7 @@ function Sparkline() {
       {[0.25, 0.5, 0.75].map((y, i) => (
         <line key={i} x1="0" x2={w} y1={h * y} y2={h * y} stroke="var(--line)" strokeDasharray="2,4" strokeWidth="1" />
       ))}
-      <path d={areaPath} fill="url(#spark-fill)" />
+      <path d={areaPath} fill="url(#spark-fill-landing)" />
       <path d={path} fill="none" stroke="var(--accent)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx={w} cy={lastY} r="3.5" fill="var(--accent)" />
       <circle cx={w} cy={lastY} r="6" fill="var(--accent)" opacity="0.2" />
