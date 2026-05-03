@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatEuros } from "@/lib/utils";
 
 export function SummaryCard({
   href,
@@ -76,6 +77,63 @@ export function SummaryCard({
       }}>
         Ouvrir →
       </p>
+    </a>
+  );
+}
+
+export function CaCard({ caEmis, caEmisPrec, caEncaisse }: {
+  caEmis: number;
+  caEmisPrec: number;
+  caEncaisse: number;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <a href="/factures" style={{ textDecoration: "none", display: "block" }}>
+      <div
+        style={{
+          background: "var(--ink)", borderRadius: "16px", padding: "24px",
+          cursor: "pointer",
+          transform: hovered ? "translateY(-2px)" : "translateY(0)",
+          boxShadow: hovered ? "0 18px 40px -22px rgba(14,14,14,0.35)" : "none",
+          transition: "transform 0.15s, box-shadow 0.15s",
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(251,248,243,0.5)", marginBottom: "16px" }}>
+          CA CE MOIS
+        </p>
+        <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "32px", color: "var(--ivory)", lineHeight: 1.06, marginBottom: "4px" }}>
+          {formatEuros(caEmis)}
+        </p>
+        {caEmisPrec > 0 && (
+          <p style={{
+            fontSize: "11px",
+            fontFamily: "Geist Mono, monospace",
+            color: caEmis >= caEmisPrec ? "oklch(0.42 0.07 155)" : "#DC2626",
+            marginTop: "4px",
+          }}>
+            {caEmis >= caEmisPrec ? "+" : ""}
+            {Math.round(((caEmis - caEmisPrec) / caEmisPrec) * 100)}% vs mois dernier
+          </p>
+        )}
+        {caEncaisse < caEmis && (
+          <p style={{ fontSize: "11px", fontFamily: "Geist Mono, monospace", color: "rgba(251,248,243,0.5)" }}>
+            {formatEuros(caEncaisse)} encaissé · {formatEuros(caEmis - caEncaisse)} à encaisser
+          </p>
+        )}
+        {caEncaisse === caEmis && caEmis > 0 && (
+          <p style={{ fontSize: "11px", color: "oklch(0.42 0.07 155)", fontFamily: "Geist Mono, monospace" }}>
+            ✓ Tout encaissé
+          </p>
+        )}
+        {caEmis === 0 && (
+          <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", fontFamily: "Geist Mono, monospace" }}>
+            Créez votre première facture
+          </p>
+        )}
+        <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", marginTop: "16px" }}>Ouvrir →</p>
+      </div>
     </a>
   );
 }

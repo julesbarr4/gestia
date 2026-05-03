@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatEuros } from "@/lib/utils";
 import Link from "next/link";
 import { AGENT_LABEL, AGENT_COLOR } from "@/lib/agents/team-data";
-import { SummaryCard, ActionLink } from "./dashboard-cards";
+import { SummaryCard, ActionLink, CaCard } from "./dashboard-cards";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -79,55 +79,7 @@ export default async function DashboardPage() {
         gap: "16px",
         marginBottom: "32px",
       }}>
-        <Link href="/factures" style={{ textDecoration: "none", display: "block" }}>
-          <div style={{
-            background: "var(--ink)", borderRadius: "16px", padding: "24px",
-            cursor: "pointer", transition: "transform 0.15s, box-shadow 0.15s",
-          }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 18px 40px -22px rgba(14,14,14,0.35)";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "none";
-            }}
-          >
-            <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(251,248,243,0.5)", marginBottom: "16px" }}>
-              CA CE MOIS
-            </p>
-            <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "32px", color: "var(--ivory)", lineHeight: 1.06, marginBottom: "4px" }}>
-              {formatEuros(caEmis)}
-            </p>
-            {caEmisPrec > 0 && (
-              <p style={{
-                fontSize: "11px",
-                fontFamily: "Geist Mono, monospace",
-                color: caEmis >= caEmisPrec ? "oklch(0.42 0.07 155)" : "#DC2626",
-                marginTop: "4px",
-              }}>
-                {caEmis >= caEmisPrec ? "+" : ""}
-                {Math.round(((caEmis - caEmisPrec) / caEmisPrec) * 100)}% vs mois dernier
-              </p>
-            )}
-            {caEncaisse < caEmis && (
-              <p style={{ fontSize: "11px", fontFamily: "Geist Mono, monospace", color: "rgba(251,248,243,0.5)" }}>
-                {formatEuros(caEncaisse)} encaissé · {formatEuros(caEmis - caEncaisse)} à encaisser
-              </p>
-            )}
-            {caEncaisse === caEmis && caEmis > 0 && (
-              <p style={{ fontSize: "11px", color: "oklch(0.42 0.07 155)", fontFamily: "Geist Mono, monospace" }}>
-                ✓ Tout encaissé
-              </p>
-            )}
-            {caEmis === 0 && (
-              <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", fontFamily: "Geist Mono, monospace" }}>
-                Créez votre première facture
-              </p>
-            )}
-            <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", marginTop: "16px" }}>Ouvrir →</p>
-          </div>
-        </Link>
+        <CaCard caEmis={caEmis} caEmisPrec={caEmisPrec} caEncaisse={caEncaisse} />
         <SummaryCard
           href="/factures"
           eyebrow="À ENCAISSER"
