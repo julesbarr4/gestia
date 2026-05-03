@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatEuros } from "@/lib/utils";
 import Link from "next/link";
 import { AGENT_LABEL, AGENT_COLOR } from "@/lib/agents/team-data";
-import { SummaryCard, ActionLink } from "./dashboard-cards";
+import { SummaryCard, ActionLink, CaCard } from "./dashboard-cards";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -12,7 +12,6 @@ export default async function DashboardPage() {
 
   const debutMois = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
   const debutMoisPrecedent = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString();
-  const finMoisPrecedent = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString();
 
   const [
     { count: nbClients },
@@ -28,16 +27,17 @@ export default async function DashboardPage() {
     supabase.from("devis").select("*", { count: "exact", head: true }).eq("user_id", user!.id),
     supabase.from("factures").select("*", { count: "exact", head: true }).eq("user_id", user!.id),
     supabase.from("factures").select("total_ttc, numero, statut, clients(nom)").eq("user_id", user!.id).in("statut", ["envoyee", "en_retard"]).order("created_at", { ascending: false }).limit(4),
-    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).eq("statut", "payee").gte("created_at", debutMois),
-    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).eq("statut", "payee").gte("created_at", debutMoisPrecedent).lte("created_at", finMoisPrecedent),
+    supabase.from("factures").select("total_ttc, statut").eq("user_id", user!.id).gte("created_at", debutMois),
+    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).gte("created_at", debutMoisPrecedent).lt("created_at", debutMois),
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
     supabase.from("profiles").select("nom_entreprise").eq("id", user!.id).single(),
   ]);
 
-  const caMois = (facturesMois || []).reduce((s, f) => s + f.total_ttc, 0);
-  const caMoisPrec = (facturesMoisPrec || []).reduce((s, f) => s + f.total_ttc, 0);
+  const toutesFacturesMois = facturesMois || [];
+  const caEncaisse = toutesFacturesMois.filter(f => f.statut === "payee").reduce((s, f) => s + f.total_ttc, 0);
+  const caEmis = toutesFacturesMois.reduce((s, f) => s + f.total_ttc, 0);
+  const caEmisPrec = (facturesMoisPrec || []).reduce((s, f) => s + f.total_ttc, 0);
   const montantImpaye = (facturesImpayees || []).reduce((s, f) => s + f.total_ttc, 0);
-  const progressionCA = caMoisPrec > 0 ? Math.round(((caMois - caMoisPrec) / caMoisPrec) * 100) : null;
 
   const dateAujourdhui = new Date().toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -79,14 +79,7 @@ export default async function DashboardPage() {
         gap: "16px",
         marginBottom: "32px",
       }}>
-        <SummaryCard
-          href="/rapports"
-          dark
-          eyebrow="CA CE MOIS"
-          value={formatEuros(caMois)}
-          sub={progressionCA !== null ? `${progressionCA >= 0 ? "+" : ""}${progressionCA}% vs mois dernier` : undefined}
-          subColor={progressionCA !== null ? (progressionCA >= 0 ? "oklch(0.42 0.07 155)" : "#ef4444") : undefined}
-        />
+        <CaCard caEmis={caEmis} caEmisPrec={caEmisPrec} caEncaisse={caEncaisse} />
         <SummaryCard
           href="/factures"
           eyebrow="À ENCAISSER"
