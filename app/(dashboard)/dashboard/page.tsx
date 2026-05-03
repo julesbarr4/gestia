@@ -12,7 +12,6 @@ export default async function DashboardPage() {
 
   const debutMois = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
   const debutMoisPrecedent = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString();
-  const finMoisPrecedent = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString();
 
   const [
     { count: nbClients },
@@ -28,16 +27,17 @@ export default async function DashboardPage() {
     supabase.from("devis").select("*", { count: "exact", head: true }).eq("user_id", user!.id),
     supabase.from("factures").select("*", { count: "exact", head: true }).eq("user_id", user!.id),
     supabase.from("factures").select("total_ttc, numero, statut, clients(nom)").eq("user_id", user!.id).in("statut", ["envoyee", "en_retard"]).order("created_at", { ascending: false }).limit(4),
-    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).eq("statut", "payee").gte("created_at", debutMois),
-    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).eq("statut", "payee").gte("created_at", debutMoisPrecedent).lte("created_at", finMoisPrecedent),
+    supabase.from("factures").select("total_ttc, statut").eq("user_id", user!.id).gte("created_at", debutMois),
+    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).gte("created_at", debutMoisPrecedent).lt("created_at", debutMois),
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
     supabase.from("profiles").select("nom_entreprise").eq("id", user!.id).single(),
   ]);
 
-  const caMois = (facturesMois || []).reduce((s, f) => s + f.total_ttc, 0);
-  const caMoisPrec = (facturesMoisPrec || []).reduce((s, f) => s + f.total_ttc, 0);
+  const toutesFacturesMois = facturesMois || [];
+  const caEncaisse = toutesFacturesMois.filter(f => f.statut === "payee").reduce((s, f) => s + f.total_ttc, 0);
+  const caEmis = toutesFacturesMois.reduce((s, f) => s + f.total_ttc, 0);
+  const caEmisPrec = (facturesMoisPrec || []).reduce((s, f) => s + f.total_ttc, 0);
   const montantImpaye = (facturesImpayees || []).reduce((s, f) => s + f.total_ttc, 0);
-  const progressionCA = caMoisPrec > 0 ? Math.round(((caMois - caMoisPrec) / caMoisPrec) * 100) : null;
 
   const dateAujourdhui = new Date().toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -79,14 +79,55 @@ export default async function DashboardPage() {
         gap: "16px",
         marginBottom: "32px",
       }}>
-        <SummaryCard
-          href="/rapports"
-          dark
-          eyebrow="CA CE MOIS"
-          value={formatEuros(caMois)}
-          sub={progressionCA !== null ? `${progressionCA >= 0 ? "+" : ""}${progressionCA}% vs mois dernier` : undefined}
-          subColor={progressionCA !== null ? (progressionCA >= 0 ? "oklch(0.42 0.07 155)" : "#ef4444") : undefined}
-        />
+        <Link href="/factures" style={{ textDecoration: "none", display: "block" }}>
+          <div style={{
+            background: "var(--ink)", borderRadius: "16px", padding: "24px",
+            cursor: "pointer", transition: "transform 0.15s, box-shadow 0.15s",
+          }}
+            onMouseOver={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+              (e.currentTarget as HTMLElement).style.boxShadow = "0 18px 40px -22px rgba(14,14,14,0.35)";
+            }}
+            onMouseOut={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+              (e.currentTarget as HTMLElement).style.boxShadow = "none";
+            }}
+          >
+            <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "rgba(251,248,243,0.5)", marginBottom: "16px" }}>
+              CA CE MOIS
+            </p>
+            <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "32px", color: "var(--ivory)", lineHeight: 1.06, marginBottom: "4px" }}>
+              {formatEuros(caEmis)}
+            </p>
+            {caEmisPrec > 0 && (
+              <p style={{
+                fontSize: "11px",
+                fontFamily: "Geist Mono, monospace",
+                color: caEmis >= caEmisPrec ? "oklch(0.42 0.07 155)" : "#DC2626",
+                marginTop: "4px",
+              }}>
+                {caEmis >= caEmisPrec ? "+" : ""}
+                {Math.round(((caEmis - caEmisPrec) / caEmisPrec) * 100)}% vs mois dernier
+              </p>
+            )}
+            {caEncaisse < caEmis && (
+              <p style={{ fontSize: "11px", fontFamily: "Geist Mono, monospace", color: "rgba(251,248,243,0.5)" }}>
+                {formatEuros(caEncaisse)} encaissé · {formatEuros(caEmis - caEncaisse)} à encaisser
+              </p>
+            )}
+            {caEncaisse === caEmis && caEmis > 0 && (
+              <p style={{ fontSize: "11px", color: "oklch(0.42 0.07 155)", fontFamily: "Geist Mono, monospace" }}>
+                ✓ Tout encaissé
+              </p>
+            )}
+            {caEmis === 0 && (
+              <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", fontFamily: "Geist Mono, monospace" }}>
+                Créez votre première facture
+              </p>
+            )}
+            <p style={{ fontSize: "11px", color: "rgba(251,248,243,0.35)", marginTop: "16px" }}>Ouvrir →</p>
+          </div>
+        </Link>
         <SummaryCard
           href="/factures"
           eyebrow="À ENCAISSER"

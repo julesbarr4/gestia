@@ -48,30 +48,20 @@ export default async function DevisPage() {
       </div>
 
       {(!devis || devis.length === 0) ? (
-        <div style={{ textAlign: "center", padding: "80px 0" }}>
-          <h2 style={{ fontFamily: "Instrument Serif, serif", fontSize: "24px", fontWeight: 400, color: "var(--ink-3)", marginBottom: "16px" }}>
-            Aucun <span style={{ fontStyle: "italic" }}>devis</span> pour l&apos;instant
-          </h2>
-          <p style={{ fontSize: "13px", color: "var(--ink-3)", fontFamily: "Geist, sans-serif", marginBottom: "24px" }}>
-            Inès génère votre premier devis professionnel en 30 secondes.
+        <div style={{ textAlign: "center", padding: "80px 24px" }}>
+          <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "24px", color: "var(--ink)", marginBottom: "10px" }}>
+            Aucun devis pour le moment.
           </p>
-          <Link
-            href="/devis/nouveau"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              background: "var(--ink)",
-              color: "var(--ivory)",
-              borderRadius: "999px",
-              padding: "10px 20px",
-              fontSize: "13px",
-              fontFamily: "Geist, sans-serif",
-              textDecoration: "none",
-            }}
-          >
-            Créer mon premier devis →
-          </Link>
+          <p style={{ fontSize: "14px", color: "var(--ink-3)", marginBottom: "28px", lineHeight: 1.6 }}>
+            Inès est prête à générer votre premier devis<br/>en moins de 30 secondes.
+          </p>
+          <a href="/devis/nouveau" style={{
+            background: "var(--ink)", color: "var(--ivory)", border: "none",
+            borderRadius: "999px", padding: "11px 24px", fontSize: "13.5px",
+            fontWeight: 500, textDecoration: "none", display: "inline-block",
+          }}>
+            Générer mon premier devis →
+          </a>
         </div>
       ) : (
         <DevisListe devis={devis} />
