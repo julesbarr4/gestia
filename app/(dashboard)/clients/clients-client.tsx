@@ -83,13 +83,17 @@ export default function ClientsClient({ clients: initialClients }: { clients: Cl
           {clients.map((client, i) => (
             <div
               key={client.id}
+              onClick={() => router.push(`/clients/${client.id}`)}
               style={{
                 display: "grid",
                 gridTemplateColumns: "2fr 1.5fr 1fr 1fr 80px",
                 padding: "16px 24px",
                 alignItems: "center",
                 borderBottom: i < clients.length - 1 ? "1px solid var(--line)" : "none",
+                cursor: "pointer",
               }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "var(--ivory-2)")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             >
               <div>
                 <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "15px", color: "var(--ink)" }}>{client.nom}</p>
@@ -101,13 +105,13 @@ export default function ClientsClient({ clients: initialClients }: { clients: Cl
 
               <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
                 <button
-                  onClick={() => { setClientEdit(client); setShowModal(true); }}
+                  onClick={(e) => { e.stopPropagation(); setClientEdit(client); setShowModal(true); }}
                   style={{ padding: "5px 12px", background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "999px", fontSize: "11.5px", color: "var(--ink-2)", cursor: "pointer" }}
                 >
                   Modifier
                 </button>
                 <button
-                  onClick={() => setConfirmDelete(client.id)}
+                  onClick={(e) => { e.stopPropagation(); setConfirmDelete(client.id); }}
                   style={{ padding: "5px 12px", background: "transparent", border: "1px solid #FECACA", borderRadius: "999px", fontSize: "11.5px", color: "#DC2626", cursor: "pointer" }}
                 >
                   ×
