@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Tableau de bord" },
   { href: "/clients", label: "Clients" },
   { href: "/devis", label: "Devis" },
+  { href: "/modeles", label: "Modèles" },
   { href: "/factures", label: "Factures" },
   { href: "/emails", label: "Emails" },
   { href: "/marketing", label: "Marketing" },

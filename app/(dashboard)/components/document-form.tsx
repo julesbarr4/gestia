@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ClientSelector } from "./client-selector";
 import { formatEuros } from "@/lib/utils";
@@ -69,6 +69,18 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
   const [validite, setValidite] = useState(type === "devis" ? "30" : "");
 
   const [notes, setNotes] = useState("");
+  const [modeles, setModeles] = useState<Array<{
+    id: string;
+    nom: string;
+    description?: string;
+    lignes: Ligne[];
+    taux_tva: number;
+    conditions?: string;
+    notes?: string;
+    utilise_count: number;
+  }>>([]);
+  const [loadingModeles, setLoadingModeles] = useState(false);
+  const [showModeles, setShowModeles] = useState(false);
   const [loadingIA, setLoadingIA] = useState(false);
   const [loadingSauvegarde, setLoadingSauvegarde] = useState(false);
   const [erreur, setErreur] = useState("");
@@ -80,6 +92,33 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
   const montantEscompte = totalTTC * (tauxEscompte / 100);
   const montantAcompte = (totalTTC - montantEscompte) * (tauxAcompte / 100);
   const resteAPayer = totalTTC - montantEscompte - montantAcompte;
+
+  useEffect(() => {
+    async function chargerModeles() {
+      setLoadingModeles(true);
+      const res = await fetch("/api/modeles");
+      if (res.ok) {
+        const data = await res.json();
+        setModeles(data.modeles || []);
+      }
+      setLoadingModeles(false);
+    }
+    chargerModeles();
+  }, []);
+
+  async function appliquerModele(modele: typeof modeles[0]) {
+    setLignes(modele.lignes.map(l => ({ ...l, totalHT: l.quantite * l.prixUnitaireHT })));
+    setTauxTVA(modele.taux_tva);
+    if (modele.conditions) setConditionsPaiement(modele.conditions);
+    if (modele.notes) setNotes(modele.notes);
+    setShowModeles(false);
+
+    await fetch(`/api/modeles/${modele.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ utilise_count: modele.utilise_count + 1 }),
+    });
+  }
 
   function handleClientChange(nom: string, id?: string, client?: Client) {
     setNomClient(nom);
@@ -270,6 +309,75 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
       {erreur && (
         <div style={{ background: "#FEF2F2", color: "#991B1B", fontSize: "13px", padding: "10px 14px", borderRadius: "12px", border: "1px solid #FECACA", marginBottom: "16px" }}>
           {erreur}
+        </div>
+      )}
+
+      {modeles.length > 0 && (
+        <div style={{ marginBottom: "16px" }}>
+          {!showModeles ? (
+            <button
+              type="button"
+              onClick={() => setShowModeles(true)}
+              style={{
+                display: "flex", alignItems: "center", gap: "8px",
+                fontSize: "13px", color: "var(--ink-2)",
+                background: "var(--ivory-2)", border: "1px solid var(--line)",
+                borderRadius: "12px", padding: "10px 16px", cursor: "pointer",
+                width: "100%",
+              }}
+            >
+              <span style={{ fontSize: "16px" }}>☆</span>
+              <span>Utiliser un modèle existant ({modeles.length})</span>
+              <span style={{ marginLeft: "auto", fontSize: "11px", color: "var(--ink-3)" }}>▾</span>
+            </button>
+          ) : (
+            <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", overflow: "hidden" }}>
+              <div style={{ padding: "14px 18px", background: "var(--ivory-2)", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
+                  VOS MODÈLES
+                </p>
+                <button type="button" onClick={() => setShowModeles(false)} style={{ background: "none", border: "none", color: "var(--ink-3)", cursor: "pointer", fontSize: "18px" }}>×</button>
+              </div>
+              {loadingModeles ? (
+                <div style={{ padding: "20px", textAlign: "center", color: "var(--ink-3)", fontSize: "13px" }}>Chargement...</div>
+              ) : (
+                <div>
+                  {modeles.map((m, i) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => appliquerModele(m)}
+                      style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        width: "100%", padding: "14px 18px",
+                        background: "none", border: "none",
+                        borderBottom: i < modeles.length - 1 ? "1px solid var(--line)" : "none",
+                        cursor: "pointer", textAlign: "left" as const,
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.background = "var(--ivory-2)")}
+                      onMouseOut={(e) => (e.currentTarget.style.background = "none")}
+                    >
+                      <div>
+                        <p style={{ fontSize: "14px", fontFamily: "Instrument Serif, serif", color: "var(--ink)", marginBottom: "2px" }}>{m.nom}</p>
+                        {m.description && <p style={{ fontSize: "11px", color: "var(--ink-3)" }}>{m.description}</p>}
+                        <p style={{ fontSize: "11px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace", marginTop: "2px" }}>
+                          {m.lignes.length} ligne{m.lignes.length > 1 ? "s" : ""} · TVA {m.taux_tva}%
+                        </p>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                        {m.utilise_count > 0 && (
+                          <span style={{ fontSize: "10px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
+                            ×{m.utilise_count}
+                          </span>
+                        )}
+                        <span style={{ fontSize: "12px", color: "var(--ink-2)" }}>Utiliser →</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
