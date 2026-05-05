@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     supabase.from("factures").select("total_ttc, statut").eq("user_id", user!.id).gte("created_at", debutMois),
     supabase.from("factures").select("total_ttc").eq("user_id", user!.id).gte("created_at", debutMoisPrecedent).lt("created_at", debutMois),
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
-    supabase.from("profiles").select("nom_entreprise").eq("id", user!.id).single(),
+    supabase.from("profiles").select("nom_entreprise, siret, numero_tva").eq("id", user!.id).single(),
   ]);
 
   const toutesFacturesMois = facturesMois || [];
@@ -39,12 +39,40 @@ export default async function DashboardPage() {
   const caEmisPrec = (facturesMoisPrec || []).reduce((s, f) => s + f.total_ttc, 0);
   const montantImpaye = (facturesImpayees || []).reduce((s, f) => s + f.total_ttc, 0);
 
+  const infosManquantes = !profile?.siret || !profile?.numero_tva;
+
   const dateAujourdhui = new Date().toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
   return (
     <div style={{ maxWidth: "1100px" }}>
+
+      {infosManquantes && (
+        <div style={{
+          background: "#FFFBEB", border: "1px solid #FCD34D",
+          borderRadius: "12px", padding: "12px 16px",
+          marginBottom: "20px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+        }}>
+          <div>
+            <p style={{ fontSize: "13px", color: "#92400E", fontWeight: 500 }}>
+              ⚠️ Informations manquantes pour la conformité RFE 2026
+            </p>
+            <p style={{ fontSize: "12px", color: "#B45309", marginTop: "2px" }}>
+              Complétez votre SIRET et numéro de TVA dans les paramètres pour que vos factures soient conformes.
+            </p>
+          </div>
+          <a href="/parametres" style={{
+            fontSize: "12px", color: "#92400E", background: "#FEF3C7",
+            border: "1px solid #FCD34D", borderRadius: "999px",
+            padding: "6px 14px", textDecoration: "none", flexShrink: 0,
+            fontWeight: 500,
+          }}>
+            Compléter →
+          </a>
+        </div>
+      )}
 
       <div style={{ marginBottom: "40px" }}>
         <p style={{
