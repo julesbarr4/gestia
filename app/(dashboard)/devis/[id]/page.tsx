@@ -7,6 +7,7 @@ import { StatusChanger } from "@/app/(dashboard)/components/status-changer";
 import { DevisActions } from "./devis-actions";
 import { BoutonPDF } from "@/app/(dashboard)/components/pdf-button-wrapper";
 import { ConvertirEnFactureBtn } from "./convertir-btn";
+import { SauvegarderModeleBtn } from "./sauvegarder-modele-btn";
 
 export default async function DevisDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -72,6 +73,13 @@ export default async function DevisDetailPage({ params }: { params: Promise<{ id
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+          <SauvegarderModeleBtn
+            lignes={lignes}
+            tauxTVA={devis.taux_tva}
+            conditions={devis.conditions}
+            notes={devis.notes}
+            nomSuggere={devis.titre?.replace("Devis ", "") || ""}
+          />
           <BoutonPDF
             nomFichier={`${devis.numero}.pdf`}
             type="devis"
