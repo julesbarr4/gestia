@@ -19,7 +19,7 @@ const NAV_ITEMS: Array<{
   { href: "/marketing", label: "Mon contenu" },
   { href: "/strategie", label: "Mon plan" },
 
-  { href: "/equipe", label: "L'équipe Gestia", separator: true },
+  { href: "/dashboard/equipe", label: "L'équipe Gestia", separator: true },
   { href: "/parametres", label: "Mon compte" },
 ];
 
