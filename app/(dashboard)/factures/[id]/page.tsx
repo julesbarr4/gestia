@@ -24,7 +24,7 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nom_entreprise, adresse, code_postal, ville, siret, telephone, email")
+    .select("nom_entreprise, adresse, code_postal, ville, siret, email, telephone, numero_tva, iban, bic, site_web, couleur_principale, mention_rge, mention_assurance, mention_garantie, mention_tva_debits, type_operation, mention_legale_custom, pied_de_page")
     .eq("id", user!.id)
     .single();
 
@@ -119,6 +119,19 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
               ville: profile?.ville,
               siret: profile?.siret,
               email: profile?.email,
+              telephone: profile?.telephone,
+              numeroTva: profile?.numero_tva,
+              iban: profile?.iban,
+              bic: profile?.bic,
+              siteWeb: profile?.site_web,
+              couleurPrincipale: profile?.couleur_principale,
+              mentionRge: profile?.mention_rge,
+              mentionAssurance: profile?.mention_assurance,
+              mentionGarantie: profile?.mention_garantie,
+              mentionTvaDebits: profile?.mention_tva_debits,
+              typeOperation: profile?.type_operation,
+              mentionLegaleCustom: profile?.mention_legale_custom,
+              piedDePage: profile?.pied_de_page,
             }}
             client={{
               nom: client?.nom || facture.titre || "Client",
@@ -127,6 +140,7 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
               ville: client?.ville,
               siret: client?.siret,
               email: client?.email,
+              numeroTva: (client as { numeroTva?: string } | null)?.numeroTva,
             }}
             lignes={lignes}
             totalHT={facture.total_ht}

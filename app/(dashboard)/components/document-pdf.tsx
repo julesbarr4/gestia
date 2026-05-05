@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   partyDetail: { fontSize: 9, color: "#4A4A47", lineHeight: 1.5 },
   partyMono: { fontSize: 9, color: "#8A8780", fontFamily: "Courier", marginTop: 2 },
   datesRow: { flexDirection: "row", marginBottom: 24, gap: 24 },
+  dateBlock: {},
   dateLabel: { fontSize: 8, letterSpacing: 1.5, color: "#8A8780", textTransform: "uppercase", marginBottom: 3 },
   dateVal: { fontSize: 10, fontFamily: "Courier", color: "#0E0E0E" },
   tableHeader: {
@@ -106,6 +107,19 @@ interface DocumentPDFProps {
     ville?: string | null;
     siret?: string | null;
     email?: string | null;
+    numeroTva?: string | null;
+    telephone?: string | null;
+    siteWeb?: string | null;
+    iban?: string | null;
+    bic?: string | null;
+    couleurPrincipale?: string | null;
+    mentionRge?: string | null;
+    mentionAssurance?: string | null;
+    mentionGarantie?: string | null;
+    mentionTvaDebits?: boolean | null;
+    typeOperation?: string | null;
+    mentionLegaleCustom?: string | null;
+    piedDePage?: string | null;
   };
   client: {
     nom: string;
@@ -114,6 +128,7 @@ interface DocumentPDFProps {
     ville?: string | null;
     siret?: string | null;
     email?: string | null;
+    numeroTva?: string | null;
   };
   lignes: Ligne[];
   totalHT: number;
@@ -129,6 +144,12 @@ function euros(n: number): string {
   return (n || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
 }
 
+const typeOpLabel: Record<string, string> = {
+  prestations: "Prestation de services",
+  biens: "Livraison de biens",
+  mixte: "Prestations de services et livraisons de biens",
+};
+
 function DocumentPDF({
   type, numero, dateEmission, dateValiditeOuEcheance,
   emetteur, client, lignes, totalHT, totalTVA, totalTTC,
@@ -136,13 +157,17 @@ function DocumentPDF({
 }: DocumentPDFProps) {
   const typeLabel = type === "devis" ? "DEVIS" : "FACTURE";
   const dateSuffixLabel = type === "devis" ? "Validité" : "Échéance";
+  const couleur = emetteur.couleurPrincipale || "#0E0E0E";
 
   return (
     <Document title={`${typeLabel} ${numero}`} author={emetteur.nomEntreprise}>
       <Page size="A4" style={styles.page}>
 
         <View style={styles.header}>
-          <Text style={styles.logo}>Gestia</Text>
+          <View>
+            <Text style={{ ...styles.logo, color: couleur }}>Gestia</Text>
+            <Text style={{ fontSize: 9, color: "#8A8780", marginTop: 2 }}>{emetteur.nomEntreprise}</Text>
+          </View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={styles.docType}>{typeLabel}</Text>
             <Text style={styles.docNumber}>{numero}</Text>
@@ -158,7 +183,10 @@ function DocumentPDF({
               <Text style={styles.partyDetail}>{emetteur.codePostal} {emetteur.ville}</Text>
             )}
             {emetteur.siret && <Text style={styles.partyMono}>SIRET {emetteur.siret}</Text>}
+            {emetteur.numeroTva && <Text style={styles.partyMono}>TVA {emetteur.numeroTva}</Text>}
+            {emetteur.telephone && <Text style={styles.partyMono}>{emetteur.telephone}</Text>}
             {emetteur.email && <Text style={styles.partyMono}>{emetteur.email}</Text>}
+            {emetteur.siteWeb && <Text style={styles.partyMono}>{emetteur.siteWeb}</Text>}
           </View>
           <View style={styles.partyBlock}>
             <Text style={styles.partyLabel}>Client</Text>
@@ -168,28 +196,35 @@ function DocumentPDF({
               <Text style={styles.partyDetail}>{client.codePostal} {client.ville}</Text>
             )}
             {client.siret && <Text style={styles.partyMono}>SIRET {client.siret}</Text>}
+            {client.numeroTva && <Text style={styles.partyMono}>TVA {client.numeroTva}</Text>}
             {client.email && <Text style={styles.partyMono}>{client.email}</Text>}
           </View>
         </View>
 
-        <View style={styles.datesRow}>
-          <View style={{}}>
+        <View style={{ ...styles.datesRow, flexDirection: "row", flexWrap: "wrap" }}>
+          <View style={styles.dateBlock}>
             <Text style={styles.dateLabel}>Date d&apos;émission</Text>
             <Text style={styles.dateVal}>
               {new Date(dateEmission).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
             </Text>
           </View>
           {dateValiditeOuEcheance && (
-            <View style={{}}>
+            <View style={{ ...styles.dateBlock, marginLeft: 24 }}>
               <Text style={styles.dateLabel}>{dateSuffixLabel}</Text>
               <Text style={styles.dateVal}>
                 {new Date(dateValiditeOuEcheance).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
               </Text>
             </View>
           )}
+          {emetteur.typeOperation && (
+            <View style={{ ...styles.dateBlock, marginLeft: 24 }}>
+              <Text style={styles.dateLabel}>Catégorie (RFE 2026)</Text>
+              <Text style={styles.dateVal}>{typeOpLabel[emetteur.typeOperation] || emetteur.typeOperation}</Text>
+            </View>
+          )}
         </View>
 
-        <View style={styles.tableHeader}>
+        <View style={{ ...styles.tableHeader, backgroundColor: couleur + "18" }}>
           <Text style={styles.colDesc}>Description</Text>
           <Text style={styles.colQty}>Qté</Text>
           <Text style={styles.colPrice}>Prix HT</Text>
@@ -211,9 +246,16 @@ function DocumentPDF({
             <Text style={styles.totalVal}>{euros(totalHT)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>TVA {tauxTVA}%</Text>
+            <Text style={styles.totalLabel}>TVA {tauxTVA}%{emetteur.mentionTvaDebits ? " (sur débits)" : ""}</Text>
             <Text style={styles.totalVal}>{euros(totalTVA)}</Text>
           </View>
+          {emetteur.mentionTvaDebits && (
+            <View style={styles.totalRow}>
+              <Text style={{ ...styles.totalLabel, fontSize: 7, color: "#8A8780" }}>
+                TVA acquittée sur les débits (option exercée)
+              </Text>
+            </View>
+          )}
           <View style={styles.totalDivider} />
           <View style={styles.totalRow}>
             <Text style={styles.totalTTCLabel}>Total TTC</Text>
@@ -221,26 +263,42 @@ function DocumentPDF({
           </View>
         </View>
 
-        {(conditions || notes) && (
-          <View style={styles.footer}>
+        {(conditions || emetteur.iban) && (
+          <View style={{ ...styles.footer, marginTop: 16 }}>
             {conditions && (
               <Text style={styles.footerText}>
                 Conditions de paiement : {conditions}
               </Text>
             )}
-            {notes && <Text style={styles.footerText}>{notes}</Text>}
+            {emetteur.iban && (
+              <Text style={{ ...styles.footerText, marginTop: 4 }}>
+                Règlement par virement : IBAN {emetteur.iban}{emetteur.bic ? ` — BIC ${emetteur.bic}` : ""}
+              </Text>
+            )}
           </View>
         )}
 
-        <View style={{ ...styles.footer, marginTop: 20 }}>
+        <View style={{ ...styles.footer, marginTop: 12 }}>
           <Text style={styles.footerText}>
-            En cas de retard de paiement, des pénalités de 3× le taux légal s&apos;appliquent,
-            ainsi qu&apos;une indemnité forfaitaire de recouvrement de 40€ (art. L441-10 C. com.).
+            En cas de retard de paiement, des pénalités de 3× le taux d&apos;intérêt légal s&apos;appliquent, ainsi qu&apos;une indemnité forfaitaire de recouvrement de 40€ (art. L441-10 C. com.).
           </Text>
+          {emetteur.mentionRge && (
+            <Text style={{ ...styles.footerText, marginTop: 4 }}>{emetteur.mentionRge}</Text>
+          )}
+          {emetteur.mentionAssurance && (
+            <Text style={{ ...styles.footerText, marginTop: 4 }}>{emetteur.mentionAssurance}</Text>
+          )}
+          {emetteur.mentionGarantie && (
+            <Text style={{ ...styles.footerText, marginTop: 4 }}>{emetteur.mentionGarantie}</Text>
+          )}
+          {emetteur.mentionLegaleCustom && (
+            <Text style={{ ...styles.footerText, marginTop: 4 }}>{emetteur.mentionLegaleCustom}</Text>
+          )}
+          {emetteur.piedDePage && (
+            <Text style={{ ...styles.footerText, marginTop: 8, fontStyle: "italic" }}>{emetteur.piedDePage}</Text>
+          )}
           {genereParIA && (
-            <Text style={styles.signature}>
-              — Généré par Inès, votre assistante administrative Gestia
-            </Text>
+            <Text style={styles.signature}>— Généré par Inès, votre assistante administrative Gestia</Text>
           )}
         </View>
 
