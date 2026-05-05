@@ -66,3 +66,18 @@ html, body {
 *::-webkit-scrollbar { width: 10px; height: 10px; }
 *::-webkit-scrollbar-thumb { background: var(--line); border-radius: 6px; }
 *::-webkit-scrollbar-track { background: transparent; }
+
+/* ── RESPONSIVE MOBILE ── */
+@media (max-width: 768px) {
+  .hidden-mobile { display: none !important; }
+  .show-mobile { display: flex !important; }
+  .dashboard-main { margin-left: 0 !important; }
+  .dashboard-content { padding: 16px !important; padding-bottom: 80px !important; }
+  .grid-mobile-col { grid-template-columns: 1fr !important; }
+}
+
+@media (min-width: 769px) {
+  .hidden-mobile { display: flex !important; }
+  nav[data-bottom-nav] { display: none !important; }
+  .dashboard-main { margin-left: 240px !important; }
+}
