@@ -153,10 +153,19 @@ export function generateFacturXML(data: FacturXData): string {
     .txt(formatDate(data.dateEmission));
 
   const settlement = tx.ele("ram:ApplicableHeaderTradeSettlement");
-  if (data.emetteurNumeroTva) {
-    settlement.ele("ram:CreditorReferenceID").txt(data.emetteurNumeroTva);
-  }
+
   settlement.ele("ram:InvoiceCurrencyCode").txt("EUR");
+
+  if (data.iban) {
+    const payMeans = settlement.ele("ram:SpecifiedTradeSettlementPaymentMeans");
+    payMeans.ele("ram:TypeCode").txt("58");
+    payMeans.ele("ram:PayeePartyCreditorFinancialAccount")
+      .ele("ram:IBANID").txt(data.iban.replace(/\s/g, ""));
+    if (data.bic) {
+      payMeans.ele("ram:PayeeSpecifiedCreditorFinancialInstitution")
+        .ele("ram:BICID").txt(data.bic);
+    }
+  }
 
   const tvaInfo = getTVACategory(data.tauxTVA);
   const tax = settlement.ele("ram:ApplicableTradeTax");
@@ -180,17 +189,6 @@ export function generateFacturXML(data: FacturXData): string {
   } else {
     paymentTerms.ele("ram:Description")
       .txt(data.conditions || "Paiement à réception de facture");
-  }
-
-  if (data.iban) {
-    const payMeans = settlement.ele("ram:SpecifiedTradeSettlementPaymentMeans");
-    payMeans.ele("ram:TypeCode").txt("58");
-    payMeans.ele("ram:PayeePartyCreditorFinancialAccount")
-      .ele("ram:IBANID").txt(data.iban.replace(/\s/g, ""));
-    if (data.bic) {
-      payMeans.ele("ram:PayeeSpecifiedCreditorFinancialInstitution")
-        .ele("ram:BICID").txt(data.bic);
-    }
   }
 
   const summary = settlement.ele("ram:SpecifiedTradeSettlementHeaderMonetarySummation");
