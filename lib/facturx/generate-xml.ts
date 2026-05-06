@@ -45,6 +45,20 @@ function formatDate(dateStr: string): string {
   return dateStr.replace(/-/g, "");
 }
 
+function getTVACategory(taux: number): { code: string; exemptionCode?: string; exemptionReason?: string } {
+  if (taux === 20 || taux === 10 || taux === 5.5 || taux === 2.1) {
+    return { code: "S" };
+  }
+  if (taux === 0) {
+    return {
+      code: "E",
+      exemptionCode: "VATEX-EU-132",
+      exemptionReason: "TVA non applicable, art. 293 B du CGI",
+    };
+  }
+  return { code: "S" };
+}
+
 export function generateFacturXML(data: FacturXData): string {
   const doc = create({ version: "1.0", encoding: "UTF-8" })
     .ele("rsm:CrossIndustryInvoice", {
@@ -84,12 +98,14 @@ export function generateFacturXML(data: FacturXData): string {
       .ele("ram:BilledQuantity", { unitCode: "C62" })
       .txt(ligne.quantite.toFixed(2));
     const lineTax = lineItem.ele("ram:SpecifiedLineTradeSettlement");
-    lineTax.ele("ram:ApplicableTradeTax")
-      .ele("ram:TypeCode").txt("VAT")
-      .up()
-      .ele("ram:CategoryCode").txt(ligne.tauxTVA === 0 ? "AE" : "S")
-      .up()
-      .ele("ram:RateApplicablePercent").txt(ligne.tauxTVA.toFixed(2));
+    const ligneTVA = getTVACategory(ligne.tauxTVA);
+    const lineTaxDetails = lineTax.ele("ram:ApplicableTradeTax");
+    lineTaxDetails.ele("ram:TypeCode").txt("VAT");
+    if (ligneTVA.exemptionReason) {
+      lineTaxDetails.ele("ram:ExemptionReason").txt(ligneTVA.exemptionReason);
+    }
+    lineTaxDetails.ele("ram:CategoryCode").txt(ligneTVA.code);
+    lineTaxDetails.ele("ram:RateApplicablePercent").txt(ligne.tauxTVA.toFixed(2));
     lineTax.ele("ram:SpecifiedTradeSettlementLineMonetarySummation")
       .ele("ram:LineTotalAmount").txt(ligne.totalHT.toFixed(2));
   });
@@ -142,21 +158,28 @@ export function generateFacturXML(data: FacturXData): string {
   }
   settlement.ele("ram:InvoiceCurrencyCode").txt("EUR");
 
+  const tvaInfo = getTVACategory(data.tauxTVA);
   const tax = settlement.ele("ram:ApplicableTradeTax");
   tax.ele("ram:CalculatedAmount").txt(data.totalTVA.toFixed(2));
   tax.ele("ram:TypeCode").txt("VAT");
-  if (data.mentionTvaDebits) {
-    tax.ele("ram:DueDateTypeCode").txt("72");
+  if (tvaInfo.exemptionReason) {
+    tax.ele("ram:ExemptionReason").txt(tvaInfo.exemptionReason);
   }
   tax.ele("ram:BasisAmount").txt(data.totalHT.toFixed(2));
-  tax.ele("ram:CategoryCode").txt(data.tauxTVA === 0 ? "AE" : "S");
+  tax.ele("ram:CategoryCode").txt(tvaInfo.code);
+  if (tvaInfo.code === "S" && data.mentionTvaDebits) {
+    tax.ele("ram:DueDateTypeCode").txt("72");
+  }
   tax.ele("ram:RateApplicablePercent").txt(data.tauxTVA.toFixed(2));
 
+  const paymentTerms = settlement.ele("ram:SpecifiedTradePaymentTerms");
   if (data.dateEcheance) {
-    settlement.ele("ram:SpecifiedTradePaymentTerms")
-      .ele("ram:DueDateDateTime")
+    paymentTerms.ele("ram:DueDateDateTime")
       .ele("udt:DateTimeString", { format: "102" })
       .txt(formatDate(data.dateEcheance));
+  } else {
+    paymentTerms.ele("ram:Description")
+      .txt(data.conditions || "Paiement à réception de facture");
   }
 
   if (data.iban) {
