@@ -58,7 +58,7 @@ export function generateFacturXML(data: FacturXData): string {
   const ctx = doc.ele("rsm:ExchangedDocumentContext");
   ctx.ele("ram:GuidelineSpecifiedDocumentContextParameter")
     .ele("ram:ID")
-    .txt("urn:factur-x.eu:1p0:basic");
+    .txt("urn:cen.eu:en16931:2017#compliant#urn:factur-x.eu:1p0:basic");
 
   const header = doc.ele("rsm:ExchangedDocument");
   header.ele("ram:ID").txt(data.numero);
@@ -97,42 +97,44 @@ export function generateFacturXML(data: FacturXData): string {
   const agreement = tx.ele("ram:ApplicableHeaderTradeAgreement");
 
   const seller = agreement.ele("ram:SellerTradeParty");
+  if (data.emetteurSiret) {
+    seller.ele("ram:GlobalID", { schemeID: "0002" }).txt(data.emetteurSiret);
+  }
   seller.ele("ram:Name").txt(data.emetteurNom);
+  if (data.emetteurAdresse || data.emetteurCodePostal || data.emetteurVille) {
+    const sellerAddr = seller.ele("ram:PostalTradeAddress");
+    sellerAddr.ele("ram:PostcodeCode").txt(data.emetteurCodePostal || "");
+    sellerAddr.ele("ram:LineOne").txt(data.emetteurAdresse || "");
+    sellerAddr.ele("ram:CityName").txt(data.emetteurVille || "");
+    sellerAddr.ele("ram:CountryID").txt(data.emetteurPays || "FR");
+  }
   if (data.emetteurNumeroTva) {
     seller.ele("ram:SpecifiedTaxRegistration")
       .ele("ram:ID", { schemeID: "VA" }).txt(data.emetteurNumeroTva);
   }
-  if (data.emetteurSiret) {
-    seller.ele("ram:SpecifiedTaxRegistration")
-      .ele("ram:ID", { schemeID: "FC" }).txt(data.emetteurSiret);
-  }
-  if (data.emetteurAdresse) {
-    const sellerAddr = seller.ele("ram:PostalTradeAddress");
-    if (data.emetteurCodePostal) sellerAddr.ele("ram:PostcodeCode").txt(data.emetteurCodePostal);
-    if (data.emetteurAdresse) sellerAddr.ele("ram:LineOne").txt(data.emetteurAdresse);
-    if (data.emetteurVille) sellerAddr.ele("ram:CityName").txt(data.emetteurVille);
-    sellerAddr.ele("ram:CountryID").txt(data.emetteurPays || "FR");
-  }
 
   const buyer = agreement.ele("ram:BuyerTradeParty");
+  if (data.clientSiret) {
+    buyer.ele("ram:GlobalID", { schemeID: "0002" }).txt(data.clientSiret);
+  }
   buyer.ele("ram:Name").txt(data.clientNom);
+  if (data.clientAdresse || data.clientCodePostal || data.clientVille) {
+    const buyerAddr = buyer.ele("ram:PostalTradeAddress");
+    buyerAddr.ele("ram:PostcodeCode").txt(data.clientCodePostal || "");
+    buyerAddr.ele("ram:LineOne").txt(data.clientAdresse || "");
+    buyerAddr.ele("ram:CityName").txt(data.clientVille || "");
+    buyerAddr.ele("ram:CountryID").txt(data.clientPays || "FR");
+  }
   if (data.clientNumeroTva) {
     buyer.ele("ram:SpecifiedTaxRegistration")
       .ele("ram:ID", { schemeID: "VA" }).txt(data.clientNumeroTva);
   }
-  if (data.clientSiret) {
-    buyer.ele("ram:SpecifiedTaxRegistration")
-      .ele("ram:ID", { schemeID: "FC" }).txt(data.clientSiret);
-  }
-  if (data.clientAdresse) {
-    const buyerAddr = buyer.ele("ram:PostalTradeAddress");
-    if (data.clientCodePostal) buyerAddr.ele("ram:PostcodeCode").txt(data.clientCodePostal);
-    buyerAddr.ele("ram:LineOne").txt(data.clientAdresse);
-    if (data.clientVille) buyerAddr.ele("ram:CityName").txt(data.clientVille);
-    buyerAddr.ele("ram:CountryID").txt(data.clientPays || "FR");
-  }
 
-  tx.ele("ram:ApplicableHeaderTradeDelivery");
+  const delivery = tx.ele("ram:ApplicableHeaderTradeDelivery");
+  delivery.ele("ram:ActualDeliverySupplyChainEvent")
+    .ele("ram:OccurrenceDateTime")
+    .ele("udt:DateTimeString", { format: "102" })
+    .txt(formatDate(data.dateEmission));
 
   const settlement = tx.ele("ram:ApplicableHeaderTradeSettlement");
   if (data.emetteurNumeroTva) {
