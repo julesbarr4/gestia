@@ -388,6 +388,43 @@ export default function ParametresClient({ profile, email }: Props) {
           </p>
         </div>
 
+        <div style={{
+          background: "var(--ivory-2)", border: "1px solid var(--line)",
+          borderRadius: "16px", padding: "24px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+            <span style={{
+              fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.14em",
+              background: "color-mix(in oklch, var(--accent) 12%, transparent)",
+              color: "var(--accent)", padding: "3px 10px", borderRadius: "999px",
+              fontFamily: "Geist Mono, monospace",
+            }}>RFE 2026</span>
+            <h2 style={{ fontFamily: "Instrument Serif, serif", fontSize: "17px", color: "var(--ink)" }}>
+              Réforme de la Facturation Électronique
+            </h2>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              { date: "1er sept. 2026", desc: "Obligation de RECEVOIR des factures électroniques — toutes entreprises" },
+              { date: "1er sept. 2027", desc: "Obligation d'ÉMETTRE des factures électroniques — TPE/PME/auto-entrepreneurs" },
+            ].map((item) => (
+              <div key={item.date} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
+                <span style={{ fontSize: "10.5px", fontFamily: "Geist Mono, monospace", color: "var(--accent)", flexShrink: 0, marginTop: "1px" }}>
+                  {item.date}
+                </span>
+                <p style={{ fontSize: "13px", color: "var(--ink-2)", lineHeight: 1.5 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: "14px", padding: "12px 14px", background: "white", borderRadius: "10px", border: "1px solid var(--line)" }}>
+            <p style={{ fontSize: "12px", color: "var(--ink-2)", lineHeight: 1.6 }}>
+              <strong style={{ color: "var(--ink)" }}>Gestia génère déjà le format Factur-X</strong> (PDF visuel + XML CII embarqué, profil BASIC, conforme EN 16931).
+              Pour l&apos;émission obligatoire en 2027, vous devrez également transmettre via une <strong>Plateforme Agréée (PDP)</strong>.
+              Gestia intégrera cette fonctionnalité avant septembre 2027.
+            </p>
+          </div>
+        </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <button
             type="submit"
