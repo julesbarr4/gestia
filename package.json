@@ -32,7 +32,8 @@
     "react-dom": "^19.0.0",
     "stripe": "^17.7.0",
     "tailwind-merge": "^3.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "xmlbuilder2": "^4.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",

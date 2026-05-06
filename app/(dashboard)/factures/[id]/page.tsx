@@ -7,6 +7,7 @@ import { StatusChanger } from "@/app/(dashboard)/components/status-changer";
 import { FactureActions } from "./facture-actions";
 import { BoutonPDF } from "@/app/(dashboard)/components/pdf-button-wrapper";
 import { RelanceBtn } from "./relance-btn";
+import { FacturXBtn } from "./facturx-btn";
 
 export default async function FactureDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -64,6 +65,17 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
           <p style={{ fontSize: "12px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace", marginTop: "6px" }}>
             Émise le {new Date(facture.date_emission).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
           </p>
+          {profile?.siret && (
+            <span style={{
+              fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.14em",
+              background: "color-mix(in oklch, var(--accent) 12%, transparent)",
+              color: "var(--accent)", padding: "3px 10px", borderRadius: "999px",
+              fontFamily: "Geist Mono, monospace", border: "1px solid color-mix(in oklch, var(--accent) 30%, transparent)",
+              display: "inline-block", marginTop: "6px",
+            }}>
+              ✓ Factur-X 2026
+            </span>
+          )}
           {facture.devis_id && (
             <a
               href={`/devis/${facture.devis_id}`}
@@ -150,6 +162,11 @@ export default async function FactureDetailPage({ params }: { params: Promise<{ 
             conditions={facture.conditions}
             notes={facture.notes}
             genereParIA={facture.genere_par_ia}
+          />
+          <FacturXBtn
+            factureId={facture.id}
+            factureNumero={facture.numero}
+            hasSiret={!!profile?.siret}
           />
           <StatusChanger type="facture" id={facture.id} statutActuel={facture.statut} />
           {(facture.statut === "envoyee" || facture.statut === "en_retard") && (
