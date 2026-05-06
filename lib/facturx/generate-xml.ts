@@ -161,10 +161,6 @@ export function generateFacturXML(data: FacturXData): string {
     payMeans.ele("ram:TypeCode").txt("58");
     payMeans.ele("ram:PayeePartyCreditorFinancialAccount")
       .ele("ram:IBANID").txt(data.iban.replace(/\s/g, ""));
-    if (data.bic) {
-      payMeans.ele("ram:PayeeSpecifiedCreditorFinancialInstitution")
-        .ele("ram:BICID").txt(data.bic);
-    }
   }
 
   const tvaInfo = getTVACategory(data.tauxTVA);
