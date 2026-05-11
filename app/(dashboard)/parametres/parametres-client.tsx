@@ -3,6 +3,22 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
+function ManageSubscriptionBtn() {
+  const [loading, setLoading] = useState(false);
+  async function gerer() {
+    setLoading(true);
+    const res = await fetch("/api/stripe/portal", { method: "POST" });
+    const data = await res.json();
+    if (res.ok) window.location.href = data.url;
+    setLoading(false);
+  }
+  return (
+    <button onClick={gerer} disabled={loading} style={{ fontSize: "12px", color: "var(--ivory)", background: "var(--ink)", border: "none", borderRadius: "999px", padding: "7px 14px", cursor: "pointer" }}>
+      {loading ? "..." : "Gérer →"}
+    </button>
+  );
+}
+
 interface Profile {
   nom_entreprise?: string | null;
   siret?: string | null;
@@ -12,6 +28,7 @@ interface Profile {
   ville?: string | null;
   plan?: string | null;
   abonnement_actif?: boolean | null;
+  abonnement_fin_periode?: string | null;
   numero_tva?: string | null;
   iban?: string | null;
   bic?: string | null;
@@ -357,35 +374,40 @@ export default function ParametresClient({ profile, email }: Props) {
           </div>
         </div>
 
-        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "32px" }}>
-          <p style={{ fontSize: "10.5px", fontFamily: "Geist, sans-serif", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontWeight: 500, marginBottom: "20px" }}>
-            PLAN ACTUEL
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
-            <span style={{
-              display: "inline-block",
-              background: "color-mix(in oklch, var(--accent) 14%, transparent)",
-              color: "var(--accent)",
-              borderRadius: "999px",
-              padding: "4px 14px",
-              fontSize: "11px",
-              fontFamily: "Geist, sans-serif",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              fontWeight: 600,
-            }}>
-              {profile?.plan === "pro" ? "Pro" : "Starter"}
-            </span>
-            <span style={{ fontSize: "13px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)" }}>
-              {profile?.abonnement_actif ? "Abonnement actif" : "Période d'essai"}
-            </span>
+        <div style={{ background: "white", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px" }}>
+          <h2 style={{ fontFamily: "Instrument Serif, serif", fontSize: "18px", color: "var(--ink)", marginBottom: "16px" }}>
+            Mon abonnement
+          </h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                <span style={{
+                  fontSize: "14px", fontWeight: 500, color: "var(--ink)",
+                  textTransform: "capitalize",
+                }}>
+                  Plan {profile?.plan || "Starter"}
+                </span>
+                {profile?.abonnement_actif && (
+                  <span style={{ fontSize: "10px", background: "color-mix(in oklch, var(--accent) 12%, transparent)", color: "var(--accent)", padding: "2px 8px", borderRadius: "999px", fontFamily: "Geist Mono, monospace", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                    Actif
+                  </span>
+                )}
+              </div>
+              {profile?.abonnement_fin_periode && (
+                <p style={{ fontSize: "12px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
+                  Prochain renouvellement : {new Date(profile.abonnement_fin_periode).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                </p>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <a href="/upgrade" style={{ fontSize: "12px", color: "var(--ink-2)", background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "999px", padding: "7px 14px", textDecoration: "none" }}>
+                Changer de plan
+              </a>
+              {profile?.abonnement_actif && (
+                <ManageSubscriptionBtn />
+              )}
+            </div>
           </div>
-          <p style={{ fontSize: "12px", fontFamily: "Geist, sans-serif", color: "var(--ink-3)" }}>
-            Pour changer de plan, contactez-nous à{" "}
-            <a href="mailto:contact@gestia.fr" style={{ color: "var(--accent)", textDecoration: "none" }}>
-              contact@gestia.fr
-            </a>
-          </p>
         </div>
 
         <div style={{

@@ -20,6 +20,7 @@ const NAV_ITEMS: Array<{
   { href: "/strategie", label: "Mon plan" },
 
   { href: "/dashboard/equipe", label: "L'équipe Gestia", separator: true },
+  { href: "/upgrade", label: "⭐ Changer de plan", separator: true },
   { href: "/parametres", label: "Mon compte" },
 ];
 
