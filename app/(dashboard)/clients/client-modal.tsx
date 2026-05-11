@@ -10,6 +10,7 @@ interface ClientForm {
   code_postal: string;
   ville: string;
   siret: string;
+  numero_tva: string;
   notes: string;
 }
 
@@ -37,6 +38,7 @@ const CHAMPS = [
   { name: "code_postal", label: "CODE POSTAL", placeholder: "75001", required: false, colSpan: 1 },
   { name: "ville", label: "VILLE", placeholder: "Paris", required: false, colSpan: 1 },
   { name: "siret", label: "SIRET", placeholder: "123 456 789 00012", required: false, colSpan: 1 },
+  { name: "numero_tva", label: "N° TVA", placeholder: "FR 12 345678901", required: false, colSpan: 1 },
   { name: "notes", label: "NOTES", placeholder: "Informations complémentaires...", required: false, colSpan: 2, textarea: true },
 ];
 
@@ -50,6 +52,7 @@ export function ClientModal({ client, onClose, onSuccess }: Props) {
     code_postal: client?.code_postal || "",
     ville: client?.ville || "",
     siret: client?.siret || "",
+    numero_tva: (client as { numero_tva?: string | null } | null | undefined)?.numero_tva || "",
     notes: client?.notes || "",
   });
   const [loading, setLoading] = useState(false);
