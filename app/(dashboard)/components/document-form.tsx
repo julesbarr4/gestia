@@ -9,9 +9,11 @@ interface Client {
   id: string;
   nom: string;
   email?: string | null;
+  telephone?: string | null;
   ville?: string | null;
   siret?: string | null;
-  telephone?: string | null;
+  adresse?: string | null;
+  code_postal?: string | null;
   numero_tva?: string | null;
 }
 
@@ -126,16 +128,23 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     setClientId(id);
     setNouveauClientDetecte(!id && nom.trim().length > 0);
     setClientEnregistre(false);
+
     if (client) {
       setClientSiret(client.siret || "");
+      setClientTva(client.numero_tva || "");
       setClientEmail(client.email || "");
       setClientTelephone(client.telephone || "");
-      setClientTva(client.numero_tva || "");
+      setClientAdresse(client.adresse || "");
+      setClientCodePostal(client.code_postal || "");
+      setClientVille(client.ville || "");
     } else if (!id) {
       setClientSiret("");
       setClientTva("");
       setClientEmail("");
       setClientTelephone("");
+      setClientAdresse("");
+      setClientCodePostal("");
+      setClientVille("");
     }
   }
 
