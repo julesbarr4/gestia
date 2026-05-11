@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     supabase.from("factures").select("total_ttc, numero, statut, clients(nom)").eq("user_id", user!.id).in("statut", ["envoyee", "en_retard"]).order("created_at", { ascending: false }).limit(4),
     supabase.from("factures").select("total_ttc, statut, date_emission, date_echeance").eq("user_id", user!.id),
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
-    supabase.from("profiles").select("nom_entreprise, siret, numero_tva").eq("id", user!.id).single(),
+    supabase.from("profiles").select("nom_entreprise, siret, numero_tva, plan").eq("id", user!.id).single(),
   ]);
 
   const toutesFactures = toutesFacturesData || [];
@@ -53,6 +53,24 @@ export default async function DashboardPage() {
 
   return (
     <div style={{ maxWidth: "1100px" }}>
+
+      {profile?.plan === "starter" && (
+        <div style={{
+          background: "var(--ivory-2)", border: "1px solid var(--line)",
+          borderRadius: "12px", padding: "12px 16px", marginBottom: "20px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+        }}>
+          <p style={{ fontSize: "13px", color: "var(--ink-2)" }}>
+            Plan gratuit · <strong style={{ color: "var(--ink)" }}>5 générations restantes</strong>
+          </p>
+          <a href="/upgrade" style={{
+            fontSize: "12px", color: "var(--ivory)", background: "var(--ink)",
+            borderRadius: "999px", padding: "6px 14px", textDecoration: "none", fontWeight: 500,
+          }}>
+            Passer à l&apos;Essentiel →
+          </a>
+        </div>
+      )}
 
       {infosManquantes && (
         <div style={{
