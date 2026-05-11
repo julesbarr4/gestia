@@ -408,27 +408,6 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
 
         <ClientSelector clients={clients} value={nomClient} clientId={clientId} onChange={handleClientChange} />
 
-        {nouveauClientDetecte && !clientEnregistre && nomClient.trim().length > 1 && (
-          <div style={{ marginTop: "12px", padding: "12px 14px", background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-            <div>
-              <p style={{ fontSize: "12.5px", color: "var(--ink)", fontWeight: 500 }}>
-                &ldquo;{nomClient}&rdquo; n&rsquo;est pas encore dans vos clients.
-              </p>
-              <p style={{ fontSize: "11px", color: "var(--ink-3)", marginTop: "2px" }}>
-                Voulez-vous l&rsquo;enregistrer pour le retrouver facilement&nbsp;?
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-              <button type="button" onClick={() => setNouveauClientDetecte(false)} style={{ fontSize: "12px", color: "var(--ink-3)", background: "none", border: "1px solid var(--line)", borderRadius: "999px", padding: "5px 12px", cursor: "pointer" }}>
-                Ignorer
-              </button>
-              <button type="button" onClick={enregistrerNouveauClient} disabled={enregistrementClient} style={{ fontSize: "12px", color: "var(--ivory)", background: "var(--ink)", border: "none", borderRadius: "999px", padding: "5px 14px", cursor: "pointer" }}>
-                {enregistrementClient ? "..." : "Enregistrer →"}
-              </button>
-            </div>
-          </div>
-        )}
-
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "14px" }}>
           <div>
             <label style={labelStyle}>SIRET client</label>
@@ -489,6 +468,28 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
             </div>
           </div>
         </div>
+
+        {nouveauClientDetecte && !clientEnregistre && nomClient.trim().length > 1 &&
+         (clientSiret || clientEmail || clientTelephone || clientAdresse || clientVille || clientTva) && (
+          <div style={{ marginTop: "14px", padding: "12px 14px", background: "var(--ivory-2)", border: "1px solid var(--line)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+            <div>
+              <p style={{ fontSize: "12.5px", color: "var(--ink)", fontWeight: 500 }}>
+                &ldquo;{nomClient}&rdquo; n&rsquo;est pas encore dans vos clients.
+              </p>
+              <p style={{ fontSize: "11px", color: "var(--ink-3)", marginTop: "2px" }}>
+                Enregistrer avec les informations saisies ci-dessus&nbsp;?
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+              <button type="button" onClick={() => setNouveauClientDetecte(false)} style={{ fontSize: "12px", color: "var(--ink-3)", background: "none", border: "1px solid var(--line)", borderRadius: "999px", padding: "5px 12px", cursor: "pointer" }}>
+                Ignorer
+              </button>
+              <button type="button" onClick={enregistrerNouveauClient} disabled={enregistrementClient} style={{ fontSize: "12px", color: "var(--ivory)", background: "var(--ink)", border: "none", borderRadius: "999px", padding: "5px 14px", cursor: "pointer" }}>
+                {enregistrementClient ? "..." : "Enregistrer →"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* BLOC 02 — PRESTATIONS */}
