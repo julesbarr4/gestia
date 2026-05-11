@@ -35,82 +35,94 @@ export async function POST(req: NextRequest) {
 
   const supabase = await getSupabaseAdmin();
 
-  switch (event.type) {
+  try {
+    switch (event.type) {
 
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
 
-      if (!session.subscription) break;
+        if (!session.subscription) break;
 
-      const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-      const userId = subscription.metadata?.supabase_user_id
-        || (session.metadata as { supabase_user_id?: string })?.supabase_user_id;
+        const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+        const userId = subscription.metadata?.supabase_user_id
+          || (session.metadata as { supabase_user_id?: string })?.supabase_user_id;
 
-      if (!userId) break;
+        if (!userId) break;
 
-      const priceId = subscription.items.data[0]?.price.id;
-      const plan = getPlanFromPriceId(priceId);
+        const priceId = subscription.items.data[0]?.price.id;
+        const plan = getPlanFromPriceId(priceId);
 
-      await supabase.from("profiles").update({
-        stripe_subscription_id: subscription.id,
-        stripe_price_id: priceId,
-        plan,
-        abonnement_actif: true,
-        abonnement_fin_periode: new Date(subscription.current_period_end * 1000).toISOString(),
-      }).eq("id", userId);
-      break;
-    }
-
-    case "customer.subscription.updated": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const userId = subscription.metadata?.supabase_user_id;
-      if (!userId) break;
-
-      const priceId = subscription.items.data[0]?.price.id;
-      const plan = getPlanFromPriceId(priceId);
-      const actif = subscription.status === "active" || subscription.status === "trialing";
-
-      await supabase.from("profiles").update({
-        stripe_subscription_id: subscription.id,
-        stripe_price_id: priceId,
-        plan,
-        abonnement_actif: actif,
-        abonnement_fin_periode: new Date(subscription.current_period_end * 1000).toISOString(),
-      }).eq("id", userId);
-      break;
-    }
-
-    case "customer.subscription.deleted": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const userId = subscription.metadata?.supabase_user_id;
-      if (!userId) break;
-
-      await supabase.from("profiles").update({
-        plan: "starter",
-        abonnement_actif: false,
-        stripe_subscription_id: null,
-        stripe_price_id: null,
-      }).eq("id", userId);
-      break;
-    }
-
-    case "invoice.payment_failed": {
-      const invoice = event.data.object as Stripe.Invoice;
-      const customerId = invoice.customer as string;
-
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("stripe_customer_id", customerId)
-        .limit(1);
-
-      if (profiles?.[0]) {
         await supabase.from("profiles").update({
-          abonnement_actif: false,
-        }).eq("id", profiles[0].id);
+          stripe_subscription_id: subscription.id,
+          stripe_price_id: priceId,
+          plan,
+          abonnement_actif: true,
+          abonnement_fin_periode: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : null,
+        }).eq("id", userId);
+        break;
       }
-      break;
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const userId = subscription.metadata?.supabase_user_id;
+        if (!userId) break;
+
+        const priceId = subscription.items.data[0]?.price.id;
+        const plan = getPlanFromPriceId(priceId);
+        const actif = subscription.status === "active" || subscription.status === "trialing";
+
+        await supabase.from("profiles").update({
+          stripe_subscription_id: subscription.id,
+          stripe_price_id: priceId,
+          plan,
+          abonnement_actif: actif,
+          abonnement_fin_periode: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : null,
+        }).eq("id", userId);
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const userId = subscription.metadata?.supabase_user_id;
+        if (!userId) break;
+
+        await supabase.from("profiles").update({
+          plan: "starter",
+          abonnement_actif: false,
+          stripe_subscription_id: null,
+          stripe_price_id: null,
+        }).eq("id", userId);
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = invoice.customer as string;
+
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("stripe_customer_id", customerId)
+          .limit(1);
+
+        if (profiles?.[0]) {
+          await supabase.from("profiles").update({
+            abonnement_actif: false,
+          }).eq("id", profiles[0].id);
+        }
+        break;
+      }
     }
+  } catch (err) {
+    console.error("Webhook error:", err);
+    return NextResponse.json(
+      { erreur: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ recu: true });
