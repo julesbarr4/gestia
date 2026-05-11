@@ -14,6 +14,7 @@ interface Client {
   notes?: string | null;
   adresse?: string | null;
   code_postal?: string | null;
+  numero_tva?: string | null;
   created_at: string;
 }
 

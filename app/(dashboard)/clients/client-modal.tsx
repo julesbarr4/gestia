@@ -25,6 +25,7 @@ interface Props {
     ville?: string | null;
     siret?: string | null;
     notes?: string | null;
+    numero_tva?: string | null;
   } | null;
   onClose: () => void;
   onSuccess: () => void;
@@ -52,7 +53,7 @@ export function ClientModal({ client, onClose, onSuccess }: Props) {
     code_postal: client?.code_postal || "",
     ville: client?.ville || "",
     siret: client?.siret || "",
-    numero_tva: (client as { numero_tva?: string | null } | null | undefined)?.numero_tva || "",
+    numero_tva: client?.numero_tva || "",
     notes: client?.notes || "",
   });
   const [loading, setLoading] = useState(false);
