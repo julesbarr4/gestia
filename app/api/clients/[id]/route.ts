@@ -8,13 +8,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { nom, email, telephone, adresse, code_postal, ville, siret, notes } = body;
+  const { nom, email, telephone, adresse, code_postal, ville, siret, notes, numero_tva } = body;
 
   if (!nom?.trim()) return NextResponse.json({ erreur: "Le nom est requis" }, { status: 400 });
 
   const { data, error } = await supabase
     .from("clients")
-    .update({ nom: nom.trim(), email, telephone, adresse, code_postal, ville, siret, notes, updated_at: new Date().toISOString() })
+    .update({ nom: nom.trim(), email, telephone, adresse, code_postal, ville, siret, notes, numero_tva: numero_tva || null, updated_at: new Date().toISOString() })
     .eq("id", id)
     .eq("user_id", user.id)
     .select()

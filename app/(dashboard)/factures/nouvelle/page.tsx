@@ -7,7 +7,7 @@ export default async function NouvelleFacturePage() {
   const { data: { user } } = await supabase.auth.getUser();
   const { data: clients } = await supabase
     .from("clients")
-    .select("id, nom, email, ville, siret, telephone")
+    .select("id, nom, email, ville, siret, telephone, numero_tva")
     .eq("user_id", user!.id)
     .order("nom", { ascending: true });
 

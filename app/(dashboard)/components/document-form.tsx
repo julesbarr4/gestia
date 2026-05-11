@@ -12,6 +12,7 @@ interface Client {
   ville?: string | null;
   siret?: string | null;
   telephone?: string | null;
+  numero_tva?: string | null;
 }
 
 interface Ligne {
@@ -129,9 +130,12 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
       setClientSiret(client.siret || "");
       setClientEmail(client.email || "");
       setClientTelephone(client.telephone || "");
+      setClientTva(client.numero_tva || "");
     } else if (!id) {
       setClientSiret("");
       setClientTva("");
+      setClientEmail("");
+      setClientTelephone("");
     }
   }
 
@@ -193,6 +197,7 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
         adresse: clientAdresse || undefined,
         code_postal: clientCodePostal || undefined,
         ville: clientVille || undefined,
+        numero_tva: clientTva || undefined,
       }),
     });
     const data = await res.json();

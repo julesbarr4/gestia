@@ -7,13 +7,13 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
 
   const body = await req.json();
-  const { nom, email, telephone, adresse, code_postal, ville, siret, notes } = body;
+  const { nom, email, telephone, adresse, code_postal, ville, siret, notes, numero_tva } = body;
 
   if (!nom?.trim()) return NextResponse.json({ erreur: "Le nom est requis" }, { status: 400 });
 
   const { data, error } = await supabase
     .from("clients")
-    .insert({ user_id: user.id, nom: nom.trim(), email, telephone, adresse, code_postal, ville, siret, notes })
+    .insert({ user_id: user.id, nom: nom.trim(), email, telephone, adresse, code_postal, ville, siret, notes, numero_tva: numero_tva || null })
     .select()
     .single();
 
