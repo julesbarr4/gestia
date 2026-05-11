@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Gestia — Logos</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ivory: #FBF8F3;
+    --ink: #0E0E0E;
+    --fir: oklch(0.42 0.07 155);
+    --line: rgba(14,14,14,0.12);
+    --muted: rgba(14,14,14,0.55);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page { max-width: 1280px; margin: 0 auto; padding: 80px 48px 120px; }
+  header { margin-bottom: 72px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  h1 { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; font-size: 56px; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); max-width: 560px; }
+
+  section { margin-bottom: 64px; }
+  h2 { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .section-sub { color: var(--muted); margin: 0 0 28px; font-size: 13px; }
+
+  .grid { display: grid; gap: 20px; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-1 { grid-template-columns: 1fr; }
+
+  .card {
+    background: var(--ivory);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card .canvas {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+  }
+  .card.wide .canvas { aspect-ratio: 24 / 7; }
+  .card.vertical .canvas { aspect-ratio: 6 / 7; padding: 48px; }
+  .card.favicon .canvas { aspect-ratio: 1 / 1; padding: 60px; }
+
+  .card.bg-ivory .canvas { background: var(--ivory); }
+  .card.bg-dark .canvas { background: var(--ink); }
+  .card.bg-fir .canvas { background: var(--fir); }
+  .card.bg-checker .canvas {
+    background-image:
+      linear-gradient(45deg, #e8e4dc 25%, transparent 25%),
+      linear-gradient(-45deg, #e8e4dc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e8e4dc 75%),
+      linear-gradient(-45deg, transparent 75%, #e8e4dc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-color: #f5f2eb;
+  }
+
+  .card img { display: block; max-width: 100%; max-height: 100%; }
+
+  .meta {
+    border-top: 1px solid var(--line);
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.015);
+  }
+  .meta .name { font-weight: 500; }
+  .meta .dims { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .downloads { display: flex; gap: 8px; padding: 0 16px 14px; }
+  .downloads a {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    transition: all 0.15s ease;
+  }
+  .downloads a:hover { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+  .downloads a.primary { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+  .downloads a.primary:hover { background: var(--fir); border-color: var(--fir); }
+
+  footer { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">Identité visuelle</div>
+    <h1>Gestia — Système de logos</h1>
+    <p class="sub">Tous les fichiers sont fournis en SVG (master, vectoriel, redimensionnable à l'infini) et PNG (haute résolution, prêt à l'emploi). Le fond ivoire est le contexte principal de la marque ; les versions transparentes sont pour les placements sur photographies ou couleurs personnalisées.</p>
+  </header>
+
+  <section>
+    <h2>Sceau — Marque principale</h2>
+    <p class="section-sub">À utiliser comme avatar, signature, élément de signature. Format carré 1:1.</p>
+    <div class="grid grid-3">
+
+      <div class="card bg-ivory">
+        <div class="canvas"><img src="seal-ivory.svg" alt=""></div>
+        <div class="meta"><span class="name">seal-ivory</span><span class="dims">1024×1024</span></div>
+        <div class="downloads">
+          <a href="seal-ivory.svg" download class="primary">SVG</a>
+          <a href="seal-ivory.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card bg-dark">
+        <div class="canvas"><img src="seal-dark.svg" alt=""></div>
+        <div class="meta"><span class="name">seal-dark</span><span class="dims">1024×1024</span></div>
+        <div class="downloads">
+          <a href="seal-dark.svg" download class="primary">SVG</a>
+          <a href="seal-dark.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card bg-fir">
+        <div class="canvas"><img src="seal-fir.svg" alt=""></div>
+        <div class="meta"><span class="name">seal-fir</span><span class="dims">1024×1024</span></div>
+        <div class="downloads">
+          <a href="seal-fir.svg" download class="primary">SVG</a>
+          <a href="seal-fir.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card bg-checker">
+        <div class="canvas"><img src="seal-transparent-ink.svg" alt=""></div>
+        <div class="meta"><span class="name">seal-transparent-ink</span><span class="dims">1024×1024</span></div>
+        <div class="downloads">
+          <a href="seal-transparent-ink.svg" download class="primary">SVG</a>
+          <a href="seal-transparent-ink.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card bg-checker">
+        <div class="canvas" style="background-color:#2a2a2a"><img src="seal-transparent-ivory.svg" alt=""></div>
+        <div class="meta"><span class="name">seal-transparent-ivory</span><span class="dims">1024×1024</span></div>
+        <div class="downloads">
+          <a href="seal-transparent-ivory.svg" download class="primary">SVG</a>
+          <a href="seal-transparent-ivory.png" download>PNG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wordmark</h2>
+    <p class="section-sub">Le nom seul, italique Instrument Serif. Le point sur le « i » est en vert sapin — accent constant du système.</p>
+    <div class="grid grid-1">
+
+      <div class="card wide bg-ivory">
+        <div class="canvas"><img src="wordmark-ivory.svg" alt=""></div>
+        <div class="meta"><span class="name">wordmark-ivory</span><span class="dims">1800×600</span></div>
+        <div class="downloads">
+          <a href="wordmark-ivory.svg" download class="primary">SVG</a>
+          <a href="wordmark-ivory.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card wide bg-dark">
+        <div class="canvas"><img src="wordmark-dark.svg" alt=""></div>
+        <div class="meta"><span class="name">wordmark-dark</span><span class="dims">1800×600</span></div>
+        <div class="downloads">
+          <a href="wordmark-dark.svg" download class="primary">SVG</a>
+          <a href="wordmark-dark.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card wide bg-checker">
+        <div class="canvas"><img src="wordmark-transparent-ink.svg" alt=""></div>
+        <div class="meta"><span class="name">wordmark-transparent-ink</span><span class="dims">1800×600</span></div>
+        <div class="downloads">
+          <a href="wordmark-transparent-ink.svg" download class="primary">SVG</a>
+          <a href="wordmark-transparent-ink.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card wide bg-checker">
+        <div class="canvas" style="background-color:#2a2a2a"><img src="wordmark-transparent-ivory.svg" alt=""></div>
+        <div class="meta"><span class="name">wordmark-transparent-ivory</span><span class="dims">1800×600</span></div>
+        <div class="downloads">
+          <a href="wordmark-transparent-ivory.svg" download class="primary">SVG</a>
+          <a href="wordmark-transparent-ivory.png" download>PNG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Lockup horizontal — Sceau + wordmark</h2>
+    <p class="section-sub">Format préféré pour en-têtes de site, signatures email, papier à en-tête.</p>
+    <div class="grid grid-1">
+
+      <div class="card wide bg-ivory">
+        <div class="canvas"><img src="lockup-horizontal-ivory.svg" alt=""></div>
+        <div class="meta"><span class="name">lockup-horizontal-ivory</span><span class="dims">2400×700</span></div>
+        <div class="downloads">
+          <a href="lockup-horizontal-ivory.svg" download class="primary">SVG</a>
+          <a href="lockup-horizontal-ivory.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card wide bg-dark">
+        <div class="canvas"><img src="lockup-horizontal-dark.svg" alt=""></div>
+        <div class="meta"><span class="name">lockup-horizontal-dark</span><span class="dims">2400×700</span></div>
+        <div class="downloads">
+          <a href="lockup-horizontal-dark.svg" download class="primary">SVG</a>
+          <a href="lockup-horizontal-dark.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card wide bg-checker">
+        <div class="canvas"><img src="lockup-horizontal-transparent.svg" alt=""></div>
+        <div class="meta"><span class="name">lockup-horizontal-transparent</span><span class="dims">2400×700</span></div>
+        <div class="downloads">
+          <a href="lockup-horizontal-transparent.svg" download class="primary">SVG</a>
+          <a href="lockup-horizontal-transparent.png" download>PNG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Lockup vertical</h2>
+    <p class="section-sub">Format empilé pour cartes de visite, signatures formelles, applications carrées.</p>
+    <div class="grid grid-2">
+
+      <div class="card vertical bg-ivory">
+        <div class="canvas"><img src="lockup-vertical-ivory.svg" alt=""></div>
+        <div class="meta"><span class="name">lockup-vertical-ivory</span><span class="dims">1200×1400</span></div>
+        <div class="downloads">
+          <a href="lockup-vertical-ivory.svg" download class="primary">SVG</a>
+          <a href="lockup-vertical-ivory.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card vertical bg-dark">
+        <div class="canvas"><img src="lockup-vertical-dark.svg" alt=""></div>
+        <div class="meta"><span class="name">lockup-vertical-dark</span><span class="dims">1200×1400</span></div>
+        <div class="downloads">
+          <a href="lockup-vertical-dark.svg" download class="primary">SVG</a>
+          <a href="lockup-vertical-dark.png" download>PNG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Favicon — Icône d'application</h2>
+    <p class="section-sub">Sceau adapté en petite taille avec trait épaissi et coins arrondis. Pour onglet de navigateur, écran d'accueil iOS / Android.</p>
+    <div class="grid grid-3">
+
+      <div class="card favicon bg-ivory">
+        <div class="canvas"><img src="favicon-ivory.svg" alt="" style="width:160px;height:160px"></div>
+        <div class="meta"><span class="name">favicon-ivory</span><span class="dims">512×512</span></div>
+        <div class="downloads">
+          <a href="favicon-ivory.svg" download class="primary">SVG</a>
+          <a href="favicon-ivory.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card favicon bg-dark">
+        <div class="canvas"><img src="favicon-dark.svg" alt="" style="width:160px;height:160px"></div>
+        <div class="meta"><span class="name">favicon-dark</span><span class="dims">512×512</span></div>
+        <div class="downloads">
+          <a href="favicon-dark.svg" download class="primary">SVG</a>
+          <a href="favicon-dark.png" download>PNG</a>
+        </div>
+      </div>
+
+      <div class="card favicon bg-fir">
+        <div class="canvas"><img src="favicon-fir.svg" alt="" style="width:160px;height:160px"></div>
+        <div class="meta"><span class="name">favicon-fir</span><span class="dims">512×512</span></div>
+        <div class="downloads">
+          <a href="favicon-fir.svg" download class="primary">SVG</a>
+          <a href="favicon-fir.png" download>PNG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Gestia · Identité visuelle · 17 variantes SVG + 17 variantes PNG · Format master : SVG vectoriel, redimensionnable à l'infini sans perte.
+  </footer>
+</div>
+</body>
+</html>
