@@ -1,4 +1,6 @@
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 import { createClient } from "@/lib/supabase/server";
 import { formatEuros } from "@/lib/utils";
@@ -18,8 +20,7 @@ export default async function DashboardPage() {
     { count: nbDevis },
     { count: nbFactures },
     { data: facturesImpayees },
-    { data: facturesMois },
-    { data: facturesMoisPrec },
+    { data: toutesFacturesData },
     { data: derniersLogs },
     { data: profile },
   ] = await Promise.all([
@@ -27,16 +28,21 @@ export default async function DashboardPage() {
     supabase.from("devis").select("*", { count: "exact", head: true }).eq("user_id", user!.id),
     supabase.from("factures").select("*", { count: "exact", head: true }).eq("user_id", user!.id),
     supabase.from("factures").select("total_ttc, numero, statut, clients(nom)").eq("user_id", user!.id).in("statut", ["envoyee", "en_retard"]).order("created_at", { ascending: false }).limit(4),
-    supabase.from("factures").select("total_ttc, statut").eq("user_id", user!.id).gte("created_at", debutMois),
-    supabase.from("factures").select("total_ttc").eq("user_id", user!.id).gte("created_at", debutMoisPrecedent).lt("created_at", debutMois),
+    supabase.from("factures").select("total_ttc, statut, date_emission, date_echeance").eq("user_id", user!.id),
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
     supabase.from("profiles").select("nom_entreprise, siret, numero_tva").eq("id", user!.id).single(),
   ]);
 
-  const toutesFacturesMois = facturesMois || [];
-  const caEncaisse = toutesFacturesMois.filter(f => f.statut === "payee").reduce((s, f) => s + f.total_ttc, 0);
-  const caEmis = toutesFacturesMois.reduce((s, f) => s + f.total_ttc, 0);
-  const caEmisPrec = (facturesMoisPrec || []).reduce((s, f) => s + f.total_ttc, 0);
+  const toutesFactures = toutesFacturesData || [];
+  const caEmis = toutesFactures
+    .filter(f => f.date_emission >= debutMois.split("T")[0])
+    .reduce((s, f) => s + f.total_ttc, 0);
+  const caEncaisse = toutesFactures
+    .filter(f => f.statut === "payee")
+    .reduce((s, f) => s + f.total_ttc, 0);
+  const caEmisPrec = toutesFactures
+    .filter(f => f.date_emission >= debutMoisPrecedent.split("T")[0] && f.date_emission < debutMois.split("T")[0])
+    .reduce((s, f) => s + f.total_ttc, 0);
   const montantImpaye = (facturesImpayees || []).reduce((s, f) => s + f.total_ttc, 0);
 
   const infosManquantes = !profile?.siret || !profile?.numero_tva;
