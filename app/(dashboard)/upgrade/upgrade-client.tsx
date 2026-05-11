@@ -2,62 +2,64 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const PLANS = [
-  {
-    id: "starter",
-    nom: "Gratuit",
-    prix: 0,
-    cible: "Pour découvrir Gestia",
-    features: [
-      "5 devis générés par Inès",
-      "5 factures générées par Inès",
-      "Export PDF professionnel",
-      "Factur-X conforme RFE 2026",
-      "Accès au dashboard",
-    ],
-    priceId: null,
-    highlighted: false,
-  },
-  {
-    id: "essentiel",
-    nom: "Essentiel",
-    prix: 19,
-    cible: "Artisans & commerçants",
-    features: [
-      "Devis & factures illimités",
-      "Inès (Admin) · Léa (Support)",
-      "Hugo (CFO) — rapport hebdo",
-      "Export PDF + Factur-X",
-      "Relances automatiques 3 niveaux",
-      "Modèles de devis",
-    ],
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ESSENTIEL,
-    highlighted: true,
-  },
-  {
-    id: "pro",
-    nom: "Pro",
-    prix: 39,
-    cible: "TPE 2 à 10 salariés",
-    features: [
-      "Tout l'Essentiel",
-      "Cyprien (CMO) — contenu marketing",
-      "Augustin (CEO) — analyse stratégique",
-      "Support prioritaire",
-      "Accès API (bientôt)",
-    ],
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
-    highlighted: false,
-  },
-];
-
-export function UpgradeClient({ planActuel, abonnementActif }: {
+export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, priceIdPro }: {
   planActuel: string;
   abonnementActif: boolean;
+  priceIdEssentiel: string;
+  priceIdPro: string;
 }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [erreur, setErreur] = useState("");
   const router = useRouter();
+
+  const PLANS = [
+    {
+      id: "starter",
+      nom: "Gratuit",
+      prix: 0,
+      cible: "Pour découvrir Gestia",
+      features: [
+        "5 devis générés par Inès",
+        "5 factures générées par Inès",
+        "Export PDF professionnel",
+        "Factur-X conforme RFE 2026",
+        "Accès au dashboard",
+      ],
+      priceId: null,
+      highlighted: false,
+    },
+    {
+      id: "essentiel",
+      nom: "Essentiel",
+      prix: 19,
+      cible: "Artisans & commerçants",
+      features: [
+        "Devis & factures illimités",
+        "Inès (Admin) · Léa (Support)",
+        "Hugo (CFO) — rapport hebdo",
+        "Export PDF + Factur-X",
+        "Relances automatiques 3 niveaux",
+        "Modèles de devis",
+      ],
+      priceId: priceIdEssentiel || null,
+      highlighted: true,
+    },
+    {
+      id: "pro",
+      nom: "Pro",
+      prix: 39,
+      cible: "TPE 2 à 10 salariés",
+      features: [
+        "Tout l'Essentiel",
+        "Cyprien (CMO) — contenu marketing",
+        "Augustin (CEO) — analyse stratégique",
+        "Support prioritaire",
+        "Accès API (bientôt)",
+      ],
+      priceId: priceIdPro || null,
+      highlighted: false,
+    },
+  ];
 
   async function choisirPlan(plan: typeof PLANS[0]) {
     if (!plan.priceId) {

@@ -16,6 +16,8 @@ export default async function UpgradePage() {
     <UpgradeClient
       planActuel={profile?.plan || "starter"}
       abonnementActif={profile?.abonnement_actif || false}
+      priceIdEssentiel={process.env.STRIPE_PRICE_ESSENTIEL || ""}
+      priceIdPro={process.env.STRIPE_PRICE_PRO || ""}
     />
   );
 }
