@@ -57,7 +57,9 @@ export async function POST(req: NextRequest) {
           stripe_price_id: priceId,
           plan,
           abonnement_actif: true,
-          abonnement_fin_periode: new Date(subscription.current_period_end * 1000).toISOString(),
+          abonnement_fin_periode: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : null,
         }).eq("id", userId);
         break;
       }
@@ -76,7 +78,9 @@ export async function POST(req: NextRequest) {
           stripe_price_id: priceId,
           plan,
           abonnement_actif: actif,
-          abonnement_fin_periode: new Date(subscription.current_period_end * 1000).toISOString(),
+          abonnement_fin_periode: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : null,
         }).eq("id", userId);
         break;
       }
