@@ -8,6 +8,9 @@ interface Client {
   ville?: string | null;
   siret?: string | null;
   telephone?: string | null;
+  adresse?: string | null;
+  code_postal?: string | null;
+  numero_tva?: string | null;
 }
 
 interface Props {
@@ -51,8 +54,17 @@ export function ClientSelector({ clients, value, clientId, onChange, required }:
             {clientSelectionne.nom.charAt(0)}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: "14px", fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}>{clientSelectionne.nom}</p>
-            {clientSelectionne.email && <p style={{ fontSize: "11px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>{clientSelectionne.email}</p>}
+            <p style={{ fontSize: "14px", fontFamily: "Instrument Serif, serif", color: "var(--ink)" }}>
+              {clientSelectionne.nom}
+            </p>
+            <p style={{ fontSize: "11px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace", marginTop: "2px" }}>
+              {[
+                clientSelectionne.email,
+                clientSelectionne.adresse && clientSelectionne.ville
+                  ? `${clientSelectionne.adresse}, ${clientSelectionne.code_postal} ${clientSelectionne.ville}`
+                  : clientSelectionne.ville,
+              ].filter(Boolean).join(" · ")}
+            </p>
           </div>
           <span style={{ fontSize: "9.5px", textTransform: "uppercase", letterSpacing: "0.14em", background: "color-mix(in oklch, var(--accent) 12%, transparent)", color: "var(--accent)", padding: "2px 8px", borderRadius: "999px" }}>Enregistré</span>
           <button type="button" onClick={() => { setOpen(true); onChange("", undefined, undefined); }} style={{ fontSize: "12px", color: "var(--ink-3)", background: "none", border: "1px solid var(--line)", borderRadius: "999px", padding: "4px 10px", cursor: "pointer" }}>Changer</button>
@@ -83,9 +95,17 @@ export function ClientSelector({ clients, value, clientId, onChange, required }:
             >
               <div>
                 <p style={{ fontSize: "14px", color: "var(--ink)", fontFamily: "Instrument Serif, serif" }}>{client.nom}</p>
-                {client.email && <p style={{ fontSize: "11px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>{client.email}</p>}
+                <p style={{ fontSize: "11px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
+                  {[client.email, client.ville].filter(Boolean).join(" · ")}
+                </p>
               </div>
-              {client.ville && <p style={{ fontSize: "11px", color: "var(--ink-3)" }}>{client.ville}</p>}
+              <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
+                {client.siret && (
+                  <p style={{ fontSize: "10px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
+                    {client.siret}
+                  </p>
+                )}
+              </div>
             </button>
           ))}
           {recherche.trim().length > 0 && !clientsFiltres.find(c => c.nom.toLowerCase() === recherche.toLowerCase()) && (
