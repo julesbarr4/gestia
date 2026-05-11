@@ -60,26 +60,41 @@ export function UpgradeClient({ planActuel, abonnementActif }: {
   const router = useRouter();
 
   async function choisirPlan(plan: typeof PLANS[0]) {
-    if (!plan.priceId || plan.id === planActuel) return;
+    if (!plan.priceId) {
+      setErreur(`Price ID manquant pour le plan ${plan.nom}. Vérifiez vos variables d'environnement.`);
+      return;
+    }
+    if (plan.id === planActuel) return;
 
     setLoading(plan.id);
     setErreur("");
 
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId: plan.priceId, plan: plan.id }),
-    });
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId: plan.priceId, plan: plan.id }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      setErreur(data.erreur || "Erreur lors de la création de la session");
+      if (!res.ok) {
+        setErreur(`Erreur ${res.status} : ${data.erreur || JSON.stringify(data)}`);
+        setLoading(null);
+        return;
+      }
+
+      if (!data.url) {
+        setErreur("Aucune URL de redirection reçue de Stripe.");
+        setLoading(null);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      setErreur(`Erreur réseau : ${err instanceof Error ? err.message : String(err)}`);
       setLoading(null);
-      return;
     }
-
-    window.location.href = data.url;
   }
 
   async function gererAbonnement() {
