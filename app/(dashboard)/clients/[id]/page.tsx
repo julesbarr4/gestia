@@ -13,7 +13,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
   const { data: client } = await supabase
     .from("clients")
-    .select("*")
+    .select("*, numero_tva")
     .eq("id", id)
     .eq("user_id", user!.id)
     .single();
@@ -90,7 +90,18 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           >
             + Nouveau devis
           </Link>
-          <ClientActions clientId={client.id} clientNom={client.nom} />
+          <ClientActions client={{
+            id: client.id,
+            nom: client.nom,
+            email: client.email,
+            telephone: client.telephone,
+            adresse: client.adresse,
+            code_postal: client.code_postal,
+            ville: client.ville,
+            siret: client.siret,
+            notes: client.notes,
+            numero_tva: (client as { numero_tva?: string | null }).numero_tva,
+          }} />
         </div>
       </div>
 

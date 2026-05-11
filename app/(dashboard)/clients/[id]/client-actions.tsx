@@ -3,7 +3,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClientModal } from "../client-modal";
 
-export function ClientActions({ clientId, clientNom }: { clientId: string; clientNom: string }) {
+interface Client {
+  id: string;
+  nom: string;
+  email?: string | null;
+  telephone?: string | null;
+  adresse?: string | null;
+  code_postal?: string | null;
+  ville?: string | null;
+  siret?: string | null;
+  notes?: string | null;
+  numero_tva?: string | null;
+}
+
+export function ClientActions({ client }: { client: Client }) {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -11,7 +24,7 @@ export function ClientActions({ clientId, clientNom }: { clientId: string; clien
 
   async function supprimer() {
     setLoading(true);
-    await fetch(`/api/clients/${clientId}`, { method: "DELETE" });
+    await fetch(`/api/clients/${client.id}`, { method: "DELETE" });
     router.push("/clients");
   }
 
@@ -34,7 +47,7 @@ export function ClientActions({ clientId, clientNom }: { clientId: string; clien
 
       {showEdit && (
         <ClientModal
-          client={{ id: clientId, nom: clientNom }}
+          client={client}
           onClose={() => setShowEdit(false)}
           onSuccess={() => { setShowEdit(false); router.refresh(); }}
         />
@@ -44,7 +57,7 @@ export function ClientActions({ clientId, clientNom }: { clientId: string; clien
         <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(14,14,14,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
           <div style={{ background: "var(--ivory)", borderRadius: "20px", padding: "32px", maxWidth: "380px", width: "100%", textAlign: "center" }}>
             <p style={{ fontFamily: "Instrument Serif, serif", fontSize: "22px", color: "var(--ink)", marginBottom: "10px" }}>
-              Supprimer <em>{clientNom}</em> ?
+              Supprimer <em>{client.nom}</em> ?
             </p>
             <p style={{ fontSize: "13px", color: "var(--ink-3)", marginBottom: "24px", lineHeight: 1.5 }}>
               Les devis et factures associés seront conservés mais sans lien client.
