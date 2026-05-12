@@ -87,17 +87,27 @@ export default function SignupPage({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: { nom_entreprise: "" },
       },
     });
 
     if (error) {
-      setErreur(error.message === "User already registered"
-        ? "Un compte existe déjà avec cet email."
-        : error.message);
+      setErreur(
+        error.message.includes("already registered")
+          ? "Un compte existe déjà avec cet email."
+          : error.message
+      );
       setLoading(false);
       return;
+    }
+
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (loginError) {
+      console.warn("Auto-login failed:", loginError.message);
     }
 
     if (data.user) setUserId(data.user.id);
@@ -135,6 +145,16 @@ export default function SignupPage({
     setLoading(true);
     setErreur("");
 
+    if (userId) {
+      await supabase
+        .from("profiles")
+        .update({
+          nom_entreprise: nomEntreprise.trim(),
+          ville: ville || null,
+        })
+        .eq("id", userId);
+    }
+
     if (planId === "starter") {
       setSucces(true);
       setLoading(false);
@@ -147,13 +167,6 @@ export default function SignupPage({
       setErreur("Configuration Stripe manquante.");
       setLoading(false);
       return;
-    }
-
-    if (userId) {
-      await supabase
-        .from("profiles")
-        .update({ plan: planId })
-        .eq("id", userId);
     }
 
     const res = await fetch("/api/stripe/checkout", {
@@ -184,34 +197,25 @@ export default function SignupPage({
             ✓
           </div>
           <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace", marginBottom: "10px" }}>
-            VÉRIFIEZ VOTRE EMAIL
+            COMPTE CRÉÉ
           </p>
           <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", color: "var(--ink)", marginBottom: "12px", lineHeight: 1.1 }}>
-            <em>Presque prêt !</em>
+            Bienvenue sur <em>Gestia !</em>
           </h1>
-          <p style={{ fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6, marginBottom: "10px" }}>
-            Un lien de confirmation a été envoyé à <strong>{email}</strong>.
+          <p style={{ fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6, marginBottom: "28px" }}>
+            Votre compte est prêt. Commencez à générer vos premiers devis avec Inès.
           </p>
-          <p style={{ fontSize: "13px", color: "var(--ink-3)", lineHeight: 1.6, marginBottom: "28px" }}>
-            Cliquez sur le lien pour activer votre compte et accéder à votre espace Gestia.
+          <a href="/dashboard" style={{
+            display: "inline-block",
+            background: "var(--ink)", color: "var(--ivory)",
+            borderRadius: "999px", padding: "12px 28px",
+            fontSize: "14px", fontWeight: 500, textDecoration: "none",
+          }}>
+            Accéder à mon espace →
+          </a>
+          <p style={{ fontSize: "12px", color: "var(--ink-3)", marginTop: "16px" }}>
+            Vous pourrez upgrader votre plan à tout moment depuis votre espace.
           </p>
-          <div style={{ padding: "16px", background: "var(--ivory-2)", borderRadius: "12px", border: "1px solid var(--line)", marginBottom: "24px" }}>
-            <p style={{ fontSize: "12px", color: "var(--ink-3)" }}>
-              Vous n'avez pas reçu l'email ? Vérifiez vos spams ou{" "}
-              <button
-                onClick={async () => {
-                  await supabase.auth.resend({ type: "signup", email });
-                  alert("Email renvoyé !");
-                }}
-                style={{ color: "var(--ink)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", fontSize: "12px" }}
-              >
-                cliquez ici pour renvoyer
-              </button>.
-            </p>
-          </div>
-          <Link href="/login" style={{ fontSize: "13px", color: "var(--ink-3)", textDecoration: "underline" }}>
-            Déjà confirmé ? Se connecter
-          </Link>
         </div>
       </div>
     );
