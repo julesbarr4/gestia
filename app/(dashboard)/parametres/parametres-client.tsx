@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { CompteSection } from "./compte-section";
 
 function ManageSubscriptionBtn() {
   const [loading, setLoading] = useState(false);
@@ -446,6 +447,8 @@ export default function ParametresClient({ profile, email }: Props) {
             </p>
           </div>
         </div>
+
+        <CompteSection email={email} />
 
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <button
