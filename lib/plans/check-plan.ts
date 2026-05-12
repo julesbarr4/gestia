@@ -5,7 +5,7 @@ export type Plan = "starter" | "essentiel" | "pro";
 export const LIMITES = {
   starter: {
     maxGenerations: 5,
-    agentsAutorises: ["devis", "factures", "relances", "support", "rapport", "marketing", "strategie"],
+    agentsAutorises: ["devis", "factures", "relances"],
   },
   essentiel: {
     maxGenerations: Infinity,
@@ -21,8 +21,8 @@ export const AGENT_PLAN_REQUIS: Record<string, Plan> = {
   devis: "starter",
   factures: "starter",
   relances: "starter",
-  support: "starter",
-  rapport: "starter",
+  support: "essentiel",
+  rapport: "essentiel",
   marketing: "pro",
   strategie: "pro",
 };

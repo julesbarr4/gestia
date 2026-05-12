@@ -14,14 +14,11 @@ const NAV_ITEMS: Array<{
   { href: "/devis", label: "Mes devis" },
   { href: "/factures", label: "Mes factures" },
   { href: "/modeles", label: "Mes modèles" },
-
-  { href: "/emails", label: "Répondre aux emails", separator: true },
-  { href: "/rapports", label: "Mes chiffres" },
+  { href: "/emails", label: "Répondre aux emails", separator: true, badge: "Essentiel" },
+  { href: "/rapports", label: "Mes chiffres", badge: "Essentiel" },
   { href: "/marketing", label: "Mon contenu", badge: "Pro" },
   { href: "/strategie", label: "Mon plan", badge: "Pro" },
-
   { href: "/dashboard/equipe", label: "L'équipe Gestia", separator: true },
-  { href: "/upgrade", label: "⭐ Changer de plan", separator: true },
   { href: "/parametres", label: "Mon compte" },
 ];
 
