@@ -18,15 +18,30 @@ export default function LoginPage() {
     setLoading(true);
     setErreur("");
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      setErreur("Email ou mot de passe incorrect.");
+      if (error.message.includes("Email not confirmed")) {
+        setErreur("Votre email n'est pas encore confirmé. Vérifiez votre boîte mail.");
+      } else if (error.message.includes("Invalid login credentials")) {
+        setErreur("Email ou mot de passe incorrect.");
+      } else {
+        setErreur(error.message);
+      }
       setLoading(false);
       return;
     }
 
-    router.push("/dashboard");
+    if (!data.user) {
+      setErreur("Connexion impossible. Réessayez.");
+      setLoading(false);
+      return;
+    }
+
+    router.refresh();
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 100);
   }
 
   return (
