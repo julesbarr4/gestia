@@ -4,12 +4,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRelance } from "@/lib/agents/admin-agent";
 import { formatDate } from "@/lib/utils";
+import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
+  }
+
+  const acces = await verifierAccesAgent(user.id, "relances");
+  if (!acces.autorise) {
+    return NextResponse.json(
+      { erreur: acces.erreur, planRequis: acces.planRequis, limite: true },
+      { status: 403 }
+    );
   }
 
   const { factureId } = await req.json();
@@ -52,5 +61,6 @@ export async function POST(req: NextRequest) {
     })
     .eq("id", factureId);
 
+  await incrementerGenerations(user.id);
   return NextResponse.json({ relance, emailDestination: facture.clients?.email });
 }
