@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     supabase.from("factures").select("total_ttc, numero, statut, clients(nom)").eq("user_id", user!.id).in("statut", ["envoyee", "en_retard"]).order("created_at", { ascending: false }).limit(4),
     supabase.from("factures").select("total_ttc, statut, date_emission, date_echeance").eq("user_id", user!.id),
     supabase.from("agents_logs").select("agent, action, created_at").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(5),
-    supabase.from("profiles").select("nom_entreprise, siret, numero_tva, plan").eq("id", user!.id).single(),
+    supabase.from("profiles").select("nom_entreprise, siret, numero_tva, plan, nb_generations_ia").eq("id", user!.id).single(),
   ]);
 
   const toutesFactures = toutesFacturesData || [];
@@ -61,7 +61,10 @@ export default async function DashboardPage() {
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
         }}>
           <p style={{ fontSize: "13px", color: "var(--ink-2)" }}>
-            Plan gratuit · <strong style={{ color: "var(--ink)" }}>5 générations restantes</strong>
+            Plan gratuit ·{" "}
+            <strong style={{ color: (profile?.nb_generations_ia || 0) >= 4 ? "#DC2626" : "var(--ink)" }}>
+              {5 - (profile?.nb_generations_ia || 0)} génération{5 - (profile?.nb_generations_ia || 0) > 1 ? "s" : ""} restante{5 - (profile?.nb_generations_ia || 0) > 1 ? "s" : ""}
+            </strong>
           </p>
           <a href="/upgrade" style={{
             fontSize: "12px", color: "var(--ivory)", background: "var(--ink)",

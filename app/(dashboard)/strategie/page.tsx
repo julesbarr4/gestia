@@ -69,6 +69,12 @@ export default function StrategiePage() {
 
     const data = await res.json();
 
+    if (res.status === 403) {
+      setErreur(data.erreur || "Fonctionnalité réservée à un plan supérieur");
+      setLoading(false);
+      return;
+    }
+
     if (!res.ok) {
       setErreur(data.erreur || "Erreur");
       setLoading(false);

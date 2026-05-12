@@ -3,12 +3,21 @@ export const maxDuration = 120; // 2 min timeout Vercel
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererContenuSocial } from "@/lib/agents/cmo-agent";
+import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
+  }
+
+  const acces = await verifierAccesAgent(user.id, "marketing");
+  if (!acces.autorise) {
+    return NextResponse.json(
+      { erreur: acces.erreur, planRequis: acces.planRequis, limite: true },
+      { status: 403 }
+    );
   }
 
   const body = await req.json();
@@ -32,5 +41,6 @@ export async function POST(req: NextRequest) {
     tonalite,
   });
 
+  await incrementerGenerations(user.id);
   return NextResponse.json({ contenu });
 }

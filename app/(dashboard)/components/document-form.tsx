@@ -88,6 +88,7 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
   const [loadingSauvegarde, setLoadingSauvegarde] = useState(false);
   const [erreur, setErreur] = useState("");
   const [succes, setSucces] = useState(false);
+  const [limiteAtteinte, setLimiteAtteinte] = useState(false);
 
   const totalHT = lignes.reduce((s, l) => s + l.quantite * l.prixUnitaireHT, 0);
   const montantTVA = totalHT * (tauxTVA / 100);
@@ -171,6 +172,7 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     if (!nomClient.trim()) { setErreur("Renseignez d'abord un client."); return; }
     setLoadingIA(true);
     setErreur("");
+    setLimiteAtteinte(false);
 
     const bodyKey = type === "devis" ? "descriptionProjet" : "descriptionPrestations";
     const res = await fetch(agentEndpoint, {
@@ -185,6 +187,14 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     });
 
     const data = await res.json();
+
+    if (res.status === 403 && data.limite) {
+      setErreur(data.erreur || "Limite atteinte");
+      setLimiteAtteinte(true);
+      setLoadingIA(false);
+      return;
+    }
+
     if (!res.ok) { setErreur(data.erreur || "Erreur IA"); setLoadingIA(false); return; }
 
     const doc: DocumentResult = data.document;
@@ -320,9 +330,33 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
         </h1>
       </div>
 
-      {erreur && (
+      {erreur && !limiteAtteinte && (
         <div style={{ background: "#FEF2F2", color: "#991B1B", fontSize: "13px", padding: "10px 14px", borderRadius: "12px", border: "1px solid #FECACA", marginBottom: "16px" }}>
           {erreur}
+        </div>
+      )}
+
+      {limiteAtteinte && (
+        <div style={{
+          background: "#FFFBEB", border: "1px solid #FCD34D",
+          borderRadius: "12px", padding: "14px 16px", marginBottom: "16px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+        }}>
+          <div>
+            <p style={{ fontSize: "13.5px", color: "#92400E", fontWeight: 500 }}>
+              Limite du plan gratuit atteinte
+            </p>
+            <p style={{ fontSize: "12px", color: "#B45309", marginTop: "2px" }}>
+              Vous avez utilisé vos 5 générations gratuites.
+            </p>
+          </div>
+          <a href="/upgrade" style={{
+            fontSize: "12px", color: "var(--ivory)", background: "var(--ink)",
+            borderRadius: "999px", padding: "7px 14px", textDecoration: "none",
+            fontWeight: 500, flexShrink: 0,
+          }}>
+            Passer à l&apos;Essentiel →
+          </a>
         </div>
       )}
 

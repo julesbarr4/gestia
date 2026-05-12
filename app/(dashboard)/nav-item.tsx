@@ -7,6 +7,7 @@ const NAV_ITEMS: Array<{
   href: string;
   label: string;
   separator?: boolean;
+  badge?: string;
 }> = [
   { href: "/dashboard", label: "Accueil" },
   { href: "/clients", label: "Mes clients" },
@@ -16,8 +17,8 @@ const NAV_ITEMS: Array<{
 
   { href: "/emails", label: "Répondre aux emails", separator: true },
   { href: "/rapports", label: "Mes chiffres" },
-  { href: "/marketing", label: "Mon contenu" },
-  { href: "/strategie", label: "Mon plan" },
+  { href: "/marketing", label: "Mon contenu", badge: "Pro" },
+  { href: "/strategie", label: "Mon plan", badge: "Pro" },
 
   { href: "/dashboard/equipe", label: "L'équipe Gestia", separator: true },
   { href: "/upgrade", label: "⭐ Changer de plan", separator: true },
@@ -57,6 +58,21 @@ export function NavItems() {
               }}
             >
               {item.label}
+              {item.badge && (
+                <span style={{
+                  marginLeft: "auto",
+                  fontSize: "8.5px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  background: "color-mix(in oklch, var(--accent) 15%, transparent)",
+                  color: "var(--accent)",
+                  padding: "1px 6px",
+                  borderRadius: "999px",
+                  fontFamily: "Geist Mono, monospace",
+                }}>
+                  {item.badge}
+                </span>
+              )}
             </Link>
           </div>
         );
