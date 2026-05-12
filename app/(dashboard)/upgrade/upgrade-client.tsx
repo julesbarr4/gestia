@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, priceIdPro }: {
   planActuel: string;
@@ -11,6 +13,10 @@ export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, p
   const [loading, setLoading] = useState<string | null>(null);
   const [erreur, setErreur] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const succes = searchParams.get("success") === "true";
+  const planUpgrade = searchParams.get("plan");
+  const canceled = searchParams.get("canceled") === "true";
 
   const PLANS = [
     {
@@ -113,8 +119,55 @@ export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, p
     color: "var(--ink-3)", fontFamily: "Geist Mono, monospace",
   };
 
+  if (succes) {
+    return (
+      <div style={{ maxWidth: "560px", textAlign: "center", margin: "0 auto", padding: "60px 0" }}>
+        <div style={{
+          width: "64px", height: "64px", borderRadius: "50%",
+          background: "color-mix(in oklch, var(--accent) 12%, transparent)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          margin: "0 auto 24px",
+          fontSize: "28px",
+        }}>
+          ✓
+        </div>
+        <p style={{ fontSize: "10.5px", textTransform: "uppercase", letterSpacing: "0.16em", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace", marginBottom: "12px" }}>
+          ABONNEMENT ACTIVÉ
+        </p>
+        <h1 style={{ fontFamily: "Instrument Serif, serif", fontSize: "36px", color: "var(--ink)", lineHeight: 1.06, marginBottom: "12px" }}>
+          Bienvenue sur le plan <em>{planUpgrade === "pro" ? "Pro" : "Essentiel"} !</em>
+        </h1>
+        <p style={{ fontSize: "15px", color: "var(--ink-2)", marginBottom: "32px", lineHeight: 1.6 }}>
+          Votre abonnement est actif. Tous vos agents IA sont maintenant disponibles.
+        </p>
+        <a href="/dashboard" style={{
+          display: "inline-block",
+          background: "var(--ink)", color: "var(--ivory)",
+          borderRadius: "999px", padding: "12px 28px",
+          fontSize: "14px", fontWeight: 500, textDecoration: "none",
+        }}>
+          Accéder au dashboard →
+        </a>
+        <p style={{ fontSize: "12px", color: "var(--ink-3)", marginTop: "16px" }}>
+          Une confirmation vous a été envoyée par email.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ maxWidth: "900px" }}>
+
+      {canceled && (
+        <div style={{
+          background: "var(--ivory-2)", border: "1px solid var(--line)",
+          borderRadius: "12px", padding: "12px 16px", marginBottom: "20px",
+        }}>
+          <p style={{ fontSize: "13px", color: "var(--ink-2)" }}>
+            Paiement annulé. Vous pouvez réessayer quand vous voulez.
+          </p>
+        </div>
+      )}
 
       <div style={{ marginBottom: "36px" }}>
         <p style={ey}>ABONNEMENT</p>
