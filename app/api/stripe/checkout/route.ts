@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${baseUrl}/upgrade?success=true&plan=${plan}&session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${baseUrl}/auth/stripe-success?plan=${plan}`,
     cancel_url: `${baseUrl}/upgrade?canceled=true`,
     metadata: {
       supabase_user_id: user.id,

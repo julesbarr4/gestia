@@ -12,6 +12,11 @@ export default function LoginPage() {
   const [erreur, setErreur] = useState("");
   const router = useRouter();
   const supabase = createClient();
+  const searchParams = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : null;
+  const messagePaiement = searchParams?.get("message") === "paiement-confirme";
+  const planPaiement = searchParams?.get("plan");
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +68,21 @@ export default function LoginPage() {
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "14px", maxWidth: "380px" }}>
+            {messagePaiement && (
+              <div style={{
+                background: "color-mix(in oklch, var(--accent) 10%, transparent)",
+                border: "1px solid color-mix(in oklch, var(--accent) 30%, transparent)",
+                borderRadius: "12px", padding: "12px 16px", marginBottom: "20px",
+                maxWidth: "380px",
+              }}>
+                <p style={{ fontSize: "13px", color: "var(--accent)", fontWeight: 500 }}>
+                  ✓ Paiement confirmé — plan {planPaiement === "pro" ? "Pro" : "Essentiel"} activé !
+                </p>
+                <p style={{ fontSize: "12px", color: "var(--ink-2)", marginTop: "4px" }}>
+                  Reconnectez-vous pour accéder à votre espace.
+                </p>
+              </div>
+            )}
             {erreur && (
               <div style={{ background: "#FEF2F2", color: "#991B1B", fontSize: "13px", padding: "10px 14px", borderRadius: "10px", border: "1px solid #FECACA" }}>
                 {erreur}
