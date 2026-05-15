@@ -69,7 +69,7 @@ export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, p
 
   async function choisirPlan(plan: typeof PLANS[0]) {
     if (!plan.priceId) {
-      setErreur(`Price ID manquant pour le plan ${plan.nom}. Vérifiez vos variables d'environnement.`);
+      setErreur(`Price ID manquant pour le plan ${plan.nom}.`);
       return;
     }
     if (plan.id === planActuel) return;
@@ -87,20 +87,26 @@ export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, p
       const data = await res.json();
 
       if (!res.ok) {
-        setErreur(`Erreur ${res.status} : ${data.erreur || JSON.stringify(data)}`);
+        setErreur(data.erreur || "Erreur lors du changement de plan.");
         setLoading(null);
         return;
       }
 
       if (!data.url) {
-        setErreur("Aucune URL de redirection reçue de Stripe.");
+        setErreur("Aucune URL de redirection reçue.");
         setLoading(null);
         return;
       }
 
+      if (data.updated) {
+        window.location.href = data.url;
+        return;
+      }
+
       window.location.href = data.url;
+
     } catch (err) {
-      setErreur(`Erreur réseau : ${err instanceof Error ? err.message : String(err)}`);
+      setErreur(`Erreur : ${err instanceof Error ? err.message : String(err)}`);
       setLoading(null);
     }
   }
