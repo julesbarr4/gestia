@@ -12,15 +12,60 @@ export async function POST(req: NextRequest) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("stripe_customer_id, nom_entreprise, email")
+    .select("stripe_customer_id, stripe_subscription_id, nom_entreprise, plan")
     .eq("id", user.id)
     .single();
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://gestia-beta.vercel.app";
+
+  if (profile?.stripe_subscription_id) {
+    try {
+      const subscription = await stripe.subscriptions.retrieve(
+        profile.stripe_subscription_id
+      );
+
+      if (subscription.status === "active" || subscription.status === "trialing") {
+        const updatedSubscription = await stripe.subscriptions.update(
+          profile.stripe_subscription_id,
+          {
+            items: [{
+              id: subscription.items.data[0].id,
+              price: priceId,
+            }],
+            proration_behavior: "always_invoice",
+            metadata: {
+              supabase_user_id: user.id,
+              plan,
+            },
+          }
+        );
+
+        const finPeriode = updatedSubscription.current_period_end
+          ? new Date(updatedSubscription.current_period_end * 1000).toISOString()
+          : null;
+
+        await supabase.from("profiles").update({
+          plan,
+          stripe_price_id: priceId,
+          abonnement_actif: true,
+          abonnement_fin_periode: finPeriode,
+        }).eq("id", user.id);
+
+        return NextResponse.json({
+          url: `${baseUrl}/upgrade?success=true&plan=${plan}`,
+          updated: true,
+        });
+      }
+    } catch (err) {
+      console.error("Erreur mise à jour abonnement:", err);
+    }
+  }
 
   let customerId = profile?.stripe_customer_id;
 
   if (!customerId) {
     const customer = await stripe.customers.create({
-      email: user.email || profile?.email || "",
+      email: user.email || "",
       name: profile?.nom_entreprise || "",
       metadata: { supabase_user_id: user.id },
     });
@@ -31,8 +76,6 @@ export async function POST(req: NextRequest) {
       .update({ stripe_customer_id: customerId })
       .eq("id", user.id);
   }
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mongestia.fr";
 
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
