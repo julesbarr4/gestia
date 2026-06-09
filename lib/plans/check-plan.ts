@@ -82,14 +82,30 @@ export async function incrementerGenerations(userId: string): Promise<void> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan, nb_generations_ia")
+    .select("plan")
     .eq("id", userId)
     .single();
 
-  if (profile?.plan === "starter" || !profile?.plan) {
+  // Seul le plan starter est plafonné, donc seul lui a besoin du compteur.
+  if (profile?.plan && profile.plan !== "starter") return;
+
+  // Incrément atomique côté base (voir migration 0001) : évite la race
+  // condition du read-modify-write où des requêtes concurrentes lisaient
+  // toutes la même valeur et dépassaient le quota gratuit.
+  const { error } = await supabase.rpc("increment_generations_ia", {
+    p_user_id: userId,
+  });
+
+  // Repli défensif si la fonction RPC n'est pas encore déployée.
+  if (error) {
+    const { data: actuel } = await supabase
+      .from("profiles")
+      .select("nb_generations_ia")
+      .eq("id", userId)
+      .single();
     await supabase
       .from("profiles")
-      .update({ nb_generations_ia: (profile?.nb_generations_ia || 0) + 1 })
+      .update({ nb_generations_ia: (actuel?.nb_generations_ia || 0) + 1 })
       .eq("id", userId);
   }
 }

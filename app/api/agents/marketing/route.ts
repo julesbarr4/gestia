@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { sujet, reseaux, tonalite } = body;
+  const { sujet, reseaux, tonalite, secteur } = body;
 
   if (!sujet || !reseaux?.length) {
     return NextResponse.json({ erreur: "sujet et reseaux sont requis" }, { status: 400 });
@@ -29,13 +29,14 @@ export async function POST(req: NextRequest) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nom_entreprise")
+    .select("nom_entreprise, secteur")
     .eq("id", user.id)
     .single();
 
   const contenu = await genererContenuSocial({
     nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
-    secteur: "services",
+    // Priorité au secteur fourni dans la requête, sinon celui du profil.
+    secteur: secteur || profile?.secteur || undefined,
     sujet,
     reseaux,
     tonalite,

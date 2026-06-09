@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { planFromPriceId } from "@/lib/plans/plan-mapping";
 import Stripe from "stripe";
 
 export const config = { api: { bodyParser: false } };
@@ -10,12 +11,6 @@ async function getSupabaseAdmin() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
-}
-
-function getPlanFromPriceId(priceId: string): string {
-  if (priceId === process.env.STRIPE_PRICE_ESSENTIEL) return "essentiel";
-  if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
-  return "starter";
 }
 
 export async function POST(req: NextRequest) {
@@ -50,7 +45,7 @@ export async function POST(req: NextRequest) {
         if (!userId) break;
 
         const priceId = subscription.items.data[0]?.price.id;
-        const plan = getPlanFromPriceId(priceId);
+        const plan = planFromPriceId(priceId);
 
         await supabase.from("profiles").update({
           stripe_subscription_id: subscription.id,
@@ -70,7 +65,7 @@ export async function POST(req: NextRequest) {
         if (!userId) break;
 
         const priceId = subscription.items.data[0]?.price.id;
-        const plan = getPlanFromPriceId(priceId);
+        const plan = planFromPriceId(priceId);
         const actif = subscription.status === "active" || subscription.status === "trialing";
 
         await supabase.from("profiles").update({

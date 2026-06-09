@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
+import { planFromPriceId } from "@/lib/plans/plan-mapping";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
 
-  const { priceId, plan } = await req.json();
+  const { priceId } = await req.json();
   if (!priceId) return NextResponse.json({ erreur: "Prix manquant" }, { status: 400 });
+
+  // Le plan est dérivé du prix côté serveur — jamais de la requête client —
+  // pour empêcher un utilisateur de payer le prix starter en réclamant "pro".
+  const plan = planFromPriceId(priceId);
+  if (plan === "starter") {
+    return NextResponse.json({ erreur: "Prix inconnu" }, { status: 400 });
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
