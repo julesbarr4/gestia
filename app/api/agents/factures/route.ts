@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererFacture } from "@/lib/agents/admin-agent";
 import { genererNumeroDocument } from "@/lib/utils";
+import { calculerTotauxDocument } from "@/lib/documents/totaux";
 import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -47,6 +48,17 @@ export async function POST(req: NextRequest) {
     devisReference,
   });
 
+  // Les totaux produits par le LLM ne sont pas une source de confiance :
+  // on les recalcule à partir des lignes avant insertion (document légal).
+  const resultat = calculerTotauxDocument(document.lignes);
+  if (!resultat.ok) {
+    return NextResponse.json(
+      { erreur: `Document généré invalide : ${resultat.erreur}` },
+      { status: 502 }
+    );
+  }
+  const totaux = resultat.totaux;
+
   const { count } = await supabase
     .from("factures")
     .select("*", { count: "exact", head: true })
@@ -65,10 +77,11 @@ export async function POST(req: NextRequest) {
       devis_id: devisId || null,
       numero,
       titre: document.titre,
-      lignes: document.lignes,
-      total_ht: document.totalHT,
-      total_tva: document.totalTVA,
-      total_ttc: document.totalTTC,
+      lignes: totaux.lignes,
+      total_ht: totaux.totalHT,
+      taux_tva: totaux.tauxTVA,
+      total_tva: totaux.totalTVA,
+      total_ttc: totaux.totalTTC,
       notes: document.notes,
       conditions: document.conditions,
       date_echeance: dateEcheance,

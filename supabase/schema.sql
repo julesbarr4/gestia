@@ -1,5 +1,13 @@
--- Gestia - Schéma base de données
--- À exécuter dans l'éditeur SQL de Supabase
+-- Gestia - Schéma base de données de RÉFÉRENCE
+-- À exécuter dans l'éditeur SQL de Supabase pour une installation neuve.
+--
+-- Ce fichier reflète l'état réel de la base, migrations incluses :
+--   - 0001_add_secteur_and_atomic_generations.sql
+--   - 0002_rgpd_suppression_compte.sql
+-- Sur une base existante, exécuter uniquement les migrations, pas ce fichier.
+--
+-- Toute évolution du schéma doit être faite via une migration dans
+-- supabase/migrations/ PUIS reportée ici pour garder la référence alignée.
 
 -- Extension UUID
 create extension if not exists "uuid-ossp";
@@ -17,10 +25,50 @@ create table public.profiles (
   ville text,
   telephone text,
   logo_url text,
-  plan text default 'starter' check (plan in ('starter', 'pro')),
+
+  -- Identité et coordonnées de facturation (Factur-X, PDF)
+  numero_tva text,
+  iban text,
+  bic text,
+  site_web text,
+  couleur_principale text default '#0E0E0E',
+
+  -- Mentions légales configurables (paramètres / documents)
+  mention_rge text,
+  mention_assurance text,
+  mention_garantie text,
+  mention_tva_debits boolean default false,
+  -- Nature des opérations facturées (champ Factur-X)
+  type_operation text default 'prestations'
+    check (type_operation in ('biens', 'prestations', 'mixte')),
+  mention_legale_custom text,
+  pied_de_page text,
+
+  -- Secteur d'activité (migration 0001) : utilisé par les agents IA.
+  -- Les valeurs autorisées correspondent aux SecteurId de lib/agents/secteurs.ts.
+  secteur text
+    constraint profiles_secteur_check check (
+      secteur is null
+      or secteur in (
+        'services',
+        'artisanat_btp',
+        'restauration',
+        'sante_bienetre',
+        'ecommerce',
+        'conseil'
+      )
+    ),
+
+  -- Abonnement : les valeurs correspondent au type Plan de lib/plans/check-plan.ts.
+  plan text default 'starter' check (plan in ('starter', 'essentiel', 'pro')),
+  -- Compteur de générations IA du plan starter (incrément atomique, migration 0001)
+  nb_generations_ia integer default 0,
   stripe_customer_id text,
   stripe_subscription_id text,
+  stripe_price_id text,
   abonnement_actif boolean default false,
+  abonnement_fin_periode timestamptz,
+
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -112,6 +160,27 @@ create policy "Utilisateur gère ses factures" on public.factures
   for all using (auth.uid() = user_id);
 
 -- ============================================================
+-- MODÈLES DE DEVIS RÉUTILISABLES
+-- ============================================================
+create table public.modeles_devis (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  nom text not null,
+  description text,
+  lignes jsonb default '[]'::jsonb,
+  taux_tva numeric(5,2) default 20,
+  conditions text,
+  notes text,
+  utilise_count integer default 0,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table public.modeles_devis enable row level security;
+create policy "Utilisateur gère ses modèles" on public.modeles_devis
+  for all using (auth.uid() = user_id);
+
+-- ============================================================
 -- EMAILS ENTRANTS (SAV)
 -- ============================================================
 create table public.emails_entrants (
@@ -190,6 +259,8 @@ create trigger devis_updated_at before update on public.devis
   for each row execute function update_updated_at();
 create trigger factures_updated_at before update on public.factures
   for each row execute function update_updated_at();
+create trigger modeles_devis_updated_at before update on public.modeles_devis
+  for each row execute function update_updated_at();
 
 -- ============================================================
 -- FONCTION : créer profil après inscription
@@ -206,3 +277,51 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================================
+-- FONCTION : incrément atomique du compteur de générations IA
+-- (migration 0001 — évite la race condition du read-modify-write)
+-- ============================================================
+create or replace function public.increment_generations_ia(p_user_id uuid)
+returns integer
+language sql
+security definer
+set search_path = public
+as $$
+  update public.profiles
+     set nb_generations_ia = coalesce(nb_generations_ia, 0) + 1
+   where id = p_user_id
+  returning nb_generations_ia;
+$$;
+
+-- ============================================================
+-- FONCTION : suppression de compte RGPD transactionnelle
+-- (migration 0002 — purge toutes les données de l'appelant en une
+-- transaction unique ; toute nouvelle table user_id doit y être ajoutée)
+-- ============================================================
+create or replace function public.supprimer_compte_utilisateur()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+begin
+  if v_user_id is null then
+    raise exception 'Non authentifié';
+  end if;
+
+  delete from public.emails_entrants where user_id = v_user_id;
+  delete from public.rapports_financiers where user_id = v_user_id;
+  delete from public.modeles_devis where user_id = v_user_id;
+  delete from public.agents_logs where user_id = v_user_id;
+  delete from public.factures where user_id = v_user_id;
+  delete from public.devis where user_id = v_user_id;
+  delete from public.clients where user_id = v_user_id;
+  delete from public.profiles where id = v_user_id;
+end;
+$$;
+
+revoke all on function public.supprimer_compte_utilisateur() from public;
+grant execute on function public.supprimer_compte_utilisateur() to authenticated;

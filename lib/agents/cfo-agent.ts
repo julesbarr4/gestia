@@ -1,4 +1,5 @@
 import { callAgent, MODELS } from "@/lib/claude";
+import { REGLE_ANTI_INJECTION } from "@/lib/agents/prompt-securite";
 
 const SYSTEM_PROMPT = `Tu es Hugo, directeur financier IA de Gestia.
 
@@ -27,7 +28,7 @@ RÈGLES ABSOLUES :
 - Maximum 3-4 points par bloc (sinon l'entrepreneur décroche)
 - Pas d'émojis
 - Format JSON strict quand demandé
-- Signature "— Hugo, votre CFO Gestia" dans le résumé exécutif final`;
+- Signature "— Hugo, votre CFO Gestia" dans le résumé exécutif final${REGLE_ANTI_INJECTION}`;
 
 export interface RapportFinancier {
   resumeExecutif: string;

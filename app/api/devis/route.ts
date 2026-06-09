@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { calculerTotauxDocument } from "@/lib/documents/totaux";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -8,9 +9,17 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const {
-    clientId, nomClient, lignes, totalHT, totalTVA, totalTTC,
-    tauxTVA, conditionsPaiement, reference, notes, validite,
+    clientId, nomClient, lignes, tauxTVA,
+    conditionsPaiement, reference, notes, validite,
   } = body;
+
+  // Les totaux envoyés par le client sont ignorés : un devis engage
+  // l'entreprise, ses montants sont recalculés côté serveur.
+  const resultat = calculerTotauxDocument(lignes, tauxTVA);
+  if (!resultat.ok) {
+    return NextResponse.json({ erreur: resultat.erreur }, { status: 400 });
+  }
+  const totaux = resultat.totaux;
 
   let clientIdFinal = clientId || null;
 
@@ -46,11 +55,11 @@ export async function POST(req: NextRequest) {
       numero,
       titre: `Devis ${nomClient}`,
       statut: "brouillon",
-      lignes,
-      total_ht: totalHT,
-      taux_tva: tauxTVA,
-      total_tva: totalTVA,
-      total_ttc: totalTTC,
+      lignes: totaux.lignes,
+      total_ht: totaux.totalHT,
+      taux_tva: totaux.tauxTVA,
+      total_tva: totaux.totalTVA,
+      total_ttc: totaux.totalTTC,
       notes: notes || null,
       conditions: conditionsPaiement,
       date_validite: dateValidite,
