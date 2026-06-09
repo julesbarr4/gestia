@@ -17,6 +17,23 @@ export interface AgentResponse {
   dureeMs: number;
 }
 
+/**
+ * Nettoie la sortie d'un agent LLM pour en extraire le JSON exploitable.
+ * Les modèles encapsulent fréquemment leur réponse dans un bloc ```json ...```
+ * malgré la consigne "JSON strict" ; cette fonction retire ces délimiteurs.
+ */
+export function nettoyerJsonLLM(contenu: string): string {
+  return contenu.replace(/```json\n?|\n?```/g, "").trim();
+}
+
+/**
+ * Variante typée qui parse directement le JSON nettoyé.
+ * Lève si la sortie n'est pas du JSON valide (à gérer par l'appelant).
+ */
+export function parseJsonLLM<T>(contenu: string): T {
+  return JSON.parse(nettoyerJsonLLM(contenu)) as T;
+}
+
 export async function callAgent(
   model: string,
   systemPrompt: string,

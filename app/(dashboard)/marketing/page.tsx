@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, Copy, CheckCircle } from "lucide-react";
+import { SECTEURS_LISTE } from "@/lib/agents/secteurs";
 
 interface ContenuMarketing {
   linkedin?: string;
@@ -46,6 +47,7 @@ export default function MarketingPage() {
   const [sujet, setSujet] = useState("");
   const [reseaux, setReseaux] = useState<string[]>(["linkedin"]);
   const [tonalite, setTonalite] = useState("professionnel");
+  const [secteur, setSecteur] = useState("");
   const [loading, setLoading] = useState(false);
   const [contenu, setContenu] = useState<ContenuMarketing | null>(null);
   const [erreur, setErreur] = useState("");
@@ -66,7 +68,7 @@ export default function MarketingPage() {
     const res = await fetch("/api/agents/marketing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sujet, reseaux, tonalite }),
+      body: JSON.stringify({ sujet, reseaux, tonalite, secteur: secteur || undefined }),
     });
 
     const data = await res.json();
@@ -149,6 +151,20 @@ export default function MarketingPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <label style={labelStyle}>Secteur d&apos;activité</label>
+            <select
+              value={secteur}
+              onChange={(e) => setSecteur(e.target.value)}
+              style={inputStyle}
+            >
+              <option value="">Détecté automatiquement</option>
+              {SECTEURS_LISTE.map((s) => (
+                <option key={s.id} value={s.id}>{s.label}</option>
+              ))}
+            </select>
           </div>
 
           <div>

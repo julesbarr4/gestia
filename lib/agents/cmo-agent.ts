@@ -1,4 +1,5 @@
-import { callAgent, MODELS } from "@/lib/claude";
+import { callAgent, MODELS, parseJsonLLM } from "@/lib/claude";
+import { contexteSecteurPourPrompt, resoudreSecteur } from "@/lib/agents/secteurs";
 
 const SYSTEM_PROMPT = `Tu es Cyprien, directeur marketing IA de Gestia.
 
@@ -36,17 +37,21 @@ export interface ContenuMarketing {
 
 export async function genererContenuSocial(params: {
   nomEntreprise: string;
-  secteur: string;
+  secteur?: string;
   sujet: string;
   reseaux: Array<"linkedin" | "instagram" | "facebook" | "newsletter">;
   tonalite?: "professionnel" | "decontracte" | "inspirant";
 }): Promise<ContenuMarketing> {
-  const tonalite = params.tonalite || "professionnel";
+  const secteur = resoudreSecteur(params.secteur);
+  // À défaut de tonalité explicite, on prend celle conseillée pour le secteur.
+  const tonalite = params.tonalite || secteur.tonaliteConseillee;
 
   const { contenu } = await callAgent(
     MODELS.HAIKU,
     SYSTEM_PROMPT,
-    `Génère du contenu marketing pour "${params.nomEntreprise}" (${params.secteur}).
+    `Génère du contenu marketing pour "${params.nomEntreprise}".
+
+${contexteSecteurPourPrompt(params.secteur)}
 
 Sujet : ${params.sujet}
 Tonalité : ${tonalite}
@@ -63,20 +68,21 @@ Retourne UNIQUEMENT ce JSON (inclure seulement les réseaux demandés) :
     2048
   );
 
-  const cleaned = contenu.replace(/```json\n?|\n?```/g, "").trim();
-  return JSON.parse(cleaned) as ContenuMarketing;
+  return parseJsonLLM<ContenuMarketing>(contenu);
 }
 
 export async function genererEmailNewsletter(params: {
   nomEntreprise: string;
-  secteur: string;
+  secteur?: string;
   sujet: string;
   offre?: string;
 }): Promise<{ sujet: string; corps: string }> {
   const { contenu } = await callAgent(
     MODELS.SONNET,
     SYSTEM_PROMPT,
-    `Génère une newsletter email pour "${params.nomEntreprise}" (${params.secteur}).
+    `Génère une newsletter email pour "${params.nomEntreprise}".
+
+${contexteSecteurPourPrompt(params.secteur)}
 
 Sujet/thème : ${params.sujet}
 ${params.offre ? `Offre à mettre en avant : ${params.offre}` : ""}
@@ -89,6 +95,5 @@ Retourne UNIQUEMENT ce JSON :
     2048
   );
 
-  const cleaned = contenu.replace(/```json\n?|\n?```/g, "").trim();
-  return JSON.parse(cleaned) as { sujet: string; corps: string };
+  return parseJsonLLM<{ sujet: string; corps: string }>(contenu);
 }
