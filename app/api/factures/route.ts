@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { calculerTotauxDocument } from "@/lib/documents/totaux";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -8,9 +9,17 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const {
-    clientId, nomClient, lignes, totalHT, totalTVA, totalTTC,
-    tauxTVA, conditionsPaiement, reference, notes, dateEcheance,
+    clientId, nomClient, lignes, tauxTVA,
+    conditionsPaiement, reference, notes, dateEcheance,
   } = body;
+
+  // Les totaux envoyés par le client sont ignorés : la facture est un
+  // document légal (Factur-X), ses montants sont recalculés côté serveur.
+  const resultat = calculerTotauxDocument(lignes, tauxTVA);
+  if (!resultat.ok) {
+    return NextResponse.json({ erreur: resultat.erreur }, { status: 400 });
+  }
+  const totaux = resultat.totaux;
 
   let clientIdFinal = clientId || null;
 
@@ -43,11 +52,11 @@ export async function POST(req: NextRequest) {
       numero,
       titre: `Facture ${nomClient}`,
       statut: "brouillon",
-      lignes,
-      total_ht: totalHT,
-      taux_tva: tauxTVA,
-      total_tva: totalTVA,
-      total_ttc: totalTTC,
+      lignes: totaux.lignes,
+      total_ht: totaux.totalHT,
+      taux_tva: totaux.tauxTVA,
+      total_tva: totaux.totalTVA,
+      total_ttc: totaux.totalTTC,
       notes: notes || null,
       conditions: conditionsPaiement,
       date_echeance: dateEcheance || null,

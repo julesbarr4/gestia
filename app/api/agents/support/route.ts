@@ -3,6 +3,7 @@ export const maxDuration = 120; // 2 min timeout Vercel
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { analyserEtRepondreEmail } from "@/lib/agents/support-agent";
+import { reponseAgentSuspecte } from "@/lib/agents/prompt-securite";
 import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -44,6 +45,11 @@ export async function POST(req: NextRequest) {
     analyse.reponse += "\n\n— Généré par Léa, votre assistante support Gestia";
   }
 
+  // Filtre de sortie anti prompt-injection : si la réponse générée semble
+  // détournée (instructions inhabituelles, fuite de prompt), elle n'est pas
+  // marquée "traite" et l'utilisateur est invité à la relire avant envoi.
+  const suspecte = reponseAgentSuspecte(analyse.reponse) || reponseAgentSuspecte(analyse.sujetReponse);
+
   const { data: emailLog } = await supabase
     .from("emails_entrants")
     .insert({
@@ -52,11 +58,18 @@ export async function POST(req: NextRequest) {
       sujet,
       corps,
       reponse_ia: analyse.reponse,
-      statut: "traite",
+      statut: suspecte ? "en_attente" : "traite",
     })
     .select()
     .single();
 
   await incrementerGenerations(user.id);
-  return NextResponse.json({ analyse, emailLogId: emailLog?.id });
+  return NextResponse.json({
+    analyse,
+    emailLogId: emailLog?.id,
+    ...(suspecte && {
+      avertissementSecurite:
+        "Cette réponse contient des éléments inhabituels (possible tentative de manipulation dans l'e-mail reçu). Relisez-la attentivement avant tout envoi.",
+    }),
+  });
 }
