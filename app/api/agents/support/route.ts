@@ -1,4 +1,4 @@
-export const maxDuration = 120; // 2 min timeout Vercel
+export const maxDuration = 120;
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -34,46 +34,52 @@ export async function POST(req: NextRequest) {
     .eq("id", user.id)
     .single();
 
-  const analyse = await analyserEtRepondreEmail({
-    emailDe,
-    sujet: sujet || "(sans sujet)",
-    corps,
-    nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
-  });
-
-  if (ajouterSignatureLea === true) {
-    analyse.reponse += "\n\n— Généré par Léa, votre assistante support Gestia";
-  }
-
-  // Filtre de sortie anti prompt-injection : si la réponse générée semble
-  // détournée (instructions inhabituelles, fuite de prompt), elle n'est pas
-  // marquée "traite" et l'utilisateur est invité à la relire avant envoi.
-  const suspecte = reponseAgentSuspecte(analyse.reponse) || reponseAgentSuspecte(analyse.sujetReponse);
-
-  const { data: emailLog } = await supabase
-    .from("emails_entrants")
-    .insert({
-      user_id: user.id,
-      de: emailDe,
-      sujet,
+  try {
+    const analyse = await analyserEtRepondreEmail({
+      emailDe,
+      sujet: sujet || "(sans sujet)",
       corps,
-      reponse_ia: analyse.reponse,
-      statut: suspecte ? "en_attente" : "traite",
-    })
-    .select()
-    .single();
+      nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
+    });
 
-  await supabase.from("agents_logs").insert({
-    user_id: user.id, agent: "support", action: "analyser_email",
-    input: { sujet }, output: { statut: "traite" }, statut: "succes",
-  });
+    if (ajouterSignatureLea === true) {
+      analyse.reponse += "\n\n— Généré par Léa, votre assistante support Gestia";
+    }
 
-  return NextResponse.json({
-    analyse,
-    emailLogId: emailLog?.id,
-    ...(suspecte && {
-      avertissementSecurite:
-        "Cette réponse contient des éléments inhabituels (possible tentative de manipulation dans l'e-mail reçu). Relisez-la attentivement avant tout envoi.",
-    }),
-  });
+    const suspecte = reponseAgentSuspecte(analyse.reponse) || reponseAgentSuspecte(analyse.sujetReponse);
+
+    const { data: emailLog } = await supabase
+      .from("emails_entrants")
+      .insert({
+        user_id: user.id,
+        de: emailDe,
+        sujet,
+        corps,
+        reponse_ia: analyse.reponse,
+        statut: suspecte ? "en_attente" : "traite",
+      })
+      .select()
+      .single();
+
+    await supabase.from("agents_logs").insert({
+      user_id: user.id, agent: "support", action: "analyser_email",
+      input: { sujet }, output: { statut: "traite" }, statut: "succes",
+    });
+
+    return NextResponse.json({
+      analyse,
+      emailLogId: emailLog?.id,
+      ...(suspecte && {
+        avertissementSecurite:
+          "Cette réponse contient des éléments inhabituels (possible tentative de manipulation dans l'e-mail reçu). Relisez-la attentivement avant tout envoi.",
+      }),
+    });
+  } catch (err) {
+    await supabase.rpc("rembourser_generation", { p_user_id: user.id });
+    console.error("Erreur génération support:", err);
+    return NextResponse.json(
+      { erreur: "Erreur lors de la génération. Votre quota n'a pas été débité." },
+      { status: 500 }
+    );
+  }
 }

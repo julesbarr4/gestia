@@ -1,4 +1,4 @@
-export const maxDuration = 120; // 2 min timeout Vercel
+export const maxDuration = 120;
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -44,27 +44,36 @@ export async function POST(req: NextRequest) {
     .eq("id", user.id)
     .single();
 
-  const relance = await genererRelance({
-    nomClient: facture.clients?.nom || "Client",
-    nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
-    numeroFacture: facture.numero,
-    montantTTC: facture.total_ttc,
-    dateEcheance: formatDate(facture.date_echeance),
-    nbRelances: facture.nb_relances,
-  });
+  try {
+    const relance = await genererRelance({
+      nomClient: facture.clients?.nom || "Client",
+      nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
+      numeroFacture: facture.numero,
+      montantTTC: facture.total_ttc,
+      dateEcheance: formatDate(facture.date_echeance),
+      nbRelances: facture.nb_relances,
+    });
 
-  await supabase
-    .from("factures")
-    .update({
-      nb_relances: facture.nb_relances + 1,
-      derniere_relance_at: new Date().toISOString(),
-    })
-    .eq("id", factureId);
+    await supabase
+      .from("factures")
+      .update({
+        nb_relances: facture.nb_relances + 1,
+        derniere_relance_at: new Date().toISOString(),
+      })
+      .eq("id", factureId);
 
-  await supabase.from("agents_logs").insert({
-    user_id: user.id, agent: "admin", action: "generer_relance",
-    input: { factureId }, output: { niveau: facture.nb_relances + 1 }, statut: "succes",
-  });
+    await supabase.from("agents_logs").insert({
+      user_id: user.id, agent: "admin", action: "generer_relance",
+      input: { factureId }, output: { niveau: facture.nb_relances + 1 }, statut: "succes",
+    });
 
-  return NextResponse.json({ relance, emailDestination: facture.clients?.email });
+    return NextResponse.json({ relance, emailDestination: facture.clients?.email });
+  } catch (err) {
+    await supabase.rpc("rembourser_generation", { p_user_id: user.id });
+    console.error("Erreur génération relance:", err);
+    return NextResponse.json(
+      { erreur: "Erreur lors de la génération. Votre quota n'a pas été débité." },
+      { status: 500 }
+    );
+  }
 }

@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ analyse });
   } catch (err) {
+    await supabase.rpc("rembourser_generation", { p_user_id: user.id });
     await supabase.from("agents_logs").insert({
       user_id: user.id,
       agent: "ceo",
