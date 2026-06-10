@@ -2,8 +2,13 @@ import Link from "next/link";
 import { PublicShell } from "@/app/components/public-layout";
 import { TEAM_AGENTS } from "@/lib/agents/team-data";
 
-export const metadata = {
-  title: "L'équipe — Gestia",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "L'équipe IA — Inès, Léa, Hugo, Cyprien, Augustin",
+  description:
+    "Rencontrez les 5 agents IA de Gestia : Inès pour la facturation, Léa pour le support client, Hugo pour vos finances, Cyprien pour le marketing, Augustin pour la stratégie.",
+  alternates: { canonical: "https://gestia-beta.vercel.app/equipe" },
 };
 
 export default function EquipePage() {

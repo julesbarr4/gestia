@@ -1,7 +1,12 @@
 import { PublicShell } from "@/app/components/public-layout";
 
-export const metadata = {
-  title: "Conditions Générales de Vente — Gestia",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Conditions Générales de Vente",
+  description: "Conditions générales de vente et d'utilisation de Gestia.",
+  robots: { index: false, follow: false },
+  alternates: { canonical: "https://gestia-beta.vercel.app/cgv" },
 };
 
 export default function CGVPage() {

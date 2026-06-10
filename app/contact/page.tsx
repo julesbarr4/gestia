@@ -1,8 +1,13 @@
 import { PublicShell } from "@/app/components/public-layout";
 import { ContactForm } from "./contact-form";
 
-export const metadata = {
-  title: "Contact — Gestia",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact — Parlez-nous de votre projet",
+  description:
+    "Une question sur Gestia ? Contactez notre équipe. Réponse garantie sous 24h.",
+  alternates: { canonical: "https://gestia-beta.vercel.app/contact" },
 };
 
 export default function ContactPage() {
