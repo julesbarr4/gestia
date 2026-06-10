@@ -1,7 +1,12 @@
 import { PublicShell } from "@/app/components/public-layout";
 
-export const metadata = {
-  title: "Politique de confidentialité — Gestia",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Politique de Confidentialité",
+  description: "Politique de confidentialité et protection des données personnelles de Gestia.",
+  robots: { index: false, follow: false },
+  alternates: { canonical: "https://gestia-beta.vercel.app/confidentialite" },
 };
 
 export default function ConfidentialitePage() {
