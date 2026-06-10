@@ -1,4 +1,4 @@
-export const maxDuration = 120; // 2 min timeout Vercel
+export const maxDuration = 120;
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -65,36 +65,45 @@ export async function POST(_req: NextRequest) {
     .eq("user_id", user.id)
     .gte("created_at", debutSemaine.toISOString());
 
-  const rapport = await genererRapportHebdomadaire({
-    nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
-    caSemaine,
-    caMois,
-    caMoisPrecedent,
-    facturesImpayees: facturesImpayees?.length || 0,
-    montantImpaye,
-    nbNouveauxClients: nouveauxClients?.length || 0,
-    nbDevisEnAttente: devisEnAttente?.length || 0,
-    devisAcceptesTaux: tauxAcceptation,
-  });
+  try {
+    const rapport = await genererRapportHebdomadaire({
+      nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
+      caSemaine,
+      caMois,
+      caMoisPrecedent,
+      facturesImpayees: facturesImpayees?.length || 0,
+      montantImpaye,
+      nbNouveauxClients: nouveauxClients?.length || 0,
+      nbDevisEnAttente: devisEnAttente?.length || 0,
+      devisAcceptesTaux: tauxAcceptation,
+    });
 
-  await supabase.from("rapports_financiers").insert({
-    user_id: user.id,
-    semaine: debutSemaine.toISOString().split("T")[0],
-    ca_semaine: caSemaine,
-    ca_mois: caMois,
-    factures_impayees: facturesImpayees?.length || 0,
-    montant_impaye: montantImpaye,
-    analyse_ia: rapport.resumeExecutif,
-    recommandations: rapport.recommandations,
-  });
+    await supabase.from("rapports_financiers").insert({
+      user_id: user.id,
+      semaine: debutSemaine.toISOString().split("T")[0],
+      ca_semaine: caSemaine,
+      ca_mois: caMois,
+      factures_impayees: facturesImpayees?.length || 0,
+      montant_impaye: montantImpaye,
+      analyse_ia: rapport.resumeExecutif,
+      recommandations: rapport.recommandations,
+    });
 
-  await supabase.from("agents_logs").insert({
-    user_id: user.id, agent: "cfo", action: "generer_rapport",
-    input: { periode: "hebdomadaire" }, output: { caSemaine, caMois }, statut: "succes",
-  });
+    await supabase.from("agents_logs").insert({
+      user_id: user.id, agent: "cfo", action: "generer_rapport",
+      input: { periode: "hebdomadaire" }, output: { caSemaine, caMois }, statut: "succes",
+    });
 
-  return NextResponse.json({
-    rapport,
-    metriques: { caSemaine, caMois, caMoisPrecedent, montantImpaye, tauxAcceptation },
-  });
+    return NextResponse.json({
+      rapport,
+      metriques: { caSemaine, caMois, caMoisPrecedent, montantImpaye, tauxAcceptation },
+    });
+  } catch (err) {
+    await supabase.rpc("rembourser_generation", { p_user_id: user.id });
+    console.error("Erreur génération rapport:", err);
+    return NextResponse.json(
+      { erreur: "Erreur lors de la génération. Votre quota n'a pas été débité." },
+      { status: 500 }
+    );
+  }
 }

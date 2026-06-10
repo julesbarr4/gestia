@@ -85,12 +85,55 @@ export async function POST(req: NextRequest) {
       .eq("id", user.id);
   }
 
+  if (customerId) {
+    const existingSubscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    if (existingSubscriptions.data.length > 0) {
+      const existingSub = existingSubscriptions.data[0];
+      const existingPriceId = existingSub.items.data[0]?.price.id;
+
+      if (existingPriceId === priceId) {
+        return NextResponse.json({
+          url: `${baseUrl}/upgrade?success=true&plan=${plan}`,
+          updated: true,
+        });
+      }
+
+      const updated = await stripe.subscriptions.update(existingSub.id, {
+        items: [{ id: existingSub.items.data[0].id, price: priceId }],
+        proration_behavior: "always_invoice",
+        metadata: { supabase_user_id: user.id, plan },
+      });
+
+      const finPeriode = updated.current_period_end
+        ? new Date(updated.current_period_end * 1000).toISOString()
+        : null;
+
+      await supabase.from("profiles").update({
+        plan,
+        stripe_price_id: priceId,
+        stripe_subscription_id: updated.id,
+        abonnement_actif: true,
+        abonnement_fin_periode: finPeriode,
+      }).eq("id", user.id);
+
+      return NextResponse.json({
+        url: `${baseUrl}/upgrade?success=true&plan=${plan}`,
+        updated: true,
+      });
+    }
+  }
+
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${baseUrl}/auth/stripe-success?plan=${plan}`,
+    success_url: `${baseUrl}/auth/stripe-success?plan=${plan}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${baseUrl}/upgrade?canceled=true`,
     metadata: {
       supabase_user_id: user.id,

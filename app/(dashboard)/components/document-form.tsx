@@ -172,35 +172,55 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
     if (!nomClient.trim()) { setErreur("Renseignez d'abord un client."); return; }
     setLoadingIA(true);
     setErreur("");
-    setLimiteAtteinte(false);
 
-    const bodyKey = type === "devis" ? "descriptionProjet" : "descriptionPrestations";
-    const res = await fetch(agentEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        [bodyKey]: notes || `Prestation pour ${nomClient}`,
-        nomClient,
-        clientId,
-        lignesExistantes: lignes.filter(l => l.description.trim()),
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
 
-    const data = await res.json();
+    try {
+      const bodyKey = type === "devis" ? "descriptionProjet" : "descriptionPrestations";
+      const res = await fetch(agentEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          [bodyKey]: notes || `Prestation pour ${nomClient}`,
+          nomClient,
+          clientId,
+          lignesExistantes: lignes.filter(l => l.description.trim()),
+        }),
+        signal: controller.signal,
+      });
 
-    if (res.status === 403 && data.limite) {
-      setErreur(data.erreur || "Limite atteinte");
-      setLimiteAtteinte(true);
+      clearTimeout(timeoutId);
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 403 && data.limite) {
+          setErreur(data.erreur || "Limite atteinte");
+          setLimiteAtteinte(true);
+        } else {
+          setErreur(data.erreur || "Erreur IA");
+        }
+        setLoadingIA(false);
+        return;
+      }
+
+      const doc = data.document;
+      setLignes(doc.lignes.map((l: { description: string; quantite: number; prixUnitaireHT: number; totalHT: number }) => ({
+        ...l,
+        totalHT: l.quantite * l.prixUnitaireHT,
+      })));
+      if (doc.notes && !notes) setNotes(doc.notes);
+
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err instanceof Error && err.name === "AbortError") {
+        setErreur("La génération a pris trop de temps. Vérifiez votre liste — le document a peut-être été créé.");
+      } else {
+        setErreur("Erreur réseau. Vérifiez votre connexion et réessayez.");
+      }
+    } finally {
       setLoadingIA(false);
-      return;
     }
-
-    if (!res.ok) { setErreur(data.erreur || "Erreur IA"); setLoadingIA(false); return; }
-
-    const doc: DocumentResult = data.document;
-    setLignes(doc.lignes.map(l => ({ ...l, totalHT: l.quantite * l.prixUnitaireHT })));
-    if (doc.notes && !notes) setNotes(doc.notes);
-    setLoadingIA(false);
   }
 
   async function enregistrerNouveauClient() {
