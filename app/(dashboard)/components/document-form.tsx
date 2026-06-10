@@ -546,7 +546,7 @@ export function DocumentForm({ type, clients, agentEndpoint, sauvegardeEndpoint,
         </div>
 
         {lignes.map((ligne, i) => (
-          <div key={i} style={{ display: "grid", gridTemplateColumns: "3fr 60px 100px 100px 28px", gap: "6px", marginBottom: "6px", alignItems: "center" }}>
+          <div key={i} className="grid-lignes-document" style={{ display: "grid", gridTemplateColumns: "3fr 60px 100px 100px 28px", gap: "6px", marginBottom: "6px", alignItems: "center" }}>
             <input style={{ ...inputStyle, padding: "8px 10px" }} value={ligne.description} onChange={(e) => updateLigne(i, "description", e.target.value)} placeholder="Description de la prestation" />
             <input style={{ ...inputStyle, padding: "8px 6px", textAlign: "center" }} type="number" min="0" step="0.5" value={ligne.quantite} onChange={(e) => updateLigne(i, "quantite", parseFloat(e.target.value) || 0)} />
             <input style={{ ...inputStyle, padding: "8px 10px", textAlign: "right" }} type="number" min="0" step="0.01" value={ligne.prixUnitaireHT} onChange={(e) => updateLigne(i, "prixUnitaireHT", parseFloat(e.target.value) || 0)} placeholder="0" />

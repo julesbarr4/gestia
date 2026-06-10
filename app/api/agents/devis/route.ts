@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { genererDevis } from "@/lib/agents/admin-agent";
 import { genererNumeroDocument } from "@/lib/utils";
 import { calculerTotauxDocument } from "@/lib/documents/totaux";
-import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
+import { verifierEtIncrementerGeneration } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
   }
 
-  const acces = await verifierAccesAgent(user.id, "devis");
+  const acces = await verifierEtIncrementerGeneration(user.id, "devis");
   if (!acces.autorise) {
     return NextResponse.json(
       { erreur: acces.erreur, planRequis: acces.planRequis, limite: true },
@@ -95,6 +95,5 @@ export async function POST(req: NextRequest) {
     duree_ms: Date.now() - debut,
   });
 
-  await incrementerGenerations(user.id);
   return NextResponse.json({ devis, document });
 }

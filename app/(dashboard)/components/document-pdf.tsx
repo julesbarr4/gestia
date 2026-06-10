@@ -256,6 +256,13 @@ function DocumentPDF({
               </Text>
             </View>
           )}
+          {tauxTVA === 0 && (
+            <View style={{ marginTop: 6 }}>
+              <Text style={{ fontSize: 7, color: "#8A8780", fontStyle: "italic" }}>
+                TVA non applicable, art. 293 B du CGI
+              </Text>
+            </View>
+          )}
           <View style={styles.totalDivider} />
           <View style={styles.totalRow}>
             <Text style={styles.totalTTCLabel}>Total TTC</Text>
@@ -282,6 +289,11 @@ function DocumentPDF({
           <Text style={styles.footerText}>
             En cas de retard de paiement, des pénalités de 3× le taux d&apos;intérêt légal s&apos;appliquent, ainsi qu&apos;une indemnité forfaitaire de recouvrement de 40€ (art. L441-10 C. com.).
           </Text>
+          {tauxTVA === 0 && (
+            <Text style={{ ...styles.footerText, marginTop: 4 }}>
+              TVA non applicable en vertu de l&apos;article 293 B du CGI.
+            </Text>
+          )}
           {emetteur.mentionRge && (
             <Text style={{ ...styles.footerText, marginTop: 4 }}>{emetteur.mentionRge}</Text>
           )}

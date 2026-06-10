@@ -4,6 +4,7 @@
 -- Ce fichier reflète l'état réel de la base, migrations incluses :
 --   - 0001_add_secteur_and_atomic_generations.sql
 --   - 0002_rgpd_suppression_compte.sql
+--   - 0003_numerotation_quota_atomique.sql
 -- Sur une base existante, exécuter uniquement les migrations, pas ce fichier.
 --
 -- Toute évolution du schéma doit être faite via une migration dans
@@ -90,6 +91,8 @@ create table public.clients (
   code_postal text,
   ville text,
   siret text,
+  -- Numéro de TVA intracommunautaire (migration 0003)
+  numero_tva text,
   notes text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -292,6 +295,81 @@ as $$
      set nb_generations_ia = coalesce(nb_generations_ia, 0) + 1
    where id = p_user_id
   returning nb_generations_ia;
+$$;
+
+-- ============================================================
+-- COMPTEURS DE NUMÉROTATION SÉQUENTIELLE (migration 0003)
+-- ============================================================
+create table public.compteurs_documents (
+  user_id uuid references public.profiles(id) on delete cascade primary key,
+  dernier_numero_devis integer default 0,
+  dernier_numero_facture integer default 0,
+  updated_at timestamptz default now()
+);
+
+alter table public.compteurs_documents enable row level security;
+create policy "Utilisateur gère ses compteurs" on public.compteurs_documents
+  for all using (auth.uid() = user_id);
+
+create or replace function public.prochain_numero_document(
+  p_user_id uuid,
+  p_type text
+) returns integer
+language plpgsql
+security definer
+as $$
+declare
+  v_numero integer;
+begin
+  insert into public.compteurs_documents (user_id)
+  values (p_user_id)
+  on conflict (user_id) do nothing;
+
+  if p_type = 'facture' then
+    update public.compteurs_documents
+    set dernier_numero_facture = dernier_numero_facture + 1, updated_at = now()
+    where user_id = p_user_id
+    returning dernier_numero_facture into v_numero;
+  else
+    update public.compteurs_documents
+    set dernier_numero_devis = dernier_numero_devis + 1, updated_at = now()
+    where user_id = p_user_id
+    returning dernier_numero_devis into v_numero;
+  end if;
+
+  return v_numero;
+end;
+$$;
+
+-- ============================================================
+-- FONCTION : vérification + incrément atomique du quota IA
+-- (migration 0003 — corrige le TOCTOU entre check et incrément)
+-- ============================================================
+create or replace function public.verifier_et_incrementer_generation(
+  p_user_id uuid,
+  p_max integer
+) returns jsonb
+language plpgsql
+security definer
+as $$
+declare
+  v_actuel integer;
+begin
+  select nb_generations_ia into v_actuel
+  from public.profiles
+  where id = p_user_id
+  for update;
+
+  if v_actuel >= p_max then
+    return jsonb_build_object('autorise', false, 'nb_generations', v_actuel);
+  end if;
+
+  update public.profiles
+  set nb_generations_ia = nb_generations_ia + 1
+  where id = p_user_id;
+
+  return jsonb_build_object('autorise', true, 'nb_generations', v_actuel + 1);
+end;
 $$;
 
 -- ============================================================

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { prochainNumeroFacture } from "@/lib/documents/numerotation";
 
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,13 +26,21 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     );
   }
 
-  const annee = new Date().getFullYear();
-  const { count } = await supabase
+  const { data: factureExistante } = await supabase
     .from("factures")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id);
+    .select("id, numero")
+    .eq("devis_id", id)
+    .eq("user_id", user.id)
+    .single();
 
-  const numero = `FAC-${annee}-${String((count || 0) + 1).padStart(4, "0")}`;
+  if (factureExistante) {
+    return NextResponse.json(
+      { erreur: "Ce devis a déjà été converti en facture.", factureId: factureExistante.id },
+      { status: 409 }
+    );
+  }
+
+  const numero = await prochainNumeroFacture(user.id);
 
   const dateEcheance = new Date();
   dateEcheance.setDate(dateEcheance.getDate() + 30);

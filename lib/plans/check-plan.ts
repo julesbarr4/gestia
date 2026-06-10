@@ -33,11 +33,10 @@ export const PLAN_ORDRE: Record<Plan, number> = {
   pro: 2,
 };
 
-export async function verifierAccesAgent(userId: string, agent: string): Promise<{
+export async function verifierEtIncrementerGeneration(userId: string, agent: string): Promise<{
   autorise: boolean;
   erreur?: string;
   planRequis?: string;
-  generationsRestantes?: number;
 }> {
   const supabase = await createClient();
 
@@ -48,64 +47,36 @@ export async function verifierAccesAgent(userId: string, agent: string): Promise
     .single();
 
   const plan = (profile?.plan || "starter") as Plan;
-  const nbGenerations = profile?.nb_generations_ia || 0;
-  const limites = LIMITES[plan];
+  const abonnementActif = profile?.abonnement_actif ?? true;
+  const planEffectif: Plan = (plan !== "starter" && !abonnementActif) ? "starter" : plan;
 
   const planRequis = AGENT_PLAN_REQUIS[agent] || "starter";
-  if (PLAN_ORDRE[plan] < PLAN_ORDRE[planRequis]) {
+  if (PLAN_ORDRE[planEffectif] < PLAN_ORDRE[planRequis]) {
     return {
       autorise: false,
-      erreur: `Cette fonctionnalité nécessite le plan ${planRequis === "pro" ? "Pro" : "Essentiel"}.`,
+      erreur: `Cette fonctionnalité nécessite le plan ${planRequis === "pro" ? "Pro" : "Essentiel"}.${!abonnementActif && plan !== "starter" ? " Votre abonnement est inactif." : ""}`,
       planRequis,
     };
   }
 
-  if (plan === "starter" && nbGenerations >= limites.maxGenerations) {
-    return {
-      autorise: false,
-      erreur: `Vous avez atteint la limite de ${limites.maxGenerations} générations gratuites. Passez à l'Essentiel pour continuer.`,
-      planRequis: "essentiel",
-      generationsRestantes: 0,
-    };
+  if (planEffectif === "starter") {
+    const { data, error } = await supabase.rpc("verifier_et_incrementer_generation", {
+      p_user_id: userId,
+      p_max: LIMITES.starter.maxGenerations,
+    });
+
+    if (error || !data) {
+      return { autorise: false, erreur: "Impossible de vérifier votre quota." };
+    }
+
+    if (!data.autorise) {
+      return {
+        autorise: false,
+        erreur: `Vous avez atteint la limite de ${LIMITES.starter.maxGenerations} générations IA gratuites (devis, factures et relances confondus). Passez à l'Essentiel pour continuer.`,
+        planRequis: "essentiel",
+      };
+    }
   }
 
-  return {
-    autorise: true,
-    generationsRestantes: plan === "starter"
-      ? limites.maxGenerations - nbGenerations
-      : Infinity,
-  };
-}
-
-export async function incrementerGenerations(userId: string): Promise<void> {
-  const supabase = await createClient();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan")
-    .eq("id", userId)
-    .single();
-
-  // Seul le plan starter est plafonné, donc seul lui a besoin du compteur.
-  if (profile?.plan && profile.plan !== "starter") return;
-
-  // Incrément atomique côté base (voir migration 0001) : évite la race
-  // condition du read-modify-write où des requêtes concurrentes lisaient
-  // toutes la même valeur et dépassaient le quota gratuit.
-  const { error } = await supabase.rpc("increment_generations_ia", {
-    p_user_id: userId,
-  });
-
-  // Repli défensif si la fonction RPC n'est pas encore déployée.
-  if (error) {
-    const { data: actuel } = await supabase
-      .from("profiles")
-      .select("nb_generations_ia")
-      .eq("id", userId)
-      .single();
-    await supabase
-      .from("profiles")
-      .update({ nb_generations_ia: (actuel?.nb_generations_ia || 0) + 1 })
-      .eq("id", userId);
-  }
+  return { autorise: true };
 }
