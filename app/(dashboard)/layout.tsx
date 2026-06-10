@@ -47,7 +47,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <div style={{ width: "26px", height: "26px", background: "var(--ink)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ivory)", fontFamily: "Instrument Serif, serif", fontStyle: "italic", fontSize: "13px", flexShrink: 0 }}>{initiale}</div>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: "12px", fontWeight: 500, color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{nomEntreprise}</p>
-              <p style={{ fontSize: "10px", color: "var(--ink-3)" }}>{plan === "pro" ? "Plan Pro" : "Plan Starter"}</p>
+              <p style={{ fontSize: "10px", color: "var(--ink-3)" }}>
+                {plan === "pro" ? "Plan Pro" : plan === "essentiel" ? "Plan Essentiel" : "Plan Gratuit"}
+              </p>
             </div>
           </div>
         </div>

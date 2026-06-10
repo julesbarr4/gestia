@@ -81,3 +81,12 @@ html, body {
   nav[data-bottom-nav] { display: none !important; }
   .dashboard-main { margin-left: 240px !important; }
 }
+
+@media (max-width: 480px) {
+  .grid-lignes-document {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-lignes-document > * {
+    grid-column: span 1 !important;
+  }
+}

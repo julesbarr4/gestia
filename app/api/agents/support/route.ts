@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { analyserEtRepondreEmail } from "@/lib/agents/support-agent";
 import { reponseAgentSuspecte } from "@/lib/agents/prompt-securite";
-import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
+import { verifierEtIncrementerGeneration } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
   }
 
-  const acces = await verifierAccesAgent(user.id, "support");
+  const acces = await verifierEtIncrementerGeneration(user.id, "support");
   if (!acces.autorise) {
     return NextResponse.json(
       { erreur: acces.erreur, planRequis: acces.planRequis, limite: true },
@@ -63,7 +63,11 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
 
-  await incrementerGenerations(user.id);
+  await supabase.from("agents_logs").insert({
+    user_id: user.id, agent: "support", action: "analyser_email",
+    input: { sujet }, output: { statut: "traite" }, statut: "succes",
+  });
+
   return NextResponse.json({
     analyse,
     emailLogId: emailLog?.id,

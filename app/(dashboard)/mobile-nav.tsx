@@ -1,14 +1,35 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, FileText, Receipt, Users, Menu } from "lucide-react";
 
 const BOTTOM_ITEMS = [
-  { href: "/dashboard", label: "Accueil", icon: "⌂" },
-  { href: "/devis", label: "Devis", icon: "📄" },
-  { href: "/factures", label: "Factures", icon: "🧾" },
-  { href: "/clients", label: "Clients", icon: "👤" },
-  { href: "/menu", label: "Menu", icon: "☰" },
+  { href: "/dashboard", label: "Accueil", icon: <Home size={20} /> },
+  { href: "/devis", label: "Devis", icon: <FileText size={20} /> },
+  { href: "/factures", label: "Factures", icon: <Receipt size={20} /> },
+  { href: "/clients", label: "Clients", icon: <Users size={20} /> },
+  { href: "/menu", label: "Menu", icon: <Menu size={20} /> },
 ];
+
+function open() {
+  const drawer = document.getElementById("mobile-drawer");
+  const overlay = document.getElementById("mobile-overlay");
+  drawer?.classList.add("open");
+  if (overlay) {
+    overlay.style.opacity = "1";
+    overlay.style.pointerEvents = "auto";
+  }
+}
+
+function close() {
+  const drawer = document.getElementById("mobile-drawer");
+  const overlay = document.getElementById("mobile-overlay");
+  drawer?.classList.remove("open");
+  if (overlay) {
+    overlay.style.opacity = "0";
+    overlay.style.pointerEvents = "none";
+  }
+}
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -39,10 +60,15 @@ export function BottomNav() {
             }}
             onClick={item.href === "/menu" ? (e) => {
               e.preventDefault();
-              document.getElementById("mobile-drawer")?.classList.toggle("open");
+              const drawer = document.getElementById("mobile-drawer");
+              if (drawer?.classList.contains("open")) {
+                close();
+              } else {
+                open();
+              }
             } : undefined}
           >
-            <span style={{ fontSize: "18px", lineHeight: 1 }}>{item.icon}</span>
+            <span style={{ display: "flex", lineHeight: 1 }}>{item.icon}</span>
             <span>{item.label}</span>
             {isActive && (
               <span style={{
@@ -62,11 +88,7 @@ export function MobileMenuButton() {
   return (
     <button
       className="show-mobile"
-      onClick={() => {
-        document.getElementById("mobile-drawer")?.classList.toggle("open");
-        document.getElementById("mobile-overlay")?.style.setProperty("opacity", "1");
-        document.getElementById("mobile-overlay")?.style.setProperty("pointer-events", "auto");
-      }}
+      onClick={open}
       style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "var(--ink)", padding: "4px", display: "none" }}
     >
       ☰
@@ -97,10 +119,6 @@ export function MobileDrawer({ nomEntreprise, initiale, plan }: {
     { href: "/parametres", label: "Mon compte" },
   ];
 
-  function close() {
-    document.getElementById("mobile-drawer")?.classList.remove("open");
-  }
-
   return (
     <>
       <div
@@ -117,7 +135,7 @@ export function MobileDrawer({ nomEntreprise, initiale, plan }: {
       <div
         id="mobile-drawer"
         style={{
-          position: "fixed", top: 0, right: "-280px", height: "100vh",
+          position: "fixed", top: 0, right: "-280px", height: "100dvh",
           width: "280px", zIndex: 49,
           background: "var(--ivory)", borderLeft: "1px solid var(--line)",
           display: "flex", flexDirection: "column",
@@ -137,7 +155,9 @@ export function MobileDrawer({ nomEntreprise, initiale, plan }: {
             <div style={{ width: "26px", height: "26px", background: "var(--ink)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ivory)", fontFamily: "Instrument Serif, serif", fontStyle: "italic", fontSize: "13px", flexShrink: 0 }}>{initiale}</div>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: "12px", fontWeight: 500, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nomEntreprise}</p>
-              <p style={{ fontSize: "10px", color: "var(--ink-3)" }}>{plan === "pro" ? "Plan Pro" : "Plan Starter"}</p>
+              <p style={{ fontSize: "10px", color: "var(--ink-3)" }}>
+                {plan === "pro" ? "Plan Pro" : plan === "essentiel" ? "Plan Essentiel" : "Plan Gratuit"}
+              </p>
             </div>
           </div>
         </div>
@@ -174,9 +194,6 @@ export function MobileDrawer({ nomEntreprise, initiale, plan }: {
 
       <style>{`
         #mobile-drawer.open { right: 0 !important; }
-        #mobile-drawer.open ~ * #mobile-overlay,
-        #mobile-overlay { transition: opacity 0.25s; }
-        #mobile-drawer.open + #mobile-overlay { opacity: 1 !important; pointer-events: auto !important; }
       `}</style>
     </>
   );

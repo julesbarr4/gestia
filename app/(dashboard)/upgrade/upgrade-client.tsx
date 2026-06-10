@@ -25,11 +25,10 @@ export function UpgradeClient({ planActuel, abonnementActif, priceIdEssentiel, p
       prix: 0,
       cible: "Pour découvrir Gestia",
       features: [
-        "5 devis générés par Inès",
-        "5 factures générées par Inès",
+        "5 générations IA au total (relances incluses)",
+        "Inès uniquement (devis, factures, relances)",
         "Export PDF professionnel",
         "Factur-X conforme RFE 2026",
-        "Accès au dashboard",
       ],
       priceId: null,
       highlighted: false,

@@ -45,7 +45,7 @@ export default async function DashboardPage() {
     .reduce((s, f) => s + f.total_ttc, 0);
   const montantImpaye = (facturesImpayees || []).reduce((s, f) => s + f.total_ttc, 0);
 
-  const infosManquantes = !profile?.siret || !profile?.numero_tva;
+  const infosManquantes = !profile?.siret;
 
   const dateAujourdhui = new Date().toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
           <p style={{ fontSize: "13px", color: "var(--ink-2)" }}>
             Plan gratuit ·{" "}
             <strong style={{ color: (profile?.nb_generations_ia || 0) >= 4 ? "#DC2626" : "var(--ink)" }}>
-              {5 - (profile?.nb_generations_ia || 0)} génération{5 - (profile?.nb_generations_ia || 0) > 1 ? "s" : ""} restante{5 - (profile?.nb_generations_ia || 0) > 1 ? "s" : ""}
+              {5 - (profile?.nb_generations_ia || 0)} génération{5 - (profile?.nb_generations_ia || 0) > 1 ? "s" : ""} IA restante{5 - (profile?.nb_generations_ia || 0) > 1 ? "s" : ""} (relances incluses)
             </strong>
           </p>
           <a href="/upgrade" style={{

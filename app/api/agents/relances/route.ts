@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRelance } from "@/lib/agents/admin-agent";
 import { formatDate } from "@/lib/utils";
-import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
+import { verifierEtIncrementerGeneration } from "@/lib/plans/check-plan";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
   }
 
-  const acces = await verifierAccesAgent(user.id, "relances");
+  const acces = await verifierEtIncrementerGeneration(user.id, "relances");
   if (!acces.autorise) {
     return NextResponse.json(
       { erreur: acces.erreur, planRequis: acces.planRequis, limite: true },
@@ -61,6 +61,10 @@ export async function POST(req: NextRequest) {
     })
     .eq("id", factureId);
 
-  await incrementerGenerations(user.id);
+  await supabase.from("agents_logs").insert({
+    user_id: user.id, agent: "admin", action: "generer_relance",
+    input: { factureId }, output: { niveau: facture.nb_relances + 1 }, statut: "succes",
+  });
+
   return NextResponse.json({ relance, emailDestination: facture.clients?.email });
 }

@@ -3,7 +3,7 @@ export const maxDuration = 120; // 2 min timeout Vercel
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererRapportHebdomadaire } from "@/lib/agents/cfo-agent";
-import { verifierAccesAgent, incrementerGenerations } from "@/lib/plans/check-plan";
+import { verifierEtIncrementerGeneration } from "@/lib/plans/check-plan";
 export async function POST(_req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -12,7 +12,7 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
   }
 
-  const acces = await verifierAccesAgent(user.id, "rapport");
+  const acces = await verifierEtIncrementerGeneration(user.id, "rapport");
   if (!acces.autorise) {
     return NextResponse.json(
       { erreur: acces.erreur, planRequis: acces.planRequis, limite: true },
@@ -88,7 +88,11 @@ export async function POST(_req: NextRequest) {
     recommandations: rapport.recommandations,
   });
 
-  await incrementerGenerations(user.id);
+  await supabase.from("agents_logs").insert({
+    user_id: user.id, agent: "cfo", action: "generer_rapport",
+    input: { periode: "hebdomadaire" }, output: { caSemaine, caMois }, statut: "succes",
+  });
+
   return NextResponse.json({
     rapport,
     metriques: { caSemaine, caMois, caMoisPrecedent, montantImpaye, tauxAcceptation },

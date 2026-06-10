@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { calculerTotauxDocument } from "@/lib/documents/totaux";
+import { prochainNumeroDevis } from "@/lib/documents/numerotation";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     if (nouveauClient) clientIdFinal = nouveauClient.id;
   }
 
-  const numero = reference || `DEV-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+  const numero = reference || await prochainNumeroDevis(user.id);
   const dateValidite = validite
     ? new Date(Date.now() + Number(validite) * 86400000).toISOString().split("T")[0]
     : null;
