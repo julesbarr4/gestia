@@ -27,6 +27,7 @@ export function PublicNavbar() {
         <Link href="/#fonctionnalites" style={{ fontSize: "13.5px", color: "var(--ink-2)", textDecoration: "none" }}>Fonctionnalités</Link>
         <Link href="/equipe" style={{ fontSize: "13.5px", color: "var(--ink-2)", textDecoration: "none" }}>L'équipe</Link>
         <Link href="/#tarifs" style={{ fontSize: "13.5px", color: "var(--ink-2)", textDecoration: "none" }}>Tarifs</Link>
+        <Link href="/blog" style={{ fontSize: "13.5px", color: "var(--ink-2)", textDecoration: "none" }}>Blog</Link>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         <Link href="/login" style={{ fontSize: "13.5px", color: "var(--ink-2)", textDecoration: "none" }}>
