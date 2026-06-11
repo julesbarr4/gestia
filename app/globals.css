@@ -90,3 +90,65 @@ html, body {
     grid-column: span 1 !important;
   }
 }
+
+.prose-gestia h2 {
+  font-family: "Instrument Serif", serif;
+  font-size: 28px;
+  color: var(--ink);
+  margin-top: 40px;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.prose-gestia h3 {
+  font-family: "Geist", sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+
+.prose-gestia p {
+  font-size: 15px;
+  color: var(--ink-2);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.prose-gestia ul, .prose-gestia ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.prose-gestia li {
+  font-size: 15px;
+  color: var(--ink-2);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.prose-gestia strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.prose-gestia code {
+  font-family: "Geist Mono", monospace;
+  font-size: 13px;
+  background: var(--ivory-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+.prose-gestia a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-gestia div[style*="background:#f5f5f5"],
+.prose-gestia div[style*="background:#fff3f3"] {
+  margin: 24px 0;
+}
