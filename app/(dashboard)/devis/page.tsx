@@ -12,9 +12,15 @@ export default async function DevisPage() {
 
   const { data: devis } = await supabase
     .from("devis")
-    .select("*, clients(nom)")
+    .select("id, numero, statut, total_ttc, date_emission, clients(nom)")
     .eq("user_id", user!.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  const { count: totalDevis } = await supabase
+    .from("devis")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user!.id);
 
   return (
     <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%" }}>
@@ -64,7 +70,7 @@ export default async function DevisPage() {
           </a>
         </div>
       ) : (
-        <DevisListe devis={devis} />
+        <DevisListe devis={devis as Parameters<typeof DevisListe>[0]["devis"]} total={totalDevis || 0} />
       )}
     </div>
   );

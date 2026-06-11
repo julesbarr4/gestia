@@ -78,16 +78,23 @@ export async function POST(_req: NextRequest) {
       devisAcceptesTaux: tauxAcceptation,
     });
 
-    await supabase.from("rapports_financiers").insert({
-      user_id: user.id,
-      semaine: debutSemaine.toISOString().split("T")[0],
-      ca_semaine: caSemaine,
-      ca_mois: caMois,
-      factures_impayees: facturesImpayees?.length || 0,
-      montant_impaye: montantImpaye,
-      analyse_ia: rapport.resumeExecutif,
-      recommandations: rapport.recommandations,
-    });
+    const semaine = new Date().toISOString().slice(0, 10);
+
+    await supabase
+      .from("rapports_financiers")
+      .upsert(
+        {
+          user_id: user.id,
+          semaine,
+          ca_semaine: caSemaine,
+          ca_mois: caMois,
+          factures_impayees: facturesImpayees?.length || 0,
+          montant_impaye: montantImpaye,
+          analyse_ia: rapport.resumeExecutif,
+          recommandations: rapport.recommandations,
+        },
+        { onConflict: "user_id,semaine" }
+      );
 
     await supabase.from("agents_logs").insert({
       user_id: user.id, agent: "cfo", action: "generer_rapport",

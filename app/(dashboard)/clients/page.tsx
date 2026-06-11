@@ -10,7 +10,8 @@ export default async function ClientsPage() {
     .from("clients")
     .select("*, numero_tva")
     .eq("user_id", user!.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   return <ClientsClient clients={clients || []} />;
 }

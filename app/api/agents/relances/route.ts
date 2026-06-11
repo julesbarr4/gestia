@@ -45,26 +45,35 @@ export async function POST(req: NextRequest) {
     .single();
 
   try {
+    const { data: nbRelancesApres, error: relanceError } = await supabase.rpc(
+      "incrementer_relance",
+      { p_facture_id: factureId, p_user_id: user.id }
+    );
+
+    if (relanceError) {
+      if (relanceError.message?.includes("RELANCE_TROP_RAPIDE")) {
+        return NextResponse.json(
+          { erreur: "Une relance vient d'être générée. Attendez une minute avant d'en envoyer une autre." },
+          { status: 429 }
+        );
+      }
+      throw relanceError;
+    }
+
+    const nbRelances = (nbRelancesApres as number) - 1;
+
     const relance = await genererRelance({
       nomClient: facture.clients?.nom || "Client",
       nomEntreprise: profile?.nom_entreprise || "Mon Entreprise",
       numeroFacture: facture.numero,
       montantTTC: facture.total_ttc,
       dateEcheance: formatDate(facture.date_echeance),
-      nbRelances: facture.nb_relances,
+      nbRelances,
     });
-
-    await supabase
-      .from("factures")
-      .update({
-        nb_relances: facture.nb_relances + 1,
-        derniere_relance_at: new Date().toISOString(),
-      })
-      .eq("id", factureId);
 
     await supabase.from("agents_logs").insert({
       user_id: user.id, agent: "admin", action: "generer_relance",
-      input: { factureId }, output: { niveau: facture.nb_relances + 1 }, statut: "succes",
+      input: { factureId }, output: { niveau: nbRelancesApres }, statut: "succes",
     });
 
     return NextResponse.json({ relance, emailDestination: facture.clients?.email });

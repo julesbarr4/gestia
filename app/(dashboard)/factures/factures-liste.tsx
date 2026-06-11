@@ -23,7 +23,7 @@ interface Facture {
   clients: { nom?: string } | null;
 }
 
-export function FacturesListe({ factures }: { factures: Facture[] }) {
+export function FacturesListe({ factures, total = 0 }: { factures: Facture[]; total?: number }) {
   const router = useRouter();
 
   return (
@@ -48,6 +48,16 @@ export function FacturesListe({ factures }: { factures: Facture[] }) {
           <p style={{ fontSize: "13px", fontFamily: "Geist Mono, monospace", color: "var(--ink)", fontWeight: 500, textAlign: "right" }}>{formatEuros(f.total_ttc)}</p>
         </div>
       ))}
+      {total > 50 && (
+        <div style={{ padding: "14px 24px", borderTop: "1px solid var(--line)", background: "var(--ivory-2)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <p style={{ fontSize: "12px", color: "var(--ink-3)", fontFamily: "Geist Mono, monospace" }}>
+            50 plus récents affichés sur {total} factures au total
+          </p>
+          <p style={{ fontSize: "11px", color: "var(--ink-3)" }}>
+            Bientôt : recherche et filtres
+          </p>
+        </div>
+      )}
     </div>
   );
 }

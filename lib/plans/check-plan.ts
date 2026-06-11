@@ -33,6 +33,12 @@ export const PLAN_ORDRE: Record<Plan, number> = {
   pro: 2,
 };
 
+export const RATE_LIMITS_PAR_PLAN: Record<Plan, number> = {
+  starter: 3,
+  essentiel: 10,
+  pro: 20,
+};
+
 export async function verifierEtIncrementerGeneration(userId: string, agent: string): Promise<{
   autorise: boolean;
   erreur?: string;
@@ -56,6 +62,19 @@ export async function verifierEtIncrementerGeneration(userId: string, agent: str
       autorise: false,
       erreur: `Cette fonctionnalité nécessite le plan ${planRequis === "pro" ? "Pro" : "Essentiel"}.${!abonnementActif && plan !== "starter" ? " Votre abonnement est inactif." : ""}`,
       planRequis,
+    };
+  }
+
+  const maxParMinute = RATE_LIMITS_PAR_PLAN[planEffectif];
+  const { data: rateLimitOk, error: rateLimitError } = await supabase.rpc(
+    "verifier_rate_limit_agent",
+    { p_user_id: userId, p_max_par_minute: maxParMinute }
+  );
+
+  if (rateLimitError || !rateLimitOk) {
+    return {
+      autorise: false,
+      erreur: "Trop de générations en cours. Attendez une minute avant de réessayer.",
     };
   }
 

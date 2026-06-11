@@ -12,9 +12,15 @@ export default async function FacturesPage() {
 
   const { data: factures } = await supabase
     .from("factures")
-    .select("*, clients(nom)")
+    .select("id, numero, statut, total_ttc, date_echeance, nb_relances, clients(nom)")
     .eq("user_id", user!.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  const { count: totalFactures } = await supabase
+    .from("factures")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user!.id);
 
   return (
     <div style={{ padding: "40px", background: "var(--ivory)", minHeight: "100%" }}>
@@ -64,7 +70,7 @@ export default async function FacturesPage() {
           </a>
         </div>
       ) : (
-        <FacturesListe factures={factures} />
+        <FacturesListe factures={factures as Parameters<typeof FacturesListe>[0]["factures"]} total={totalFactures || 0} />
       )}
     </div>
   );
