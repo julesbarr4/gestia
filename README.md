@@ -1,137 +1,112 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Gestia — Le cabinet exécutif qui ne dort jamais</title>
+# Gestia
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+Assistant administratif IA pour TPE et indépendants : devis, factures (Factur-X), relances, support client, rapports financiers et contenu marketing, pris en charge par une équipe d'agents IA basée sur Claude.
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: { extend: { fontFamily: { sans: ["Geist","ui-sans-serif","system-ui","sans-serif"], serif: ["Instrument Serif","ui-serif","Georgia","serif"], mono: ["Geist Mono","ui-monospace","monospace"] } } }
-  };
-</script>
+## Fonctionnalités
 
-<style>
-  :root {
-    /* Tones — premium ivoire + ink + accent forêt */
-    --ivory: #FBF8F3;
-    --ivory-2: #F4EFE6;
-    --ink: #0E0E0E;
-    --ink-2: #4A4A47;
-    --ink-3: #8A8780;
-    --line: #E5DFD2;
-    --accent: oklch(0.42 0.07 155); /* sapin profond */
-    --radius: 14px;
-  }
-  html, body { background: var(--ivory); color: var(--ink); font-family: Geist, ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-  body { font-feature-settings: "ss01", "cv11"; }
-  ::selection { background: var(--accent); color: var(--ivory); }
-  /* hide scrollbar accent */
-  html { scroll-behavior: smooth; }
-</style>
-</head>
-<body>
-  <div id="root"></div>
+| Agent | Rôle | Fonctions | Plan minimum |
+|-------|------|-----------|--------------|
+| Inès | Assistante administrative | Devis, factures, relances de paiement | Starter |
+| Léa | Responsable service client | Analyse et réponse aux e-mails entrants | Essentiel |
+| Hugo | Directeur financier | Rapports financiers | Essentiel |
+| Cyprien | Directeur marketing | Contenu marketing adapté au secteur | Pro |
+| Augustin | Directeur général | Stratégie | Pro |
 
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+Également inclus :
+- gestion des clients, devis et factures avec numérotation séquentielle ;
+- export de factures au format **Factur-X** (EN 16931) ;
+- modèles de devis réutilisables ;
+- abonnements Stripe (Starter, Essentiel, Pro) ; le plan Starter est limité à 5 générations IA ;
+- suppression de compte conforme au RGPD ;
+- mode démo avec données fictives (`DEMO_MODE=true`).
 
-  <script type="text/babel" src="components.jsx"></script>
-  <script type="text/babel" src="tweaks-panel.jsx"></script>
+## Stack technique
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+- **Framework** : Next.js 15 (App Router), React 19, TypeScript
+- **UI** : Tailwind CSS, Radix UI, lucide-react
+- **Base de données et authentification** : Supabase (PostgreSQL avec RLS)
+- **IA** : Anthropic Claude (`@anthropic-ai/sdk`)
+- **Paiement** : Stripe
+- **PDF et XML** : `@react-pdf/renderer`, `xmlbuilder2`
+- **Tests** : Vitest
 
-    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-      "accentHue": 155,
-      "accentChroma": 0.05,
-      "accentLightness": 0.42,
-      "ivoryWarmth": 80,
-      "radius": 14,
-      "headlineStyle": "serif-italic",
-      "heroLabel": "Le cabinet exécutif",
-      "heroLabelItalic": "qui ne dort jamais.",
-      "showFloatingCallouts": true,
-      "darkHero": false,
-      "showTeamCard": true
-    }/*EDITMODE-END*/;
+## Démarrage
 
-    function App() {
-      const [tw, setTweak] = useTweaks(TWEAK_DEFAULTS);
+### Prérequis
 
-      // Apply tweaks → CSS vars
-      useEffect(() => {
-        const r = document.documentElement.style;
-        r.setProperty("--accent", `oklch(${tw.accentLightness} ${tw.accentChroma} ${tw.accentHue})`);
-        const w = tw.ivoryWarmth;
-        r.setProperty("--ivory", `oklch(0.975 ${(w/100)*0.012} 80)`);
-        r.setProperty("--ivory-2", `oklch(0.945 ${(w/100)*0.018} 78)`);
-        r.setProperty("--line", `oklch(0.89 ${(w/100)*0.018} 76)`);
-        r.setProperty("--radius", `${tw.radius}px`);
-      }, [tw]);
+- Node.js 20 ou supérieur
+- Un projet Supabase, une clé API Anthropic et un compte Stripe
 
-      return (
-        <div className="relative">
-          <Navbar />
-          <main>
-            <Hero />
-            <LogoStrip />
-            <TeamSection />
-            <Features />
-            <HowItWorks />
-            <Testimonials />
-            <Pricing />
-            <Manifesto />
-            <FAQ />
-            <FinalCTA />
-          </main>
-          <Footer />
+### Installation
 
-          <TweaksPanel title="Tweaks · Gestia">
-            <TweakSection title="Identité de marque">
-              <TweakSlider label="Teinte accent (hue)" value={tw.accentHue} onChange={v => setTweak("accentHue", v)} min={0} max={360} step={1} suffix="°" />
-              <TweakSlider label="Saturation accent" value={tw.accentChroma} onChange={v => setTweak("accentChroma", v)} min={0} max={0.3} step={0.005} />
-              <TweakSlider label="Clarté accent" value={tw.accentLightness} onChange={v => setTweak("accentLightness", v)} min={0.2} max={0.8} step={0.01} />
-              <TweakSlider label="Chaleur ivoire" value={tw.ivoryWarmth} onChange={v => setTweak("ivoryWarmth", v)} min={0} max={100} step={1} suffix="%" />
-              <TweakSlider label="Rayon des coins" value={tw.radius} onChange={v => setTweak("radius", v)} min={0} max={28} step={1} suffix="px" />
-            </TweakSection>
-            <TweakSection title="Hero">
-              <TweakText label="Titre — partie 1" value={tw.heroLabel} onChange={v => setTweak("heroLabel", v)} />
-              <TweakText label="Titre — partie 2 (italique)" value={tw.heroLabelItalic} onChange={v => setTweak("heroLabelItalic", v)} />
-              <TweakToggle label="Callouts flottants sur le mockup" value={tw.showFloatingCallouts} onChange={v => setTweak("showFloatingCallouts", v)} />
-            </TweakSection>
-            <TweakSection title="Présets palette">
-              <TweakButton onClick={() => {
-                setTweak({ accentHue: 155, accentChroma: 0.07, accentLightness: 0.42, ivoryWarmth: 80 });
-              }}>Sapin (par défaut)</TweakButton>
-              <TweakButton onClick={() => {
-                setTweak({ accentHue: 32, accentChroma: 0.13, accentLightness: 0.55, ivoryWarmth: 100 });
-              }}>Terracotta</TweakButton>
-              <TweakButton onClick={() => {
-                setTweak({ accentHue: 250, accentChroma: 0.10, accentLightness: 0.48, ivoryWarmth: 30 });
-              }}>Encre bleutée</TweakButton>
-              <TweakButton onClick={() => {
-                setTweak({ accentHue: 85, accentChroma: 0.18, accentLightness: 0.85, ivoryWarmth: 40 });
-              }}>Lime électrique</TweakButton>
-              <TweakButton onClick={() => {
-                setTweak({ accentHue: 0, accentChroma: 0, accentLightness: 0.30, ivoryWarmth: 60 });
-              }}>Mono — sans accent</TweakButton>
-            </TweakSection>
-          </TweaksPanel>
-        </div>
-      );
-    }
+```bash
+npm install
+cp .env.example .env.local
+```
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-  </script>
-</body>
-</html>
+Renseignez ensuite les variables dans `.env.local`.
+
+### Base de données
+
+Dans l'éditeur SQL de Supabase, exécutez `supabase/schema.sql`, puis les migrations de `supabase/migrations/` dans l'ordre (`0001` → `0003`).
+
+### Lancement
+
+```bash
+npm run dev
+```
+
+L'application est disponible sur http://localhost:3000.
+
+## Variables d'environnement
+
+| Variable | Usage |
+|----------|-------|
+| `ANTHROPIC_API_KEY` | Appels à l'API Claude |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé publique Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clé serveur Supabase (opérations privilégiées) |
+| `STRIPE_SECRET_KEY` | Clé secrète Stripe |
+| `STRIPE_WEBHOOK_SECRET` | Vérification de signature des webhooks Stripe |
+| `STRIPE_PRICE_ESSENTIEL` | Price ID Stripe du plan Essentiel |
+| `STRIPE_PRICE_PRO` | Price ID Stripe du plan Pro |
+| `NEXT_PUBLIC_APP_URL` | URL publique de l'application |
+| `DEMO_MODE` | `true` pour activer le mode démo |
+
+## Scripts
+
+| Commande | Description |
+|----------|-------------|
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build de production |
+| `npm run start` | Démarrage du build de production |
+| `npm run lint` | Lint |
+| `npm test` | Tests unitaires (Vitest) |
+
+## Structure du projet
+
+```
+app/
+  (auth)/          Connexion et inscription
+  (dashboard)/     Espace client : clients, devis, factures, agents, paramètres
+  api/             Routes API : agents IA, CRUD, Stripe, Factur-X, compte
+  blog/, cgv/, …   Pages publiques
+lib/
+  agents/          Prompts et logique des agents IA
+  documents/       Numérotation et calcul des totaux
+  facturx/         Génération XML Factur-X
+  plans/           Plans, quotas et correspondance avec les prix Stripe
+  supabase/        Clients Supabase (navigateur et serveur)
+  demo/            Données et clients fictifs du mode démo
+supabase/          Schéma SQL et migrations
+tests/             Tests unitaires
+```
+
+## Documentation complémentaire
+
+- [`RAPPORT.md`](RAPPORT.md) : audit de sécurité et interventions réalisées
+- [`DIAGNOSTIC.md`](DIAGNOSTIC.md) : inventaire des routes et dépendances
+- [`maquette.html`](maquette.html) : maquette de la landing page (ouvrir dans un navigateur)
 
 ## License
 
